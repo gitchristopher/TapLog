@@ -17,8 +17,10 @@ import { AuthorizeInterceptor } from 'src/api-authorization/authorize.intercepto
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ButtonsModule } from 'ngx-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
-
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 @NgModule({
    declarations: [
       AppComponent,
@@ -42,9 +44,12 @@ import { TapLoggerComponent } from './tap-logger/tap-logger.component';
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'tap-logger', component: TapLoggerComponent, canActivate: [AuthorizeGuard]  },
     ]),
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     ModalModule.forRoot(),
-    ButtonsModule.forRoot()
+    ButtonsModule.forRoot(),
+    TimepickerModule.forRoot(),
+    BsDatepickerModule.forRoot()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },

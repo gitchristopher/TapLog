@@ -2,7 +2,8 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import * as taplog from '../taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+
 
 @Component({
   selector: 'app-tap-logger',
@@ -12,6 +13,8 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 export class TapLoggerComponent implements OnInit {
 
   debug = true;
+
+  addTapForm: FormGroup;
 
   deviceList: taplog.DeviceDto[];
   cardList: taplog.CardDto[];
@@ -28,8 +31,12 @@ export class TapLoggerComponent implements OnInit {
   submitted = false;
   tap = new taplog.CreateTapCommand({result: taplog.Result.Successful});
 
-  resultEnum: taplog.Result;
+  resultEnum: taplog.Result[] = [taplog.Result.Successful, taplog.Result.Unsuccessful, taplog.Result.None, taplog.Result.Other];
   expectedResult: number;
+
+  // ismeridian = true;
+  showSec = true;
+  mytime: Date = new Date();
 
   // Icons
   faPlus = faPlus;
@@ -62,6 +69,19 @@ export class TapLoggerComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.addTapForm = new FormGroup({
+      cardType: new FormControl(),
+      card: new FormControl(),
+      device: new FormControl(),
+      result: new FormControl(),
+      expectedResult: new FormControl(),
+      time: new FormControl(),
+      date: new FormControl(),
+      fare: new FormControl(),
+      balanceBefore: new FormControl(),
+      balanceAfter: new FormControl(),
+      notes: new FormControl(),
+    });
   }
 
   getAllDevices(): void {
@@ -142,8 +162,8 @@ export class TapLoggerComponent implements OnInit {
     );
   }
 
-  createTap(){
-
+  createTap() {
+    console.log(this.addTapForm.value);
     // let tap = new ICreateTapCommand(18, 'Dr IQ', this.powers[0], 'Chuck Overstreet');
   }
 

@@ -3,15 +3,15 @@
 <div class="row">
   <div class="col-sm-2 p-5">
     <div *ngIf="stageList">
-    
-      <div class="clearfix">
+      <!-- class="clearfix" -->
+      <div>
         <h2 class="float-left">Stage Lists</h2>
         <!-- <button class="btn btn-default float-right" title="Add List..."
           (click)="showNewListModal(newListModalTemplate)">
           <fa-icon [icon]="faPlus"></fa-icon>
         </button> -->
       </div>
-      <div class="d-flex">
+      <div class="d-flex"  style="min-width: 200px;">
         <select class="custom-select">
             <option *ngFor="let stage of stageList" [value]="stage.id">
               {{stage.name}}
@@ -19,18 +19,18 @@
         </select>
       </div>
 
-      <div *ngIf="testList" class="pt-3">
-        <div class="clearfix">
+      <div *ngIf="testList" class="pt-3" style="min-width: 200px;">
+        <div class="clearfix"><!--  -->
           <h2 class="float-left">Test List</h2>
           <button class="btn btn-default float-right" title="Add List..."
             (click)="showNewTestModal(newTestModalTemplate)">
             <fa-icon [icon]="faPlus"></fa-icon>
           </button>
         </div>
-        <ul class="list-group">
+        <ul class="list-group d-flex">
           <li *ngFor="let test of testList; index as i" class="list-group-item"
             [ngClass]="{ 'active': selectedTest == test }" (click)="selectTest(test)">
-            <div class="clearfix">
+            <div><!-- class="clearfix" -->
               <div class="float-left">
                   {{ test.jiraTestNumber }}
               </div>
@@ -72,142 +72,134 @@
     </div>
   </div>
 
-
-  <div *ngIf="selectedExecution" class="ml-5 mt-5" style="min-width: 18rem;">
-    <div class="card mt-5 border-primary d-flex justify-content-around " > 
-      <div class="card-header border-primary">
-        <h3 class="text-center">ADD TAP</h3> 
+  <!-- style="min-width: 18rem;" -->
+  <div *ngIf="selectedExecution" class="ml-5 mt-5 container"  style="width: 700px;">
+    <div class="card d-flex"> 
+      <div class="card-header">
+        <h3 class="text-center justify-content-center">ADD TAP</h3> 
       </div>
       
-      <div>
-        <div class="container">
-          <div [hidden]="submitted">
-            <form (ngSubmit)="onSubmit()" #tapForm="ngForm">
-              
-              <div class="btn-group" btnRadioGroup [(ngModel)]="isCreditType" name="cardType">
-                <label class="btn btn-info" btnRadio="true"
-                       tabindex="0" role="button">EMV</label>
-                <label class="btn btn-info" btnRadio="false"
-                       tabindex="0" role="button">Go Card</label>
-              </div>
-
-              <div class="form-group">
-                <label for="card">Card</label>
-                <select class="form-control" id="card"
-                        required
-                        [(ngModel)]="tap.cardId" name="card"
-                        #card="ngModel">
-                  <option *ngFor="let c of cardList" [value]="c">{{c.number}} - {{c.alias}}</option>
-                </select>
-                <div [hidden]="card.valid || card.pristine" class="alert alert-danger">
-                  A card is required
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="device">Device</label>
-                <select class="form-control" id="device"
-                        required
-                        [(ngModel)]="tap.deviceId" name="device"
-                        #device="ngModel">
-                  <option *ngFor="let d of deviceList" [value]="d">{{d.code}} - {{d.name}}</option>
-                </select>
-                <div [hidden]="device.valid || device.pristine" class="alert alert-danger">
-                  A device is required
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="result">Result</label>
-                <select class="form-control" id="result"
-                        required
-                        [(ngModel)]="tap.deviceId" name="result"
-                        #result="ngModel">
-                  <option *ngFor="let r of resultEnum" [value]="r">{{r}}</option>
-                </select>
-                <div [hidden]="result.valid || result.pristine" class="alert alert-danger">
-                  A result is required
-                </div>
-              </div>
-
-              <div class="btn-group" btnRadioGroup [(ngModel)]="expectedResult" name="expected">
-                <label class="btn btn-info" btnRadio="0"
-                       tabindex="0" role="button">Yes</label>
-                <label class="btn btn-info" btnRadio="1"
-                       tabindex="0" role="button">No</label>
-                <label class="btn btn-info" btnRadio="2"
-                       tabindex="0" role="button">Unsure</label>
-              </div>
-
-              <div class="form-group">
-                <label for="fare">Fare</label>
-                <input type="text" class="form-control" id="fare"
-                       required
-                       [(ngModel)]="tap.fare" name="fare"
-                       #name="ngModel">
-                <!-- <div [hidden]="fare.valid || fare.pristine"
-                     class="alert alert-danger">
-                  Name is required
-                </div> -->
-              </div>
-        
-              <div class="form-group">
-                <label for="balanceBefore">Balance Before</label>
-                <input type="text" class="form-control" id="balanceBefore"
-                       [(ngModel)]="tap.balanceBefore" name="balanceBefore">
-              </div>
-        
-              <div class="form-group">
-                <label for="balanceAfter">Balance After</label>
-                <input type="text" class="form-control" id="balanceAfter"
-                       [(ngModel)]="tap.balanceAfter" name="balanceAfter">
-              </div>
-        
-              <div class="form-group">
-                <label for="notes">Notes</label>
-                <input type="text" class="form-control" id="notes"
-                       [(ngModel)]="tap.notes" name="notes">
-              </div>
-              
-              <div class="form-group">
-                <label for="case">Notes</label>
-                <input type="text" class="form-control" id="case"
-                       [(ngModel)]="tap.caseNumber" name="case">
-              </div>
-        
-              <button type="submit" class="btn btn-success" [disabled]="!tapForm.form.valid">Submit</button>
-              <!-- <button type="button" class="btn btn-default" (click)="newHero(); heroForm.reset()">New Hero</button> -->
-            </form>
-          </div>
-        
-          <div [hidden]="!submitted">
-            <h2>You submitted the following:</h2>
-            <div class="row">
-              <div class="col-xs-3">Card</div>
-              <div class="col-xs-9">{{ tap.cardId }}</div>
-            </div>
-            <div class="row">
-              <div class="col-xs-3">Device</div>
-              <div class="col-xs-9">{{ tap.deviceId }}</div>
-            </div>
-            <div class="row">
-              <div class="col-xs-3">Notes</div>
-              <div class="col-xs-9">{{ tap.notes }}</div>
-            </div>
-            <br>
-            <button class="btn btn-primary" (click)="submitted=false">Edit</button>
-          </div>
-        </div>
-      </div>
       
-      <div class="card-footer border-primary">
-        <div class="card-body text-primary text-center">
-          <button type="button" class="btn btn-success">Save Tap</button>
-        </div>
+      <div [hidden]="submitted">
+        <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="row m-3 justify-content-between">
+          <!-- #tapForm="ngForm"> -->
+          
+          <div class="mr-2" style="width: 400px;">
+            <div class="btn-group  mb-2" btnRadioGroup formControlName="cardType">
+              <label class="btn btn-info" btnRadio="true"
+                    tabindex="0" role="button">EMV</label>
+              <label class="btn btn-info" btnRadio="false"
+                    tabindex="0" role="button">Go Card</label>
+            </div>
+          
+            <div class="form-group">
+              <!-- <label for="card">Card</label> -->
+              <select class="form-control" id="card" formControlName="card">
+                <option *ngFor="let c of cardList" [value]="c">{{c.number}} - {{c.alias}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <!-- <label for="device">Device</label> -->
+              <select class="form-control" id="device" formControlName="device">
+                <option *ngFor="let d of deviceList" [value]="d">{{d.code}} - {{d.name}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <!-- <label for="result">Result</label> -->
+              <select class="form-control" id="result"
+              formControlName="result">
+              <option value="0">Successful</option>
+              <option value="1">Unsuccessful</option>
+              <option value="2">Nothing</option>
+              <option value="3">Other</option>
+            </select>
+            </div>
+
+            <div class="btn-group" btnRadioGroup formControlName="expectedResult">
+              <label class="btn btn-info" btnRadio="0"
+                    tabindex="0" role="button">Yes</label>
+              <label class="btn btn-info" btnRadio="1"
+                    tabindex="0" role="button">No</label>
+              <label class="btn btn-info" btnRadio="2"
+                    tabindex="0" role="button">Unsure</label>
+              <label class="text-center pl-3">Expected?</label>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="showSec"></timepicker>
+
+
+              <div class="form-group">
+                <input type="text" class="form-control mt-3" placeholder="Datepicker" bsDatepicker formControlName="date" />
+                <!-- <pre *ngIf="myForm.value.date" class="code-preview">{{myForm.value.date | date}}</pre> -->
+              </div>
+
+            </div>
+            
+
+          </div>
+
+          <div class="pt-6 flex flex-column">
+            <div class="form-group">
+              <!-- <label for="fare">Fare</label> -->
+              <input type="text" class="form-control" id="fare" formControlName="fare" placeholder="Cost of tap">
+            </div>
+      
+            <div class="form-group">
+              <!-- <label for="balanceBefore">Balance Before</label> -->
+              <input type="text" class="form-control" id="balanceBefore"
+                formControlName="balanceBefore" placeholder="Balance before tap">
+            </div>
+      
+            <div class="form-group">
+              <!-- <label for="balanceAfter">Balance After</label> -->
+              <input type="text" class="form-control" id="balanceAfter"
+                formControlName="balanceAfter" placeholder="Balance after tap">
+            </div>
+      
+            <div class="form-group">
+              <!-- <label for="notes">Notes</label> -->
+              <input type="text" class="form-control" id="notes"
+                formControlName="notes" placeholder="Notes">
+            </div>
+
+            <div class="d-flex justify-content-center pt-5 mt-4">
+              <button type="submit" class="btn btn-success" [disabled]="!this.addTapForm.valid">Save Tap</button>
+            </div>
+
+          </div>
+        </form>
       </div>
+    
+      <!-- <div [hidden]="!submitted" style="background-color: violet;">
+        <h2>You submitted the following:</h2>
+        <div class="row">
+          <div class="col-xs-3">Card</div>
+          <div class="col-xs-9">{{ tap.cardId }}</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-3">Device</div>
+          <div class="col-xs-9">{{ tap.deviceId }}</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-3">Notes</div>
+          <div class="col-xs-9">{{ tap.notes }}</div>
+        </div>
+        <br>
+        <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+      </div> -->
+    
+      
+      
     </div>
   </div>
 
+
+  <div>
+    <p>{{this.addTapForm.value | json}}</p>
+  </div>
 </div>
   <!-- "testExecutionId": 7,
   "cardId": 2,
