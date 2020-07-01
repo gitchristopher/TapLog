@@ -1,0 +1,51 @@
+/* .resetthis {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    border: 10px solid #14a76c;
+} */
+.tap-grid-container {
+    background-color: darkorange;
+    display: grid;
+    grid-template-columns: 12em 12em 40em auto;
+    grid-template-rows: 4em 4em 30em 1fr;
+    gap: 5px 5px;
+    grid-template-areas: 
+    "header header header header" 
+    "stage execute . title" 
+    "test executions add current"
+    "test executions . current"
+}
+.tlheader {
+    grid-area: header;
+    background-color: rgb(33, 33, 202);
+}
+.tlstage {
+    grid-area: stage;
+    background-color: yellow;
+}
+.tlexecute {
+    grid-area: execute;
+    background-color: green;
+}
+.tltitle {
+    grid-area: title;
+    background-color: red;
+}
+.tltest {
+    grid-area: test;
+    background-color: black;
+}
+.tlexecutions {
+    grid-area: executions;
+    background-color: rgb(196, 161, 188);
+}
+.tlcurrent {
+    grid-area: current;
+    background-color: rgb(151, 129, 28);
+}
+.tladd {
+    grid-area: add;
+    background-color: rgb(49, 105, 128);
+}

@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import * as taplog from '../taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 
 
 @Component({
@@ -15,6 +15,7 @@ export class TapLoggerComponent implements OnInit {
   debug = true;
 
   addTapForm: FormGroup;
+  fb: FormBuilder;
 
   deviceList: taplog.DeviceDto[];
   cardList: taplog.CardDto[];
@@ -35,7 +36,7 @@ export class TapLoggerComponent implements OnInit {
   expectedResult: number;
 
   // ismeridian = true;
-  showSec = true;
+  // showSec = true;
   mytime: Date = new Date();
 
   // Icons
@@ -53,6 +54,7 @@ export class TapLoggerComponent implements OnInit {
               private cardsClient: taplog.CardsClient,
               private stagesClient: taplog.StagesClient,
               private testsClient: taplog.TestsClient,
+              private tapsClient: taplog.TapsClient,
               private modalService: BsModalService) {
     stagesClient.getAll().subscribe(
       result => {
@@ -82,14 +84,15 @@ export class TapLoggerComponent implements OnInit {
       balanceAfter: new FormControl(),
       notes: new FormControl(),
     });
+
   }
 
   getAllDevices(): void {
-    this.devicesClient.getAll().subscribe( result => { this.deviceList = result; console.log(result);
+    this.devicesClient.getAll().subscribe( result => { this.deviceList = result;
     }, error => console.error(error));
   }
   getAllCards(): void {
-    this.cardsClient.getAll().subscribe( result => { this.cardList = result; console.log(result);
+    this.cardsClient.getAll().subscribe( result => { this.cardList = result;
     }, error => console.error(error));
   }
 
@@ -127,6 +130,7 @@ export class TapLoggerComponent implements OnInit {
 
   selectExecution(execution: taplog.TestExecutionDto2): void {
     this.selectedExecution = execution;
+    console.log(execution.taps);
   }
 
   // modals
@@ -151,7 +155,7 @@ export class TapLoggerComponent implements OnInit {
         },
         error => {
             const errors = JSON.parse(error.response);
-            console.log('errored the fuck out');
+            console.log('error while uploading test');
 
             if (errors && errors.Title) {
                 this.newTestEditor.error = errors.Title[0];
@@ -162,14 +166,85 @@ export class TapLoggerComponent implements OnInit {
     );
   }
 
-  createTap() {
-    console.log(this.addTapForm.value);
-    // let tap = new ICreateTapCommand(18, 'Dr IQ', this.powers[0], 'Chuck Overstreet');
+  addTap(data: any): void {
+    const tap = new taplog.CreateTapCommand(data);
+    console.log('uploading');
+    console.log(tap);
+    this.tapsClient.create(tap).subscribe(
+        result => {
+          const newTap = new taplog.TapDto2(data);
+          newTap.id = result;
+          this.selectedExecution.taps.push(newTap);
+          this.submitted = true;
+          this.updateTap();
+        },
+        error => {
+            console.log('error when uploading tap');
+            console.log(error);
+        }
+    );
   }
 
+  updateTap() {
+    const dateAndTime = this.addTapForm.value.time;
+    console.log(dateAndTime.toISOString());
+    const newDateAndTime = new Date(dateAndTime.getTime() + 0.5 * 60000);
+    console.log(newDateAndTime.toISOString());
+    this.mytime = new Date(this.mytime.getTime() + 0.25 * 60000);
+    this.addTapForm.patchValue({
+      notes: null,
+      balanceAfter: null,
+      balanceBefore: null,
+      fare: null,
+      expectedResult: 0,
+      result: 0,
+      time: newDateAndTime,
+      device: 1
+    });
+    // this.addTapForm.setValue({
+    //   fare: '1234',
+    // });
+  }
 
+  onSubmit() {
+    console.log(this.addTapForm.value);
 
-  onSubmit() { this.submitted = true; }
+    const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card));
+    const device = this.deviceList.find(d => d.id === Number(this.addTapForm.value.device));
+    const time = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);
+    this.mytime = this.addTapForm.value.time;
+    const data = {
+      cardType: this.addTapForm.value.cardType,
+      balanceAfter: Number(this.addTapForm.value.balanceAfter),
+      balanceBefore: Number(this.addTapForm.value.balanceBefore),
+      cardAlias: card.alias,
+      cardId: Number(this.addTapForm.value.card),
+      cardNumber: card.number,
+      cardSupplierName: card.supplierName,
+      caseNumber: '?',
+      deviceCode: device.code,
+      deviceId: Number(this.addTapForm.value.device),
+      deviceName: device.name,
+      fare: Number(this.addTapForm.value.fare),
+      id: 0,
+      notes: this.addTapForm.value.notes,
+      result: Number(this.addTapForm.value.result),
+      testerId: 'Current User',
+      timeOf: time,
+      wasResultExpected: Number(this.addTapForm.value.expectedResult),
+      testExecutionId: this.selectedExecution.id,
+    };
+    this.addTap(data);
+  }
+
+  formatTimeAndDate = (timeFromForm: Date, dateFromForm: Date): Date => {
+    const time = new Date();
+    time.setUTCDate(dateFromForm.getUTCDate());
+    time.setUTCHours(timeFromForm.getUTCHours());
+    time.setUTCMinutes(timeFromForm.getUTCMinutes());
+    time.setUTCSeconds(timeFromForm.getUTCSeconds());
+    return time;
+  }
 
   // newHero() {
   //   this.model = new Hero(42, '', '');

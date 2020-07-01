@@ -21,6 +21,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 @NgModule({
    declarations: [
       AppComponent,
@@ -46,6 +49,8 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     ]),
     ReactiveFormsModule,
     BrowserAnimationsModule,
+    MatButtonModule,
+    MatIconModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

@@ -11,6 +11,8 @@ using TapLog.Application.Common.Exceptions;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
+using TapLog.Application.Common.Interfaces;
+
 namespace TapLog.Application.Taps.Commands.CreateTap
 {
 
@@ -20,7 +22,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public int TestExecutionId { get; set; }
         public int CardId { get; set; }
         public int DeviceId { get; set; }
-        public int TesterId { get; set; }
+        public string TesterId { get; set; }
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
@@ -35,11 +37,13 @@ namespace TapLog.Application.Taps.Commands.CreateTap
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CreateTapCommandHandler(IApplicationDbContext context, IMapper mapper)
+        public CreateTapCommandHandler(IApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService)
         {
             _context = context;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<int> Handle(CreateTapCommand request, CancellationToken cancellationToken)
@@ -61,12 +65,14 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 throw new NotFoundException(nameof(Device), request.DeviceId);
             }
 
+            //var userId = _currentUserService.UserId ?? string.Empty;
+
             var entity = new Tap
             {
                 TestExecutionId = request.TestExecutionId,
                 CardId = request.CardId,
                 DeviceId = request.DeviceId,
-                TesterId = request.TesterId,
+                //TesterId = userId,
                 CaseNumber = request.CaseNumber,
                 Result = request.Result,
                 WasResultExpected = request.WasResultExpected,
@@ -75,7 +81,6 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 BalanceBefore = request?.BalanceBefore,
                 BalanceAfter = request?.BalanceAfter,
                 Notes = request.Notes,
-                
             };
 
             _context.Taps.Add(entity);

@@ -1594,8 +1594,8 @@
             "nullable": true
           },
           "testerId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "caseNumber": {
             "type": "string",
@@ -1758,8 +1758,8 @@
             "nullable": true
           },
           "testerId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "caseNumber": {
             "type": "string",
@@ -2024,8 +2024,8 @@
             "format": "int32"
           },
           "testerId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "caseNumber": {
             "type": "string",
@@ -2113,8 +2113,8 @@
             "format": "int32"
           },
           "testerId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "caseNumber": {
             "type": "string",
@@ -2274,8 +2274,8 @@
             "nullable": true
           },
           "testerId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "caseNumber": {
             "type": "string",

@@ -18,7 +18,7 @@ namespace TapLog.Application.Taps.Query
         public int DeviceId { get; set; }
         public string DeviceCode { get; set; }
         public string DeviceName { get; set; }
-        public int TesterId { get; set; }
+        public string TesterId { get; set; }
         public string CaseNumber { get; set; }
         public int Result { get; set; }
         public int WasResultExpected { get; set; }
@@ -33,7 +33,8 @@ namespace TapLog.Application.Taps.Query
         {
             profile.CreateMap<Tap, TapDto>()
                 .ForMember(d => d.Result, opt => opt.MapFrom(s => (int)s.Result))
-                .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected));
+                .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected))
+                .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy));
         }
     }
 }

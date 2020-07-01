@@ -2615,7 +2615,7 @@ export class TapDto implements ITapDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2698,7 +2698,7 @@ export interface ITapDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2911,7 +2911,7 @@ export class TapDetailDto implements ITapDetailDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2994,7 +2994,7 @@ export interface ITapDetailDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -3525,7 +3525,7 @@ export class CreateTapCommand implements ICreateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3590,7 +3590,7 @@ export interface ICreateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3619,7 +3619,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3687,7 +3687,7 @@ export interface IUpdateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3939,7 +3939,7 @@ export class TapDto2 implements ITapDto2 {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -4019,7 +4019,7 @@ export interface ITapDto2 {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: number;
+    testerId?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;

@@ -1,15 +1,12 @@
 <p *ngIf="!stageList"><em>Loading...</em></p>
 
 <div class="row">
-  <div class="col-sm-2 p-5">
+  <div class="col-sm-2 p-5" >
     <div *ngIf="stageList">
       <!-- class="clearfix" -->
       <div>
         <h2 class="float-left">Stage Lists</h2>
-        <!-- <button class="btn btn-default float-right" title="Add List..."
-          (click)="showNewListModal(newListModalTemplate)">
-          <fa-icon [icon]="faPlus"></fa-icon>
-        </button> -->
+
       </div>
       <div class="d-flex"  style="min-width: 200px;">
         <select class="custom-select">
@@ -46,8 +43,8 @@
   </div>
   
   <div *ngIf="testDeatils" class="ml-5 mt-5" style="min-width: 18rem;">
-    <div class="card mt-5 border-primary d-flex justify-content-around " > 
-      <div class="card-header border-primary">
+    <div class="card mt-5 d-flex justify-content-around " > 
+      <div class="card-header">
         <p>
           <strong>Jira: </strong> 
           {{testDeatils.jiraTestNumber}}
@@ -56,7 +53,7 @@
       <div class="card-body text-primary text-center">
         <button type="button" class="btn btn-success">Execute Test</button>
       </div>
-      <div class="card-footer border-primary">
+      <div class="card-footer">
         <ul class="list-group">
           <li *ngFor="let execution of testExecutions; index as i" class="list-group-item"
             [ngClass]="{ 'active': selectedExecution == execution }" (click)="selectExecution(execution)">
@@ -72,17 +69,14 @@
     </div>
   </div>
 
-  <!-- style="min-width: 18rem;" -->
   <div *ngIf="selectedExecution" class="ml-5 mt-5 container"  style="width: 700px;">
     <div class="card d-flex"> 
       <div class="card-header">
         <h3 class="text-center justify-content-center">ADD TAP</h3> 
       </div>
-      
-      
-      <div [hidden]="submitted">
+
+      <div>
         <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="row m-3 justify-content-between">
-          <!-- #tapForm="ngForm"> -->
           
           <div class="mr-2" style="width: 400px;">
             <div class="btn-group  mb-2" btnRadioGroup formControlName="cardType">
@@ -94,15 +88,15 @@
           
             <div class="form-group">
               <!-- <label for="card">Card</label> -->
-              <select class="form-control" id="card" formControlName="card">
-                <option *ngFor="let c of cardList" [value]="c">{{c.number}} - {{c.alias}}</option>
+              <select class="form-control" id="card" formControlName="card" required>
+                <option *ngFor="let c of cardList" [value]="c.id">{{c.number}} - {{c.alias}}</option>
               </select>
             </div>
 
             <div class="form-group">
               <!-- <label for="device">Device</label> -->
               <select class="form-control" id="device" formControlName="device">
-                <option *ngFor="let d of deviceList" [value]="d">{{d.code}} - {{d.name}}</option>
+                <option *ngFor="let d of deviceList" [value]="d.id">{{d.code}} - {{d.name}}</option>
               </select>
             </div>
 
@@ -128,7 +122,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-              <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="showSec"></timepicker>
+              <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="true" [hourStep]="1" [minuteStep]="1" [secondsStep]="1" ></timepicker>
 
 
               <div class="form-group">
@@ -144,18 +138,18 @@
           <div class="pt-6 flex flex-column">
             <div class="form-group">
               <!-- <label for="fare">Fare</label> -->
-              <input type="text" class="form-control" id="fare" formControlName="fare" placeholder="Cost of tap">
+              <input type="number" class="form-control" id="fare" formControlName="fare" placeholder="Cost of tap">
             </div>
       
             <div class="form-group">
               <!-- <label for="balanceBefore">Balance Before</label> -->
-              <input type="text" class="form-control" id="balanceBefore"
+              <input type="number" class="form-control" id="balanceBefore"
                 formControlName="balanceBefore" placeholder="Balance before tap">
             </div>
       
             <div class="form-group">
               <!-- <label for="balanceAfter">Balance After</label> -->
-              <input type="text" class="form-control" id="balanceAfter"
+              <input type="number" class="form-control" id="balanceAfter"
                 formControlName="balanceAfter" placeholder="Balance after tap">
             </div>
       
@@ -167,52 +161,43 @@
 
             <div class="d-flex justify-content-center pt-5 mt-4">
               <button type="submit" class="btn btn-success" [disabled]="!this.addTapForm.valid">Save Tap</button>
+              <button type="button" (click)="updateTap()">Update Tap</button>
             </div>
-
           </div>
+
         </form>
       </div>
-    
-      <!-- <div [hidden]="!submitted" style="background-color: violet;">
-        <h2>You submitted the following:</h2>
-        <div class="row">
-          <div class="col-xs-3">Card</div>
-          <div class="col-xs-9">{{ tap.cardId }}</div>
-        </div>
-        <div class="row">
-          <div class="col-xs-3">Device</div>
-          <div class="col-xs-9">{{ tap.deviceId }}</div>
-        </div>
-        <div class="row">
-          <div class="col-xs-3">Notes</div>
-          <div class="col-xs-9">{{ tap.notes }}</div>
-        </div>
-        <br>
-        <button class="btn btn-primary" (click)="submitted=false">Edit</button>
-      </div> -->
-    
-      
-      
     </div>
   </div>
 
+  <div *ngIf="selectedExecution" class="mr-5 mt-5" >
+    <div *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap.id; last as isLast" >
+      
+      <div class="card" style="width: 20rem;">
+        <div class="card-body">
+          <h3 class="card-title">{{tap.deviceName}}}</h3>
+          <h4 class="card-subtitle mb-2 ">{{tap.timeOf | date:'dd/MM/yy HH:mm:ss'}}</h4>
+        </div>
+      </div>
 
-  <div>
-    <p>{{this.addTapForm.value | json}}</p>
+      <div *ngIf="!isLast">
+        <div style="width: 20rem; padding: 2;">
+            <div class="d-flex-column text-center ">
+              <div>
+                <p>{{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) / 1000}}</p>
+                <!-- <button mat-icon-button color="accent" aria-label="Example icon-button with a heart icon">
+                  <mat-icon>arrow_downward</mat-icon>
+                </button> -->
+              </div>
+            </div>
+        </div>
+      </div>
+
+    </div>
   </div>
+
+  <!-- <p>{{this.addTapForm.value | json}} </p>-->
 </div>
-  <!-- "testExecutionId": 7,
-  "cardId": 2,
-  "deviceId": 2,
-  "testerId": 0,
-  "caseNumber": "string",
-  "result": 0,
-  "wasResultExpected": 0,
-  "timeOf": "2020-06-29T12:24:17.806Z",
-  "fare": 0,
-  "balanceBefore": 0,
-  "balanceAfter": 0,
-  "notes": "string" -->
 
 <ng-template #newTestModalTemplate>
   <div class="modal-header clearfix">

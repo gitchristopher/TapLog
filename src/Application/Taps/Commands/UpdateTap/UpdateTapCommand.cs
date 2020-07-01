@@ -21,7 +21,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
         public int TestExecutionId { get; set; }
         public int CardId { get; set; }
         public int DeviceId { get; set; }
-        public int TesterId { get; set; }
+        public string TesterId { get; set; }
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
@@ -74,7 +74,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.TestExecutionId = request.TestExecutionId;
             entity.CardId = request.CardId;
             entity.DeviceId = request.DeviceId;
-            entity.TesterId = request.TesterId;
+            //entity.TesterId = request.TesterId;
             entity.CaseNumber = request.CaseNumber;
             entity.Result = request.Result;
             entity.WasResultExpected = request.WasResultExpected;
