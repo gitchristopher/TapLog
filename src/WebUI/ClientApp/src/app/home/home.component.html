@@ -11,25 +11,27 @@
       Header
     </div>
     <div class="tlstage">
-      Stage
+      <app-stage-list  (onSelect)="selectStage($event)" [stageList]="stageList"></app-stage-list>
+      <!-- <app-stage-list  (onRefresh)="testlist.generateData()"></app-stage-list> -->
     </div>
-    <div class="tlexecute">
+    <!-- <div class="tlexecute">
       Execute
-    </div>
+    </div> -->
     <div class="tltitle">
       Title
     </div>
     <div class="tltest">
-      Test
+      <app-test-list (onSelect)="selectTest($event)" [testList]="testList"></app-test-list>
+      <!-- <app-test-list #testlist></app-test-list> -->
     </div>
     <div class="tlexecutions">
-      Executions
+      <app-execute-list [selectedTest]="selectedTest" [selectedStage]="selectedStage"></app-execute-list>
     </div>
     <div class="tlcurrent">
       Current
     </div>
     <div class="tladd">
-      Add
+      <app-log-tap></app-log-tap>
     </div>
   </div>
 

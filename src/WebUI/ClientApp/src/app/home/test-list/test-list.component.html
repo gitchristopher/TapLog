@@ -1,0 +1,49 @@
+<div class="clearfix"><!--  -->
+  <h2 class="float-left">Test List</h2>
+  <button class="btn btn-default float-right" title="Add List..."
+    (click)="showAddTestModal(addTestModalTemplate)">
+    <fa-icon [icon]="faPlus"></fa-icon>
+  </button>
+</div>
+<ul class="list-group d-flex">
+  <li *ngFor="let test of testList; index as i" class="list-group-item"
+    [ngClass]="{ 'active': selectedTest == test }" (click)="select(test.id)">
+    <div><!-- class="clearfix" -->
+      <div class="float-left">
+          {{ test.jiraTestNumber }}
+      </div>
+      <div class="float-right text-right">
+          <span class="badge badge-light">{{ test.id }}</span>
+      </div>
+    </div>
+  </li>
+</ul>
+
+
+<ng-template #addTestModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">New Test</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="addTestCancelled()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="title">Jira Test Number</label>
+      <input type="text" class="form-control" id="title" placeholder="Test title..." [(ngModel)]="addTestEditor.title"
+        [ngClass]="{ 'is-invalid': addTestEditor.error }" (keyup.enter)="persistTest()" />
+      <div *ngIf="addTestEditor.error" class="invalid-feedback">
+        {{ addTestEditor.error }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ addTestEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="text-right">
+      <button class="btn btn-default" (click)="addTestCancelled()">Cancel</button>
+      <button class="btn btn-primary" (click)="persistTest()">Create</button>
+    </div>
+  </div>
+</ng-template>

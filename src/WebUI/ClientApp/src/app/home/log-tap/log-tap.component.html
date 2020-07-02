@@ -1,0 +1,98 @@
+<div class="card d-flex"> 
+  <div class="card-header">
+    <h3 class="text-center justify-content-center">ADD TAP</h3> 
+  </div>
+
+  <div>
+    <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="row m-3 justify-content-between">
+      
+      <div class="mr-2" style="width: 400px;">
+        <div class="btn-group  mb-2" btnRadioGroup formControlName="cardType">
+          <label class="btn btn-info" btnRadio="true"
+                tabindex="0" role="button">EMV</label>
+          <label class="btn btn-info" btnRadio="false"
+                tabindex="0" role="button">Go Card</label>
+        </div>
+      
+        <div class="form-group">
+          <!-- <label for="card">Card</label> -->
+          <select class="form-control" id="card" formControlName="card" required>
+            <option *ngFor="let c of cardList" [value]="c.id">{{c.number}} - {{c.alias}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <!-- <label for="device">Device</label> -->
+          <select class="form-control" id="device" formControlName="device">
+            <option *ngFor="let d of deviceList" [value]="d.id">{{d.code}} - {{d.name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <!-- <label for="result">Result</label> -->
+          <select class="form-control" id="result"
+          formControlName="result">
+          <option value="0">Successful</option>
+          <option value="1">Unsuccessful</option>
+          <option value="2">Nothing</option>
+          <option value="3">Other</option>
+        </select>
+        </div>
+
+        <div class="btn-group" btnRadioGroup formControlName="expectedResult">
+          <label class="btn btn-info" btnRadio="0"
+                tabindex="0" role="button">Yes</label>
+          <label class="btn btn-info" btnRadio="1"
+                tabindex="0" role="button">No</label>
+          <label class="btn btn-info" btnRadio="2"
+                tabindex="0" role="button">Unsure</label>
+          <label class="text-center pl-3">Expected?</label>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="true" [hourStep]="1" [minuteStep]="1" [secondsStep]="1" ></timepicker>
+
+
+          <div class="form-group">
+            <input type="text" class="form-control mt-3" placeholder="Datepicker" bsDatepicker formControlName="date" />
+            <!-- <pre *ngIf="myForm.value.date" class="code-preview">{{myForm.value.date | date}}</pre> -->
+          </div>
+
+        </div>
+        
+
+      </div>
+
+      <div class="pt-6 flex flex-column">
+        <div class="form-group">
+          <!-- <label for="fare">Fare</label> -->
+          <input type="number" class="form-control" id="fare" formControlName="fare" placeholder="Cost of tap">
+        </div>
+  
+        <div class="form-group">
+          <!-- <label for="balanceBefore">Balance Before</label> -->
+          <input type="number" class="form-control" id="balanceBefore"
+            formControlName="balanceBefore" placeholder="Balance before tap">
+        </div>
+  
+        <div class="form-group">
+          <!-- <label for="balanceAfter">Balance After</label> -->
+          <input type="number" class="form-control" id="balanceAfter"
+            formControlName="balanceAfter" placeholder="Balance after tap">
+        </div>
+  
+        <div class="form-group">
+          <!-- <label for="notes">Notes</label> -->
+          <input type="text" class="form-control" id="notes"
+            formControlName="notes" placeholder="Notes">
+        </div>
+
+        <div class="d-flex justify-content-center pt-5 mt-4">
+          <button type="submit" class="btn btn-success" [disabled]="!this.addTapForm.valid">Save Tap</button>
+          <!-- <button type="button" (click)="updateTap()">Update Tap</button> -->
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

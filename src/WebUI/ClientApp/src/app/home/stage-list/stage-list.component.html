@@ -1,0 +1,12 @@
+<!-- <div>
+  <h2 class="float-left">Stage Lists</h2>
+</div> -->
+
+<!-- style="min-width: 200px;" -->
+<div class="d-flex"> 
+  <select class="custom-select" (change)="select($event.target.value)">
+      <option *ngFor="let stage of stageList" [value]="stage.id">
+        {{stage.name}}
+      </option>
+  </select>
+</div>

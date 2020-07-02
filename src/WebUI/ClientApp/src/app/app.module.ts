@@ -19,6 +19,11 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { ButtonsModule } from 'ngx-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
+import { StageListComponent } from './home/stage-list/stage-list.component';
+import { TestListComponent } from './home/test-list/test-list.component';
+import { ExecuteListComponent } from './home/execute-list/execute-list.component';
+import { LogTapComponent } from './home/log-tap/log-tap.component';
+
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +37,11 @@ import { MatIconModule } from '@angular/material/icon';
       CounterComponent,
       FetchDataComponent,
       TodoComponent,
-      TapLoggerComponent
+      TapLoggerComponent,
+      StageListComponent,
+      TestListComponent,
+      ExecuteListComponent,
+      LogTapComponent
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
