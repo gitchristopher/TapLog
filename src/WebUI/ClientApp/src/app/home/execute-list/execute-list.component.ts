@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { StageDto, TestDto, ITestExecutionDto2, TestsClient, TestExecutionDto2 } from 'src/app/taplog-api';
+import { Component, OnInit, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
+          TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
+import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-execute-list',
@@ -11,22 +13,38 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   testExecutions: ITestExecutionDto2[] = [];
   testDeatil: TestDto;
   selectedExecution: TestExecutionDto2;
+  // icon
+  faPlusSquare = faPlusSquare;
+
   @Input() selectedStage: StageDto;
   @Input() selectedTest: TestDto;
+  // tslint:disable-next-line: no-output-on-prefix
+  @Output() onSelect: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
+  select(execution: TestExecutionDto2) {
+    this.selectedExecution = execution;
+    this.onSelect.emit(execution);
+    // this.selectedTest = this.testList.find(t => t.id === e);
+    console.log('selected exe-list taps for exe id: ' + execution.id);
+  }
 
-  constructor(private testsClient: TestsClient) { }
+  constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient) { }
 
   ngOnInit() {
     this.getExecutions(this.selectedTest);
     console.log('on init' + this.selectedTest);
   }
+
   ngOnChanges() {
     this.getExecutions(this.selectedTest);
     console.log('on change' + this.selectedTest);
   }
 
-  getExecutions(test: TestDto): void {
+  // selectExecution(execution: TestExecutionDto2): void {
+  //   this.selectedExecution = execution;
+  //   console.log(execution.taps);
+  // }
 
+  getExecutions(test: TestDto): void {
     if (test !== undefined) {
       this.testExecutions = [];
       this.testsClient.getDetailedTest(test?.id).subscribe(
@@ -44,8 +62,17 @@ export class ExecuteListComponent implements OnInit, OnChanges {
     }
   }
 
-  selectExecution(execution: TestExecutionDto2): void {
-    this.selectedExecution = execution;
-    console.log(execution.taps);
+  createExecution() {
+    const execution = new CreateTestExecutionCommand({stageId: this.selectedStage.id, testId: this.selectedTest.id});
+    console.log('creating execution' + execution.toJSON);
+
+    this.executionsClient.create(execution).subscribe(result => {
+      const newExecution = new TestExecutionDto2({id: result});
+      this.select(newExecution);
+      this.testExecutions.push(newExecution);
+    },
+    error => {
+      console.log('errors while creating execution' + error);
+    });
   }
 }

@@ -17,21 +17,27 @@
     <!-- <div class="tlexecute">
       Execute
     </div> -->
-    <div class="tltitle">
+    <!-- <div class="tltitle">
       Title
-    </div>
+    </div> -->
     <div class="tltest">
       <app-test-list (onSelect)="selectTest($event)" [testList]="testList"></app-test-list>
       <!-- <app-test-list #testlist></app-test-list> -->
     </div>
     <div class="tlexecutions">
-      <app-execute-list [selectedTest]="selectedTest" [selectedStage]="selectedStage"></app-execute-list>
+      <app-execute-list 
+        (onSelect)="selectExecution($event)" 
+        [selectedTest]="selectedTest" 
+        [selectedStage]="selectedStage">
+      </app-execute-list>
     </div>
     <div class="tlcurrent">
       Current
     </div>
     <div class="tladd">
-      <app-log-tap></app-log-tap>
+      <app-log-tap
+      [selectedExecution]="selectedExecution">
+    </app-log-tap>
     </div>
   </div>
 

@@ -10,9 +10,9 @@ code {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  color: #F5F5F5;
+  background-color: #424B54;
+  border-color: #E1CE7A;
 }
 
 .ng-valid[required], .ng-valid.required  {
@@ -22,5 +22,15 @@ code {
 .ng-invalid:not(form)  {
   border-left: 5px solid #a94442;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* html, body { height: 100%; } */
+
+* {
+  box-sizing: border-box;
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  height: 100vh;
+  background-color: #F5F5F5;
+}

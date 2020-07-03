@@ -646,6 +646,26 @@
         }
       }
     },
+    "/addtapform": {
+      "get": {
+        "tags": [
+          "Taps"
+        ],
+        "operationId": "Taps_GetTapForm",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddTapVM"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Taps": {
       "get": {
         "tags": [
@@ -2004,6 +2024,26 @@
           "name": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "AddTapVM": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "devices": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/DeviceDto"
+            }
+          },
+          "cards": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CardDto"
+            }
           }
         }
       },

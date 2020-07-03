@@ -1,8 +1,8 @@
 <div class="clearfix"><!--  -->
-  <h2 class="float-left">Test List</h2>
-  <button class="btn btn-default float-right" title="Add List..."
+  <h2 class="float-left pt-1">Test List</h2>
+  <button class="btn btn-default float-" title="Add List"
     (click)="showAddTestModal(addTestModalTemplate)">
-    <fa-icon [icon]="faPlus"></fa-icon>
+    <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
   </button>
 </div>
 <ul class="list-group d-flex">
@@ -12,9 +12,9 @@
       <div class="float-left">
           {{ test.jiraTestNumber }}
       </div>
-      <div class="float-right text-right">
+      <!-- <div class="float-right text-right">
           <span class="badge badge-light">{{ test.id }}</span>
-      </div>
+      </div> -->
     </div>
   </li>
 </ul>

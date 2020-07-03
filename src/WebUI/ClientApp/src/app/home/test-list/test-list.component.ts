@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, Input, Output, EventEmitter } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, StageDto, ITestExecutionDto2 } from '../../taplog-api';
-import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPlusSquare, faEllipsisH, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-test-list',
@@ -24,12 +24,14 @@ export class TestListComponent implements OnInit {
   addTestEditor: any = {};
   // icon
   faPlus = faPlus;
+  faPlusSquare = faPlusSquare;
 
 
   // tslint:disable-next-line: no-output-on-prefix
   @Output() onSelect: EventEmitter<number> = new EventEmitter<number>();
   select(e: number) {
     this.onSelect.emit(e);
+    this.selectedTest = this.testList.find(t => t.id === e);
     console.log('selected test-list test with id: ' + e);
   }
 

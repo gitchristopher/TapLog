@@ -8,28 +8,27 @@
 .tap-grid-container {
     display: grid;
     grid-template-columns: 12em 12em 42em auto;
-    grid-template-rows: 4em 4em 30em 1fr;
+    grid-template-rows: 4em 3em 30em auto;
     gap: 5px 5px;
     grid-template-areas: 
-    "header header header header" 
-    "stage . add title" 
+    "stage . . ." 
+    "test executions add ." 
     "test executions add current"
     "test executions . current"
 }
 .tlheader {
     grid-area: header;
-    background-color: rgb(122, 122, 122);
+    background-color: rgba(255, 117, 117, 0.199);
 }
 .tlstage {
     grid-area: stage;
 }
 .tlexecute {
     grid-area: execute;
-    background-color: green;
 }
 .tltitle {
     grid-area: title;
-    background-color: rgb(255, 238, 0);
+    background-color: rgba(255, 238, 0, 0.089);
 }
 .tltest {
     grid-area: test;
@@ -39,7 +38,7 @@
 }
 .tlcurrent {
     grid-area: current;
-    background-color: rgb(50, 28, 151);
+    background-color: rgba(50, 28, 151, 0.082);
 }
 .tladd {
     grid-area: add;

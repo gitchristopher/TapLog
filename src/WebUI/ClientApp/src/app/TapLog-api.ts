@@ -1131,6 +1131,7 @@ export class SuppliersClient implements ISuppliersClient {
 }
 
 export interface ITapsClient {
+    getTapForm(): Observable<AddTapVM>;
     getAll(): Observable<TapDto[]>;
     create(command: CreateTapCommand): Observable<number>;
     get(id: number): Observable<TapDto>;
@@ -1149,6 +1150,54 @@ export class TapsClient implements ITapsClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    getTapForm(): Observable<AddTapVM> {
+        let url_ = this.baseUrl + "/addtapform";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTapForm(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTapForm(<any>response_);
+                } catch (e) {
+                    return <Observable<AddTapVM>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AddTapVM>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTapForm(response: HttpResponseBase): Observable<AddTapVM> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AddTapVM.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AddTapVM>(<any>null);
     }
 
     getAll(): Observable<TapDto[]> {
@@ -3519,6 +3568,62 @@ export class UpdateSupplierCommand implements IUpdateSupplierCommand {
 export interface IUpdateSupplierCommand {
     id?: number;
     name?: string | undefined;
+}
+
+export class AddTapVM implements IAddTapVM {
+    devices?: DeviceDto[] | undefined;
+    cards?: CardDto[] | undefined;
+
+    constructor(data?: IAddTapVM) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["devices"])) {
+                this.devices = [] as any;
+                for (let item of _data["devices"])
+                    this.devices!.push(DeviceDto.fromJS(item));
+            }
+            if (Array.isArray(_data["cards"])) {
+                this.cards = [] as any;
+                for (let item of _data["cards"])
+                    this.cards!.push(CardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AddTapVM {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddTapVM();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.devices)) {
+            data["devices"] = [];
+            for (let item of this.devices)
+                data["devices"].push(item.toJSON());
+        }
+        if (Array.isArray(this.cards)) {
+            data["cards"] = [];
+            for (let item of this.cards)
+                data["cards"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IAddTapVM {
+    devices?: DeviceDto[] | undefined;
+    cards?: CardDto[] | undefined;
 }
 
 export class CreateTapCommand implements ICreateTapCommand {

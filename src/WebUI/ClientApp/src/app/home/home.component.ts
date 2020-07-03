@@ -1,6 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { TestListComponent } from './test-list/test-list.component';
-import { StagesClient, CreateTestCommand, ICreateTestCommand, TestDto, StageDto, ITestExecutionDto2, TestsClient } from '../taplog-api';
+import { StagesClient, CreateTestCommand, ICreateTestCommand, TestDto,
+         StageDto, ITestExecutionDto2, TestsClient, TapDto2, TestExecutionDto2 } from '../taplog-api';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,8 @@ export class HomeComponent implements OnInit {
   testList: TestDto[];
   selectedTest: TestDto;
 
+  tapsList: TapDto2[];
+  selectedExecution: TestExecutionDto2;
   // @ViewChild(TestListComponent) testlist: TestListComponent;
   // refresh() {
   //   this.testlist.generateData();
@@ -27,7 +30,7 @@ export class HomeComponent implements OnInit {
             this.stageList = result.sort(function(a, b) {return (Number(a.isCurrent) - Number(b.isCurrent)); }).reverse();
             console.log(this.stageList);
             if (this.selectedStage === undefined) {
-              this.selectedStage = this.stageList[0];
+              this.selectStage(this.stageList[0].id);
             }
           }
       },
@@ -42,7 +45,7 @@ export class HomeComponent implements OnInit {
   // Id passed by the <app-stage-list> components event emitter "@Output() onSelect"
   selectStage(idFromStageList: number): void {
     this.selectedStage = this.stageList.find(s => s.id === Number(idFromStageList));
-    console.log(this.selectedStage);
+    console.log('home comp - select stage () ' + this.selectedStage);
     this.testsClient.getAll(idFromStageList).subscribe(
       result => {
           this.testList = result;
@@ -54,7 +57,7 @@ export class HomeComponent implements OnInit {
   // Id passed by the <app-test-list> components event emitter "@Output() onSelect"
   selectTest(idFromTestList: number): void {
     this.selectedTest = this.testList.find(t => t.id === Number(idFromTestList));
-    console.log(this.selectedTest);
+    console.log('home comp - select test () ' + this.selectedTest);
     // this.testsClient.getAll(stage.id).subscribe(
     //   result => {
     //       this.testList = result;
@@ -63,4 +66,15 @@ export class HomeComponent implements OnInit {
     // );
   }
 
+
+  selectExecution(execution: TestExecutionDto2): void {
+    this.selectedExecution = execution;
+    console.log('home comp - select execution () ' + this.selectedExecution);
+    // this.testsClient.getAll(stage.id).subscribe(
+    //   result => {
+    //       this.testList = result;
+    //   },
+    //   error => console.error(error)
+    // );
+  }
 }

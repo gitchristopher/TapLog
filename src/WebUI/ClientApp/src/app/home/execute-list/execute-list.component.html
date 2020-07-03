@@ -1,23 +1,22 @@
-<div class="text-center">
-  <h2 *ngIf="testDeatil?.jiraTestNumber" >Jira: {{testDeatil?.jiraTestNumber}}</h2> 
-</div>
-
-<div class="text-center p-2">
-  <button type="button" class="btn btn-success">Execute Test</button>
+<div class="d-flex align-items-start justify-content-center" *ngIf="selectedTest != null">
+  <h2 class="pt-1">Jira: {{testDeatil?.jiraTestNumber}}</h2>
+  <button class="btn btn-default float-right" title="Add Execution"
+    (click)="createExecution()">
+    <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
+  </button>
 </div>
 
 <div class="d-flex justify-content-around " >   
-  <div class="card-body">
     <ul class="list-group">
-      <li *ngFor="let execution of testExecutions; index as i" class="list-group-item"
-        [ngClass]="{ 'active': selectedExecution == execution }" (click)="selectExecution(execution)">
-        <div class="clearfix">
-          <div class="float-left text-center">
-            <p *ngIf="execution?.taps[0]?.id === null">No taps yet</p>
-            <p *ngIf="execution?.taps[0]?.id !== null">{{execution?.taps[0]?.timeOf | date: 'dd/MM/yy hh:mm:ss' }}</p>
+      <li *ngFor="let execution of testExecutions; index as i" class="list-group-item mb-2" 
+        [ngClass]="{ 'active': selectedExecution == execution }" (click)="select(execution)">
+        <div>
+          <div *ngIf="execution?.taps[0]?.id === null" class="d-flex">
+            <p>Add first tap</p>
           </div>
+          <p *ngIf="execution?.taps[0]?.id > 0">{{execution?.taps[0]?.timeOf | date: 'EEEE' }}</p>
+          <p *ngIf="execution?.taps[0]?.id > 0">{{execution?.taps[0]?.timeOf | date: 'dd/MM hh:mm:ss' }}</p>
         </div>
       </li>
     </ul>
-  </div>
 </div>
