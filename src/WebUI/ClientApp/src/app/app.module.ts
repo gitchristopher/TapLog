@@ -23,6 +23,7 @@ import { StageListComponent } from './home/stage-list/stage-list.component';
 import { TestListComponent } from './home/test-list/test-list.component';
 import { ExecuteListComponent } from './home/execute-list/execute-list.component';
 import { LogTapComponent } from './home/log-tap/log-tap.component';
+import { TapListComponent } from './home/tap-list/tap-list.component';
 
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
@@ -41,7 +42,8 @@ import { MatIconModule } from '@angular/material/icon';
       StageListComponent,
       TestListComponent,
       ExecuteListComponent,
-      LogTapComponent
+      LogTapComponent,
+      TapListComponent
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

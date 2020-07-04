@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2 } from 'src/app/taplog-api';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 
@@ -7,7 +7,7 @@ import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
   templateUrl: './log-tap.component.html',
   styleUrls: ['./log-tap.component.css']
 })
-export class LogTapComponent implements OnInit {
+export class LogTapComponent implements OnInit, OnChanges {
 
   debug = true;
   addTapForm: FormGroup;
@@ -16,19 +16,44 @@ export class LogTapComponent implements OnInit {
   cardList: CardDto[];
   submitted = false;
   mytime: Date = new Date();
+  selectedCardType: number;
 
   @Input() selectedExecution: TestExecutionDto2;
-    // tslint:disable-next-line: no-output-on-prefix
-  @Output() onSelect: EventEmitter<TapDto2> = new EventEmitter<TapDto2>();
+  // tslint:disable-next-line: no-output-on-prefix
+  @Output() onSave: EventEmitter<TapDto2> = new EventEmitter<TapDto2>();
   savedTap(e: TestExecutionDto2) {
-    this.onSelect.emit(e);
+    this.onSave.emit(e);
     // this.selectedTest = this.testList.find(t => t.id === e);
     console.log('selected exe-list exe with id: ' + e.id);
   }
+  // @Input() selectedExecution: TestExecutionDto2;
+  // // tslint:disable-next-line: no-output-on-prefix
+  // @Output() selectedExecutionChange: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
+  // savedTap(e: TestExecutionDto2){
+  //   this.selectedExecutionChange.emit(this.selectedExecution);
+  // }
 
   constructor(private tapsClient: TapsClient) { }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.addTapForm !== undefined) {
+      console.log('on changes log-tap');
+      for (const propName in changes) {
+        if (changes.hasOwnProperty(propName)) {
+          switch (propName) {
+            case 'selectedExecution': {
+              // console.log(changes.currentValue);
+              console.log(this.selectedExecution);
+              this.updateTapForm();
+            }
+          }
+        }
+      }
+    }
+  }
+
   ngOnInit() {
+    console.log('on init log-tap');
     this.tapsClient.getTapForm().subscribe( result => {
       this.cardList = result.cards;
       this.deviceList = result.devices;
@@ -49,6 +74,9 @@ export class LogTapComponent implements OnInit {
       balanceAfter: new FormControl(),
       notes: new FormControl(),
     });
+
+    this.updateTapForm();
+
   }
 
   addTap(data: any): void {
@@ -61,7 +89,7 @@ export class LogTapComponent implements OnInit {
           newTap.id = result;
           this.selectedExecution.taps.push(newTap);
           this.submitted = true;
-          this.updateTap();
+          this.updateTapForm();
           this.savedTap(this.selectedExecution);
         },
         error => {
@@ -71,12 +99,24 @@ export class LogTapComponent implements OnInit {
     );
   }
 
-  updateTap() {
-    const dateAndTime = this.addTapForm.value.time;
-    console.log(dateAndTime.toISOString());
-    const newDateAndTime = new Date(dateAndTime.getTime() + 0.5 * 60000);
-    console.log(newDateAndTime.toISOString());
-    this.mytime = new Date(this.mytime.getTime() + 0.25 * 60000);
+  updateTapForm() {
+    let newDateAndTime: Date = new Date(Date.now());
+    if (this.selectedExecution?.taps?.length > 0) {
+      const currentTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1]
+      const dateAndTime = currentTap.timeOf;
+      newDateAndTime = new Date(dateAndTime.getTime() + 0.25 * 60000);
+      const c = this.cardList.find(ca => Number(ca.id) === Number(currentTap.cardId));
+      console.log(c);
+      
+      this.addTapForm.patchValue({
+        card: this.cardList.find(car => Number(car.id) === Number(currentTap.cardId)).id,
+      });
+    }
+    // console.log(dateAndTime.toISOString());
+    // this.mytime = new Date(this.mytime.getTime() + 0.25 * 60000);
+    // const dateAndTime = currentExe.taps[currentExe.taps.length - 1].timeOf;
+
+    // const time = this.formatTimeAndDate(dateAndTime, dateAndTime);
     this.addTapForm.patchValue({
       notes: null,
       balanceAfter: null,
@@ -85,7 +125,8 @@ export class LogTapComponent implements OnInit {
       expectedResult: 0,
       result: 0,
       time: newDateAndTime,
-      device: 1
+      date: newDateAndTime,
+      device: null
     });
   }
   onSubmit() {
@@ -127,4 +168,22 @@ export class LogTapComponent implements OnInit {
     return time;
   }
 
+  selectCardType(num: number) {
+    this.selectedCardType = num;
+    switch (num) {
+      case 0:
+        this.addTapForm.patchValue({
+          card: this.cardList.filter(ct => Number(ct.supplierId) !== Number(4)),
+        });
+        break;
+      case 1:
+        this.addTapForm.patchValue({
+          card: this.cardList.filter(ct => Number(ct.supplierId) === Number(4)),
+        })
+        break;
+      default:
+        console.log('Somethign when wrong in log-tap cardtype section');
+        break;
+    }
+  }
 }

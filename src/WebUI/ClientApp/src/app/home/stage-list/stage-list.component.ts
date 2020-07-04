@@ -18,11 +18,9 @@ export class StageListComponent implements OnInit {
 
   refresh(e) {
     this.onRefresh.emit(e);
-    console.log('refreshed stage-list ' + e);
   }
   select(e: number) {
     this.onSelect.emit(e);
-    console.log('selected stage-list stage with id: ' + e);
   }
 
 

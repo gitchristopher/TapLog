@@ -32,11 +32,12 @@
       </app-execute-list>
     </div>
     <div class="tlcurrent">
-      Current
+      <app-tap-list [selectedExecution]="selectedExecution"></app-tap-list>
     </div>
     <div class="tladd">
-      <app-log-tap
-      [selectedExecution]="selectedExecution">
+      <app-log-tap      
+        (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"
+      >
     </app-log-tap>
     </div>
   </div>

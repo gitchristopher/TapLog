@@ -44,6 +44,8 @@ export class HomeComponent implements OnInit {
 
   // Id passed by the <app-stage-list> components event emitter "@Output() onSelect"
   selectStage(idFromStageList: number): void {
+    this.selectedExecution = null;
+    this.selectedTest = null;
     this.selectedStage = this.stageList.find(s => s.id === Number(idFromStageList));
     console.log('home comp - select stage () ' + this.selectedStage);
     this.testsClient.getAll(idFromStageList).subscribe(
@@ -56,6 +58,7 @@ export class HomeComponent implements OnInit {
 
   // Id passed by the <app-test-list> components event emitter "@Output() onSelect"
   selectTest(idFromTestList: number): void {
+    this.selectedExecution = null;
     this.selectedTest = this.testList.find(t => t.id === Number(idFromTestList));
     console.log('home comp - select test () ' + this.selectedTest);
     // this.testsClient.getAll(stage.id).subscribe(
@@ -69,7 +72,7 @@ export class HomeComponent implements OnInit {
 
   selectExecution(execution: TestExecutionDto2): void {
     this.selectedExecution = execution;
-    console.log('home comp - select execution () ' + this.selectedExecution);
+    console.log('home comp - select execution () ' + this.selectedExecution.id);
     // this.testsClient.getAll(stage.id).subscribe(
     //   result => {
     //       this.testList = result;

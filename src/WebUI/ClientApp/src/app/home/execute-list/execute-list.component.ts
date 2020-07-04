@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
           TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
@@ -31,12 +31,31 @@ export class ExecuteListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.getExecutions(this.selectedTest);
-    console.log('on init' + this.selectedTest);
+    console.log('on init in execute list' + this.selectedTest);
   }
 
-  ngOnChanges() {
-    this.getExecutions(this.selectedTest);
-    console.log('on change' + this.selectedTest);
+  ngOnChanges(changes: SimpleChanges) {
+    // if (this.selectedTest !== null) {
+      for (const propName in changes) {
+        if (changes.hasOwnProperty(propName)) {
+          switch (propName) {
+            case 'selectedTest': {
+              this.getExecutions(this.selectedTest);
+              console.log('case selectedTest');
+            }
+            break;
+            case 'selectedStage': {
+              this.testExecutions = null;
+              this.testDeatil = null;
+              this.selectedExecution = null;
+              console.log('case selectedStage');
+            break;
+            }
+          }
+        }
+      }
+      console.log('on change in the execute list' + this.selectedTest?.jiraTestNumber);
+    // }
   }
 
   // selectExecution(execution: TestExecutionDto2): void {
@@ -45,9 +64,9 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   // }
 
   getExecutions(test: TestDto): void {
-    if (test !== undefined) {
+    if (test !== null && test !== undefined) {
       this.testExecutions = [];
-      this.testsClient.getDetailedTest(test?.id).subscribe(
+      this.testsClient.getDetailedTest(test.id).subscribe(
         result => {
             this.testDeatil = result;
             const selectedStageTestExecutions = result.stageTests.filter(x => x.stageId === this.selectedStage.id);
