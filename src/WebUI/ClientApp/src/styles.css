@@ -32,7 +32,7 @@ body {
   margin: 0; 
   /* font-family: Roboto, "Helvetica Neue", sans-serif;  */
   height: 100vh;
-  /* background-color: white; */
+  background-color: #fafafa;
 }
 
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';

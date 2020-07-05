@@ -201,9 +201,6 @@ export class TapLoggerComponent implements OnInit {
       time: newDateAndTime,
       device: 1
     });
-    // this.addTapForm.setValue({
-    //   fare: '1234',
-    // });
   }
 
   onSubmit() {
@@ -246,7 +243,4 @@ export class TapLoggerComponent implements OnInit {
     return time;
   }
 
-  // newHero() {
-  //   this.model = new Hero(42, '', '');
-  // }
 }

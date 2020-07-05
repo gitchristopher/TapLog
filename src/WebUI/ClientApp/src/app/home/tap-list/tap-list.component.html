@@ -1,24 +1,11 @@
-<!-- <div *ngIf="selectedExecution"   class="clearfix d-flex flex-column nuroContainerTwo" style="width: 400px;" >
-  <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
-    <div class="listItem card-1">
-      <div class="card-body">
-        <h3 class="card-title">{{tap.deviceName}}</h3>
-        <h4 class="card-subtitle">{{tap.timeOf | date:'dd/MM/yy HH:mm:ss'}}</h4>
-      </div>
-    </div>
-    <div *ngIf="!isLast" class="m-2">
-      <div class="text-center justify-content-center">
-        {{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}
-      </div>
-    </div>
-  </ng-container>
-</div> -->
-
-<div class="example-action-buttons">
+<div class="d-flex align-items-start justify-content-center pb-1">
+  <h2 class="">Tap List</h2>
+</div>
+<div class="action-buttons">
   <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled">Toggle</mat-slide-toggle>
 </div>
-<div *ngIf="selectedExecution" >
-  <mat-accordion class="example-headers-align" multi>
+<div *ngIf="selectedExecution" [@fadeInOut]>
+  <mat-accordion class="headers-align" multi>
     <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
 
       <mat-expansion-panel [hideToggle]="true">

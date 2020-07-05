@@ -1,44 +1,23 @@
-<!-- 
-<div class="container">
-  <div class="row h-100 justify-content-center align-items-center">
-    <h1>TAPLOG</h1> 
+<div class="tap-grid-container">
+  <div class="tlheader">
   </div>
-</div>
--->
-<div class="resetthis">
-  <div class="tap-grid-container">
-    <div class="tlheader">
-    </div>
-    <div class="tlstage">
-      <app-stage-list  (onSelect)="selectStage($event)" [stageList]="stageList"></app-stage-list>
-      <!-- <app-stage-list  (onRefresh)="testlist.generateData()"></app-stage-list> -->
-    </div>
-    <!-- <div class="tlexecute">
-      Execute
-    </div> -->
-    <!-- <div class="tltitle">
-      Title
-    </div> -->
-    <div class="tltest">
-      <app-test-list (onSelect)="selectTest($event)" [testList]="testList"></app-test-list>
-      <!-- <app-test-list #testlist></app-test-list> -->
-    </div>
-    <div class="tlexecutions">
-      <app-execute-list 
-        (onSelect)="selectExecution($event)" 
-        [selectedTest]="selectedTest" 
-        [selectedStage]="selectedStage">
-      </app-execute-list>
-    </div>
-    <div class="tlcurrent">
-      <app-tap-list [selectedExecution]="selectedExecution"></app-tap-list>
-    </div>
-    <div class="tladd">
-      <app-log-tap      
-        (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"
-      >
-    </app-log-tap>
-    </div>
+  <div class="tlstage">
+    <app-stage-list  (onSelect)="selectStage($event)" [stageList]="stageList"></app-stage-list>
   </div>
-
+  <div class="tltest">
+    <app-test-list (onSelect)="selectTest($event)" [testList]="testList" [selectedStage]="selectedStage"></app-test-list>
+  </div>
+  <div class="tlexecutions">
+    <app-execute-list 
+      (onSelect)="selectExecution($event)" 
+      [selectedTest]="selectedTest" 
+      [selectedStage]="selectedStage">
+    </app-execute-list>
+  </div>
+  <div class="tlcurrent">
+    <app-tap-list [selectedExecution]="selectedExecution"></app-tap-list>
+  </div>
+  <div class="tladd">
+    <app-log-tap (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"></app-log-tap>
+  </div>
 </div>

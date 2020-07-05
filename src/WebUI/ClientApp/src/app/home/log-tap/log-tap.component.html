@@ -2,209 +2,109 @@
   <h2 class="">Add Tap</h2>
 </div>
 
-
-
-<!-- class="card d-flex" -->
 <div> 
-  <!-- <div class="card-header"> -->
-    <!-- <h3 class="text-center justify-content-center">ADD TAP</h3>  -->
-  <!-- </div> -->
+  <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container">
 
-  <!-- style="width: 400px;" -->
+    <div class="tl-cardRadio">
+      <mat-radio-group aria-label="Select an option" formControlName="cardType">
+        <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
+        <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="tl-card">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Card</mat-label>
+        <mat-select formControlName="card" required>
+          <mat-option *ngFor="let c of cardList" [value]="c.id">
+            {{c.number}} - {{c.alias}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="tl-device">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Device</mat-label>
+        <mat-select formControlName="device" required>
+          <mat-option *ngFor="let d of deviceList" [value]="d.id" style="width: 100%;">
+            {{d.code}} - {{d.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="tl-result">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Result</mat-label>
+        <mat-select formControlName="result" required>
+          <mat-option value="0">Successful</mat-option>
+          <mat-option value="1">Unsuccessful</mat-option>
+          <mat-option value="2">Nothing</mat-option>
+          <mat-option value="3">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="tl-expectation">
+      <mat-button-toggle-group #group="matButtonToggleGroup"  formControlName="expectedResult" required>
+        <mat-button-toggle value="0" aria-label="Expected">
+          <mat-icon>thumb_up</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="1" aria-label="Unexpected">
+          <mat-icon>thumb_down</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="2" aria-label="Unsure">
+          <mat-icon>thumbs_up_down</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
 
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container">
-
-        <!-- <div class="d-flex flex-row justify-content-between">
-          <div class="m-2  flex-column" >
-            <div class="btn-group  mb-2" btnRadioGroup formControlName="cardType">
-              <label class="btn btn-info" btnRadio="true"
-                    tabindex="0" role="button" [btnRadio]="0" (click)="selectCardType(0)">EMV</label>
-              <label class="btn btn-info" btnRadio="false"
-                    tabindex="0" role="button" [btnRadio]="1" (click)="selectCardType(1)">Go Card</label>
-            </div> 
-          
-            <div class="form-group">
-              <label for="card">Card</label>
-              <select class="form-control" id="card" formControlName="card" required>
-                <option *ngFor="let c of cardList" [value]="c.id">{{c.number}} - {{c.alias}}</option>
-              </select>
-            </div>
-          
-            <div class="form-group">
-              <label for="device">Device</label>
-              <select class="form-control" id="device" formControlName="device" required>
-                <option *ngFor="let d of deviceList" [value]="d.id">{{d.code}} - {{d.name}}</option>
-              </select>
-            </div>
-          
-            <div class="form-group">
-              <label for="result">Result</label>
-              <select class="form-control" id="result"
-              formControlName="result" required>
-                <option value="0">Successful</option>
-                <option value="1">Unsuccessful</option>
-                <option value="2">Nothing</option>
-                <option value="3">Other</option>
-              </select>
-            </div>
-
-            <div class="btn-group" btnRadioGroup formControlName="expectedResult">
-              <label class="btn btn-info" [btnRadio]="0"
-                    tabindex="0" role="button">Yes</label>
-              <label class="btn btn-info" [btnRadio]="1"
-                    tabindex="0" role="button">No</label>
-              <label class="btn btn-info" [btnRadio]="2"
-                    tabindex="0" role="button">Unsure</label>
-              <label class="text-center pl-3">Expected?</label>
-            </div> -->
-          
-            <div class="tl-cardRadio">
-              <mat-radio-group aria-label="Select an option" formControlName="cardType">
-                <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
-                <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
-              </mat-radio-group>
-            </div>
-
-            <div class="tl-card">
-              <mat-form-field appearance="outline" class="example-full-width">
-                <mat-label>Card</mat-label>
-                <mat-select formControlName="card" required>
-                  <mat-option *ngFor="let c of cardList" [value]="c.id">
-                    {{c.number}} - {{c.alias}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="tl-device">
-              <mat-form-field appearance="outline" class="example-full-width">
-                <mat-label>Device</mat-label>
-                <mat-select formControlName="device" required>
-                  <mat-option *ngFor="let d of deviceList" [value]="d.id" style="width: 100%;">
-                    {{d.code}} - {{d.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="tl-result">
-              <mat-form-field appearance="outline" class="example-full-width">
-                <mat-label>Result</mat-label>
-                <mat-select formControlName="result" required>
-                  <mat-option value="0">Successful</mat-option>
-                  <mat-option value="1">Unsuccessful</mat-option>
-                  <mat-option value="2">Nothing</mat-option>
-                  <mat-option value="3">Other</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            
-            <!-- <div class="tl-expectation">
-              <mat-radio-group aria-label="Select an option" formControlName="expectedResult">
-                <mat-radio-button value="0" class="pr-3">Expected</mat-radio-button>
-                <mat-radio-button value="1" class="pr-3">Unexpected</mat-radio-button>
-                <mat-radio-button value="2">Unsure</mat-radio-button>
-              </mat-radio-group>
-            </div> -->
-
-            <div class="tl-expectation">
-              <mat-button-toggle-group #group="matButtonToggleGroup"  formControlName="expectedResult" required>
-                <mat-button-toggle value="0" aria-label="Expected">
-                  <mat-icon>thumb_up</mat-icon>
-                </mat-button-toggle>
-                <mat-button-toggle value="1" aria-label="Unexpected">
-                  <mat-icon>thumb_down</mat-icon>
-                </mat-button-toggle>
-                <mat-button-toggle value="2" aria-label="Unsure">
-                  <mat-icon>thumbs_up_down</mat-icon>
-                </mat-button-toggle>
-              </mat-button-toggle-group>
-           </div>
-
-    
-            <div class="tl-time">
-                <timepicker formControlName="time" [showMeridian]="false" 
-                [showSeconds]="true" [hourStep]="1" 
-                [minuteStep]="1" [secondsStep]="1" >
-              </timepicker>
-            </div>
-              
-            <!-- class="form-group"   -->
-              <div class="tl-date">
-                <input type="text" placeholder="Datepicker" formControlName="date" bsDatepicker [bsConfig]="{ adaptivePosition: true }"/>
-                <!-- <pre *ngIf="myForm.value.date" class="code-preview">{{myForm.value.date | date}}</pre> -->
-              </div>
-    
-           
-            
-    
-          <!-- </div> -->
-          
-          <!-- <div class="flex flex-column m-2"> -->
-            <!-- <div class="form-group">
-              <label for="fare">Fare</label>
-              <input type="number" class="form-control" id="fare" formControlName="fare" placeholder="Cost of tap">
-            </div>
+    <div class="tl-time">
+        <timepicker formControlName="time" [showMeridian]="false" 
+        [showSeconds]="true" [hourStep]="1" 
+        [minuteStep]="1" [secondsStep]="1" >
+      </timepicker>
+    </div>
       
-            <div class="form-group">
-              <label for="balanceBefore">Balance Before</label>
-              <input type="number" class="form-control" id="balanceBefore"
-                formControlName="balanceBefore" placeholder="Balance before tap">
-            </div>
-      
-            <div class="form-group">
-              <label for="balanceAfter">Balance After</label>
-              <input type="number" class="form-control" id="balanceAfter"
-                formControlName="balanceAfter" placeholder="Balance after tap">
-            </div>
-      
-            <div class="form-group">
-              <label for="notes">Notes</label>
-              <input type="text" class="form-control" id="notes"
-                formControlName="notes" placeholder="Notes">
-            </div> 
-          
-            <div class="d-flex justify-content-center pt-5 mt-4">
-              <button type="submit" class="btn btn-success" style="background-color: #E1CE7A;" [disabled]="!this.addTapForm.valid">Save Tap</button>
-              <button type="button" (click)="updateTap()">Update Tap</button>
-            </div> -->
+    <div class="tl-date">
+      <input type="text" placeholder="Datepicker" formControlName="date" bsDatepicker [bsConfig]="{ adaptivePosition: true }"/>
+    </div>
 
-            <div class="tl-fare">
-              <mat-form-field class="example-full-width"  appearance="outline" >
-                <mat-label>Fare</mat-label>
-                <input matInput type="number" placeholder="e.g 2.7" formControlName="fare">
-              </mat-form-field>
-            </div>
 
-            <div class="tl-before">
-              <mat-form-field class="example-full-width"  appearance="outline">
-                <mat-label>Balance before</mat-label>
-                <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore">
-              </mat-form-field>
-            </div>
+    <div class="tl-fare">
+      <mat-form-field class="example-full-width"  appearance="outline" >
+        <mat-label>Fare</mat-label>
+        <input matInput type="number" placeholder="e.g 2.7" formControlName="fare">
+      </mat-form-field>
+    </div>
 
-            <div class="tl-after">
-              <mat-form-field class="example-full-width"  appearance="outline" >
-                <mat-label>Balance after</mat-label>
-                <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter">
-              </mat-form-field>
-            </div>
+    <div class="tl-before">
+      <mat-form-field class="example-full-width"  appearance="outline">
+        <mat-label>Balance before</mat-label>
+        <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore">
+      </mat-form-field>
+    </div>
 
-            <div class="tl-notes">
-              <mat-form-field class="example-full-width"  appearance="outline">
-                <mat-label>Notes</mat-label>
-                <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=9 matAutosizeMaxRows=10></textarea>
-              </mat-form-field>
-            </div>
+    <div class="tl-after">
+      <mat-form-field class="example-full-width"  appearance="outline" >
+        <mat-label>Balance after</mat-label>
+        <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter">
+      </mat-form-field>
+    </div>
 
-            <div class="tl-save">
-              <button mat-raised-button color="accent" type="submit" [disabled]="!this.addTapForm.valid">Save Tap</button>
-            </div>
+    <div class="tl-notes">
+      <mat-form-field class="example-full-width"  appearance="outline">
+        <mat-label>Notes</mat-label>
+        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=9 matAutosizeMaxRows=10></textarea>
+      </mat-form-field>
+    </div>
 
-          <!-- </div> -->
+    <div class="tl-save">
+      <button mat-raised-button color="accent" type="submit" [disabled]="!this.addTapForm.valid">Save Tap</button>
+    </div>
 
-        <!-- </div>-->
-    </form>
+  </form>
 
 </div>

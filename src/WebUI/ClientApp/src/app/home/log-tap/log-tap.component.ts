@@ -23,27 +23,16 @@ export class LogTapComponent implements OnInit, OnChanges {
   @Output() onSave: EventEmitter<TapDto2> = new EventEmitter<TapDto2>();
   savedTap(e: TestExecutionDto2) {
     this.onSave.emit(e);
-    // this.selectedTest = this.testList.find(t => t.id === e);
-    console.log('selected exe-list exe with id: ' + e.id);
   }
-  // @Input() selectedExecution: TestExecutionDto2;
-  // // tslint:disable-next-line: no-output-on-prefix
-  // @Output() selectedExecutionChange: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
-  // savedTap(e: TestExecutionDto2){
-  //   this.selectedExecutionChange.emit(this.selectedExecution);
-  // }
 
   constructor(private tapsClient: TapsClient) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.addTapForm !== undefined) {
-      console.log('on changes log-tap');
       for (const propName in changes) {
         if (changes.hasOwnProperty(propName)) {
           switch (propName) {
             case 'selectedExecution': {
-              // console.log(changes.currentValue);
-              console.log(this.selectedExecution);
               this.updateTapForm();
             }
           }
@@ -53,12 +42,11 @@ export class LogTapComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    console.log('on init log-tap');
     this.tapsClient.getTapForm().subscribe( result => {
       this.cardList = result.cards;
       this.deviceList = result.devices;
     }, error => {
-      console.log('error loading tapp form VM ' + error);
+      console.error('error loading tap form VM ' + error);
     });
 
     this.addTapForm = new FormGroup({
@@ -81,8 +69,6 @@ export class LogTapComponent implements OnInit, OnChanges {
 
   addTap(data: any): void {
     const tap = new CreateTapCommand(data);
-    console.log('uploading');
-    console.log(tap);
     this.tapsClient.create(tap).subscribe(
         result => {
           const newTap = new TapDto2(data);
@@ -93,8 +79,8 @@ export class LogTapComponent implements OnInit, OnChanges {
           this.savedTap(this.selectedExecution);
         },
         error => {
-            console.log('error when uploading tap');
-            console.log(error);
+            console.error('error when uploading tap');
+            console.error(error);
         }
     );
   }
@@ -106,17 +92,12 @@ export class LogTapComponent implements OnInit, OnChanges {
       const dateAndTime = currentTap.timeOf;
       newDateAndTime = new Date(dateAndTime.getTime() + 0.25 * 60000);
       const c = this.cardList.find(ca => Number(ca.id) === Number(currentTap.cardId));
-      console.log(c);
-      
+
       this.addTapForm.patchValue({
         card: this.cardList.find(car => Number(car.id) === Number(currentTap.cardId)).id,
       });
     }
-    // console.log(dateAndTime.toISOString());
-    // this.mytime = new Date(this.mytime.getTime() + 0.25 * 60000);
-    // const dateAndTime = currentExe.taps[currentExe.taps.length - 1].timeOf;
 
-    // const time = this.formatTimeAndDate(dateAndTime, dateAndTime);
     this.addTapForm.patchValue({
       notes: null,
       balanceAfter: null,
@@ -130,8 +111,6 @@ export class LogTapComponent implements OnInit, OnChanges {
     });
   }
   onSubmit() {
-    console.log(this.addTapForm.value);
-
     const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card));
     const device = this.deviceList.find(d => d.id === Number(this.addTapForm.value.device));
     const time = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);
@@ -182,7 +161,7 @@ export class LogTapComponent implements OnInit, OnChanges {
         })
         break;
       default:
-        console.log('Somethign when wrong in log-tap cardtype section');
+        console.error('Something when wrong in log-tap cardtype section');
         break;
     }
   }

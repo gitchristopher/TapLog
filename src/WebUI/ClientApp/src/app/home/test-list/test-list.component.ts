@@ -17,21 +17,17 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
 })
 export class TestListComponent implements OnInit {
   @Input() testList: TestDto[];
+  @Input() selectedStage: StageDto;
 
-  // misc
   debug = true;
-  // list
-  // testList: TestDto[];
   selectedTest: TestDto;
-  selectedStage: StageDto;
   testExecutions: ITestExecutionDto2[] = [];
   testDeatils: TestDto;
+  faPlus = faPlus;
+  faPlusSquare = faPlusSquare;
   // modal
   addTestModalRef: BsModalRef;
   addTestEditor: any = {};
-  // icon
-  faPlus = faPlus;
-  faPlusSquare = faPlusSquare;
 
 
   // tslint:disable-next-line: no-output-on-prefix
@@ -39,7 +35,6 @@ export class TestListComponent implements OnInit {
   select(e: number) {
     this.onSelect.emit(e);
     this.selectedTest = this.testList.find(t => t.id === e);
-    console.log('selected test-list test with id: ' + e);
   }
 
 
@@ -47,28 +42,6 @@ export class TestListComponent implements OnInit {
 
   ngOnInit() {
   }
-
-  generateData() {
-    console.log('generate date from test-list');
-  }
-
-  // selectTest(test: TestDto): void {
-  //   this.selectedTest = test;
-  //   this.testExecutions = [];
-
-  //   this.testsClient.getDetailedTest(test.id).subscribe(
-  //     result => {
-  //         this.testDeatils = result;
-  //         const selectedStageTestExecutions = result.stageTests.filter(x => x.stageId === this.selectedStage.id);
-  //         selectedStageTestExecutions.forEach(element => {
-  //           element.testExecutions.forEach(execution => {
-  //             this.testExecutions.push(execution);
-  //           });
-  //         });
-  //     },
-  //     error => console.error(error)
-  //   );
-  // }
 
   // Shows the test modal
   showAddTestModal(template: TemplateRef<any>): void {
@@ -96,7 +69,7 @@ export class TestListComponent implements OnInit {
         },
         error => {
             const errors = JSON.parse(error.response);
-            console.log('error while uploading test');
+            console.error('error while uploading test');
 
             if (errors && errors.Title) {
                 this.addTestEditor.error = errors.Title[0];
@@ -106,7 +79,4 @@ export class TestListComponent implements OnInit {
         }
     );
   }
-
-
-
 }

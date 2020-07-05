@@ -21,11 +21,6 @@ export class StageListComponent implements OnInit, OnChanges {
   @Output() onSelect: EventEmitter<number> = new EventEmitter<number>();
   @Input() stageList: StageDto[];
 
-  // @Output() onRefresh: EventEmitter<null> = new EventEmitter<null>();
-  // refresh(e) {
-  //   this.onRefresh.emit(e);
-  // }
-
   constructor(fb: FormBuilder) {
     this.stageForm = fb.group({
       stageSelect: new FormControl()

@@ -20,7 +20,6 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   testExecutions: ITestExecutionDto2[] = [];
   testDeatil: TestDto;
   selectedExecution: TestExecutionDto2;
-  // icon
   faPlusSquare = faPlusSquare;
 
   @Input() selectedStage: StageDto;
@@ -30,45 +29,32 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   select(execution: TestExecutionDto2) {
     this.selectedExecution = execution;
     this.onSelect.emit(execution);
-    // this.selectedTest = this.testList.find(t => t.id === e);
-    console.log('selected exe-list taps for exe id: ' + execution.id);
   }
 
   constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient) { }
 
   ngOnInit() {
     this.getExecutions(this.selectedTest);
-    console.log('on init in execute list' + this.selectedTest);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // if (this.selectedTest !== null) {
       for (const propName in changes) {
         if (changes.hasOwnProperty(propName)) {
           switch (propName) {
             case 'selectedTest': {
               this.getExecutions(this.selectedTest);
-              console.log('case selectedTest');
             }
             break;
             case 'selectedStage': {
               this.testExecutions = null;
               this.testDeatil = null;
               this.selectedExecution = null;
-              console.log('case selectedStage');
             break;
             }
           }
         }
       }
-      console.log('on change in the execute list' + this.selectedTest?.jiraTestNumber);
-    // }
   }
-
-  // selectExecution(execution: TestExecutionDto2): void {
-  //   this.selectedExecution = execution;
-  //   console.log(execution.taps);
-  // }
 
   getExecutions(test: TestDto): void {
     if (test !== null && test !== undefined) {
@@ -90,15 +76,14 @@ export class ExecuteListComponent implements OnInit, OnChanges {
 
   createExecution() {
     const execution = new CreateTestExecutionCommand({stageId: this.selectedStage.id, testId: this.selectedTest.id});
-    console.log('creating execution' + execution.toJSON);
 
     this.executionsClient.create(execution).subscribe(result => {
       const newExecution = new TestExecutionDto2({id: result});
-      this.select(newExecution);
       this.testExecutions.push(newExecution);
+      this.select(newExecution);
     },
     error => {
-      console.log('errors while creating execution' + error);
+      console.error('errors while creating execution' + error);
     });
   }
 }

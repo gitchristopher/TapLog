@@ -1,12 +1,3 @@
-<!-- <div class="d-flex"> 
-  <select class="custom-select" (change)="select($event.target.value)">
-      <option *ngFor="let stage of stageList" [value]="stage.id">
-        {{stage.name}}
-      </option>
-  </select>
-</div> -->
-
-
 <form [formGroup]="stageForm" *ngIf="stageList != null" [@fadeInOut]> 
   <mat-form-field appearance="standard">
     <mat-label>Select a stage</mat-label>
