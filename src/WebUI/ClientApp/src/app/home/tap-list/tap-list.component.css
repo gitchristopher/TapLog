@@ -73,3 +73,86 @@ box-shadow:  5px 5px 4px #dbf4f6,
              -5px -5px 4px #e3feff;
              padding: 1rem;
 }
+
+
+
+
+
+
+.example-action-buttons {
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.example-headers-align .mat-expansion-panel-header-title,
+.example-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.example-headers-align .mat-form-field + .mat-form-field {
+  margin-left: 8px;
+}
+
+.tap-list-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 5em;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1px 1px;
+ grid-template-areas: 
+ "number result before edit" 
+ "alias expectation fare delete" 
+ "supplier notes after delete"
+}
+
+
+.tl-number {
+  grid-area: number;
+}
+.tl-alias {
+  grid-area: alias;
+}
+.tl-supplier {
+  grid-area: supplier;
+}
+.tl-result {
+  grid-area: result;
+}
+.tl-expectation {
+  grid-area: expectation;
+}
+.tl-notes {
+  grid-area: notes;
+}
+.tl-before {
+  grid-area: before;
+}
+.tl-fare {
+  grid-area: fare;
+}
+.tl-after {
+  grid-area: after;
+}
+.tl-edit {
+  grid-area: edit;
+  justify-self: center;
+}
+.tl-delete {
+  grid-area: delete;
+  justify-self: center;
+  align-self: center;
+}
+.iconText {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.hiddenInfo {
+  font-weight: bold; 
+  margin-right: 5px;
+}

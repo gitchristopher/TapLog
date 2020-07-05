@@ -30,7 +30,9 @@ code {
 
 body { 
   margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  /* font-family: Roboto, "Helvetica Neue", sans-serif;  */
   height: 100vh;
-  background-color: #dff9fb;
+  /* background-color: white; */
 }
+
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';

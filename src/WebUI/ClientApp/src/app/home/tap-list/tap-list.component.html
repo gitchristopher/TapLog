@@ -1,4 +1,4 @@
-<div *ngIf="selectedExecution"   class="clearfix d-flex flex-column nuroContainerTwo" style="width: 400px;" >
+<!-- <div *ngIf="selectedExecution"   class="clearfix d-flex flex-column nuroContainerTwo" style="width: 400px;" >
   <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
     <div class="listItem card-1">
       <div class="card-body">
@@ -12,4 +12,82 @@
       </div>
     </div>
   </ng-container>
+</div> -->
+
+<div class="example-action-buttons">
+  <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled">Toggle</mat-slide-toggle>
+</div>
+<div *ngIf="selectedExecution" >
+  <mat-accordion class="example-headers-align" multi>
+    <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
+
+      <mat-expansion-panel [hideToggle]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{tap.deviceName}}
+          </mat-panel-title>
+          <mat-panel-description>
+            <span style="margin-left: 5em;">{{tap.timeOf | date:'mediumTime'}}</span>
+            {{tap.timeOf | date:'EEEE, MMMM d'}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        
+        <!-- Hidden section in expansion panel -->
+        <div class="tap-list-grid-container">
+          <div class="tl-number">
+            <div><span class="hiddenInfo">Number: </span>{{tap.cardNumber}}</div>
+          </div>
+          <div class="tl-alias">
+            <div><span class="hiddenInfo">Alias: </span>{{tap.cardAlias}}</div>
+          </div>
+          <div class="tl-supplier">
+            <div><span class="hiddenInfo">Type: </span>{{tap.cardSupplierName}}</div>
+          </div>
+          <div class="tl-result">
+            <div><span class="hiddenInfo">Result: </span>{{tap.result}}</div>
+          </div>
+          <div class="tl-expectation">
+            <div><span class="hiddenInfo">Expected?: </span>{{tap.wasResultExpected}}</div>
+          </div>
+          <div class="tl-notes">
+            <div><span class="hiddenInfo">Notes: </span>{{tap.notes}}</div>
+          </div>
+          <div class="tl-before">
+            <div><span class="hiddenInfo">Before: </span>{{tap.balanceBefore}}</div>
+          </div>
+          <div class="tl-fare">
+            <div><span class="hiddenInfo">Fare: </span>{{tap.fare}}</div>
+          </div>
+          <div class="tl-after">
+            <div><span class="hiddenInfo">After: </span>{{tap.balanceAfter}}</div>
+          </div>
+          <div class="tl-edit">
+            <button mat-mini-fab color="accent" (click)="editTap(tap.id)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          <div class="tl-delete">
+            <button mat-mini-fab color="warn" (click)="deleteTap(tap.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Static panel -->
+      <mat-expansion-panel disabled>
+        <mat-expansion-panel-header>
+          <mat-panel-description>
+            <p></p>
+            <div *ngIf="!isLast" class="m-2">
+              <p class="iconText">{{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p> 
+              <mat-icon style="margin-left: 7px; margin-top: 7px; ">timer</mat-icon>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+
+
+    </ng-container>
+  </mat-accordion>
 </div>

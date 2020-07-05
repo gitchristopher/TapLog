@@ -27,10 +27,14 @@ export class HomeComponent implements OnInit {
     stagesClient.getAll().subscribe(
       result => {
           if (result.length) {
-            this.stageList = result.sort(function(a, b) {return (Number(a.isCurrent) - Number(b.isCurrent)); }).reverse();
+            // this.stageList = result.sort(function(a, b) {return (Number(a.isCurrent) - Number(b.isCurrent)); }).reverse();
+
+            this.stageList = result;
+            const currentStage = this.stageList.find(s => s.isCurrent === true);
             console.log(this.stageList);
             if (this.selectedStage === undefined) {
-              this.selectStage(this.stageList[0].id);
+              // this.selectStage(this.stageList[0].id);
+              this.selectStage(currentStage.id);
             }
           }
       },
@@ -47,7 +51,7 @@ export class HomeComponent implements OnInit {
     this.selectedExecution = null;
     this.selectedTest = null;
     this.selectedStage = this.stageList.find(s => s.id === Number(idFromStageList));
-    console.log('home comp - select stage () ' + this.selectedStage);
+    console.log('home comp - select stage () ' + this.selectedStage?.id);
     this.testsClient.getAll(idFromStageList).subscribe(
       result => {
           this.testList = result;

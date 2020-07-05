@@ -2,11 +2,18 @@ import { Component, OnInit, TemplateRef, Input, Output, EventEmitter } from '@an
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, StageDto, ITestExecutionDto2 } from '../../taplog-api';
 import { faPlus, faPlusSquare, faEllipsisH, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
+import {style, state, animate, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-test-list',
   templateUrl: './test-list.component.html',
-  styleUrls: ['./test-list.component.css']
+  styleUrls: ['./test-list.component.css'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [ style({opacity: 0 }), animate('300ms 300ms cubic-bezier(.17,.67,.88,.1)', style({opacity: 1 })) ]),
+      transition(':leave', [ animate('300ms cubic-bezier(.17,.67,.88,.1)', style({opacity: 0 })) ])
+    ])
+  ]
 })
 export class TestListComponent implements OnInit {
   @Input() testList: TestDto[];

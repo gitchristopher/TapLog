@@ -1,0 +1,82 @@
+.example-full-width {
+    width: 100%;
+}
+
+.tap-log-grid-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: min-content min-content min-content min-content min-content min-content 3em 4em;
+    gap: 3px 1em;
+    grid-template-areas: 
+    "cardRadio empty" 
+    "card fare" 
+    "device before" 
+    "result after" 
+    "expectation notes" 
+    "time notes" 
+    "date notes" 
+    "save save"
+}
+.tl-empty {
+    grid-area: cardRadio;
+    /* background-color: rgba(0, 0, 0, 0.829); */
+}
+
+.tl-cardRadio {
+    grid-area: cardRadio;
+    /* background-color: rgba(104, 151, 28, 0.829); */
+}
+.tl-card {
+    grid-area: card;
+    /* background-color: rgba(104, 151, 28, 0.541); */
+    /* display: flex;
+    flex: auto; */
+}
+.tl-fare {
+    grid-area: fare;
+    /* background-color: rgb(157, 255, 0); */
+}
+.tl-device {
+    grid-area: device;
+    /* background-color: rgba(30, 28, 151, 0.884); */
+}
+.tl-before {
+    grid-area: before;
+    /* background-color: rgba(28, 30, 151, 0.477); */
+}
+.tl-result {
+    grid-area: result;
+    /* background-color: rgba(28, 36, 151, 0.199); */
+}
+.tl-after {
+    grid-area: after;
+    /* background-color: rgba(151, 53, 28, 0.863); */
+}
+.tl-expectation {
+    grid-area: expectation;
+    /* background-color: rgba(151, 63, 28, 0.479); */
+}
+.tl-notes {
+    grid-area: notes;
+    /* background-color: rgba(151, 63, 28, 0.212); */
+}
+.tl-time {
+    grid-area: time;
+    /* background-color: rgba(30, 221, 255, 0.863); */
+    padding: 5px 0px;
+}
+.tl-date {
+    grid-area: date;
+    /* background-color: rgb(255, 255, 255); */
+}
+.tl-save {
+    grid-area: save;
+    /* background-color: rgba(214, 255, 30, 0.203); */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mat-button-toggle-checked {
+    color: accent;
+}

@@ -2,11 +2,18 @@ import { Component, OnInit, Input, OnChanges, Output, EventEmitter, SimpleChange
 import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
           TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
+import {style, state, animate, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-execute-list',
   templateUrl: './execute-list.component.html',
-  styleUrls: ['./execute-list.component.css']
+  styleUrls: ['./execute-list.component.css'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [ style({opacity: 0 }), animate('300ms 400ms ease-in-out', style({opacity: 1 })) ]),
+      // transition(':leave', [ animate('300ms ease-in-out', style({opacity: 0 })) ])
+    ])
+  ]
 })
 export class ExecuteListComponent implements OnInit, OnChanges {
 

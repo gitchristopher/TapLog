@@ -1,23 +1,41 @@
-<div class="clearfix"><!--  -->
-  <h2 class="float-left pt-1">Test List</h2>
-  <button class="btn btn-default float-" title="Add List"
-    (click)="showAddTestModal(addTestModalTemplate)">
-    <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
-  </button>
-</div>
-<ul class="list-group d-flex">
-  <li *ngFor="let test of testList; index as i" class="list-group-item"
-    [ngClass]="{ 'active': selectedTest == test }" (click)="select(test.id)">
-    <div><!-- class="clearfix" -->
-      <div class="float-left">
-          {{ test.jiraTestNumber }}
+<div *ngIf="testList != null" [@fadeInOut]>
+
+  <div class="clearfix">
+    <h2 class="float-left pt-1">Test List</h2>
+    <button class="btn btn-default float-" title="Add List"
+      (click)="showAddTestModal(addTestModalTemplate)">
+      <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
+    </button>
+  </div>
+  <!-- <ul class="list-group d-flex">
+    <li *ngFor="let test of testList; index as i" class="list-group-item"
+      [ngClass]="{ 'active': selectedTest == test }" (click)="select(test.id)">
+      <div>
+        <div class="float-left">
+            {{ test.jiraTestNumber }}
+        </div>
+
       </div>
+    </li>
+  </ul> -->
+
+
+  <mat-selection-list #tests [multiple]="false">
+    <mat-list-option *ngFor="let test of testList" [value]="test" (click)="select(test.id)"> 
+      {{test.jiraTestNumber}}
+      <mat-divider></mat-divider>
+    </mat-list-option>
+  </mat-selection-list>
+
+</div>
+
+
+
       <!-- <div class="float-right text-right">
           <span class="badge badge-light">{{ test.id }}</span>
       </div> -->
-    </div>
-  </li>
-</ul>
+
+
 
 
 <ng-template #addTestModalTemplate>

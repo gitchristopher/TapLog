@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ButtonsModule } from 'ngx-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
 import { StageListComponent } from './home/stage-list/stage-list.component';
 import { TestListComponent } from './home/test-list/test-list.component';
@@ -28,7 +29,16 @@ import { TapListComponent } from './home/tap-list/tap-list.component';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 
 @NgModule({
    declarations: [
@@ -62,6 +72,14 @@ import { MatIconModule } from '@angular/material/icon';
     BrowserAnimationsModule,
     MatButtonModule,
     MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatListModule,
+    MatRadioModule,
+    MatButtonToggleModule,
+    MatExpansionModule,
+    MatSlideToggleModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

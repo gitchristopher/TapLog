@@ -7,18 +7,18 @@
 } */
 .tap-grid-container {
     display: grid;
-    grid-template-columns: 12em 12em 42em auto;
-    grid-template-rows: 4em 3em 30em auto;
+    grid-template-columns: 12em 12em 35em auto;
+    grid-template-rows: 4em 3em auto auto;
     gap: 5px 5px;
     grid-template-areas: 
-    "stage . . ." 
-    "test executions  . add" 
-    "test executions current add"
-    "test executions current . "
+    "stage header header header" 
+    "test executions  add ." 
+    "test executions add current"
+    "test executions  . current"
 }
 .tlheader {
     grid-area: header;
-    background-color: rgba(50, 28, 151, 0.082);
+    /* background-color: #dff9fb; */
 }
 .tlstage {
     grid-area: stage;

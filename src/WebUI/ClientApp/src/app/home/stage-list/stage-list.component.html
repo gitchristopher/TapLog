@@ -1,12 +1,17 @@
-<!-- <div>
-  <h2 class="float-left">Stage Lists</h2>
-</div> -->
-
-<!-- style="min-width: 200px;" -->
-<div class="d-flex"> 
+<!-- <div class="d-flex"> 
   <select class="custom-select" (change)="select($event.target.value)">
       <option *ngFor="let stage of stageList" [value]="stage.id">
         {{stage.name}}
       </option>
   </select>
-</div>
+</div> -->
+
+
+<form [formGroup]="stageForm" *ngIf="stageList != null" [@fadeInOut]> 
+  <mat-form-field appearance="standard">
+    <mat-label>Select a stage</mat-label>
+    <mat-select formControlName="stageSelect" (selectionChange)="select($event.value)">
+      <mat-option *ngFor="let stage of stageList" [value]="stage">{{stage.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
