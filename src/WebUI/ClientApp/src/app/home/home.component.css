@@ -7,7 +7,7 @@
 } */
 .tap-grid-container {
     display: grid;
-    grid-template-columns: 12em 12em 35em auto;
+    grid-template-columns: 13em 13em 35em auto;
     grid-template-rows: 4em 3em auto auto;
     gap: 5px 50px;
     grid-template-areas: 

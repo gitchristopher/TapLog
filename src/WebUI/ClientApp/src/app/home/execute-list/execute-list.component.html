@@ -1,29 +1,41 @@
-<div class="d-flex align-items-start justify-content-center" *ngIf="selectedTest == null" [@fadeInOut]>
+<div class="d-flex align-items-start" *ngIf="selectedTest == null" [@fadeInOut]>
   <h2 class="pt-1">Test Executions</h2>
 </div>
 <div *ngIf="selectedTest != null" [@fadeInOut]>
-  <div class="d-flex align-items-start justify-content-center">
-    <h2 class="pt-1">Jira: {{testDeatil?.jiraTestNumber}}</h2>
-    <button class="btn btn-default float-right" title="Add Execution"
-      (click)="createExecution()">
-      <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
-    </button>
+
+  <h2 class="pt-1">Jira: {{testDeatil?.jiraTestNumber}}</h2>
+
+  <div class="action-buttons justify-content-between d-flex flex-row">
+    <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled"></mat-slide-toggle>
+    <div *ngIf="selectedTest && isChecked" [@fadeInOut]>
+      <button mat-mini-fab color="warn" *ngIf="selectedExecution" [@fadeInOut] class="menuSmallButton trashButton" (click)="deleteExecution(selectedExecution.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-mini-fab color="primary" class="menuSmallButton addListItemButton" (click)="createExecution()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
-   
+
   <mat-selection-list #tests [multiple]="false">
     <mat-list-option *ngFor="let execution of testExecutions" [value]="execution" (click)="select(execution)"> 
       
-      <h3 matLine *ngIf="!execution?.taps?.length > 0"> Add first tap </h3>
-      <ng-container *ngIf="execution?.taps?.length > 0">
+     
+      <p matLine *ngIf="!execution?.taps?.length > 0" >
+        Add first tap
+      </p>
+      
+      <ng-container *ngIf="execution?.taps?.length > 0"  >
         <p matLine>
           <span> {{execution?.taps[0]?.timeOf | date: 'EEEE' }} </span>
-          <span class="float-right"> {{execution?.taps[0]?.timeOf | date: 'hh:mm:ss' }}  </span>
+          <span class="float-right ml-2"> {{execution?.taps[0]?.timeOf | date: 'hh:mm:ss' }}  </span>
         </p>
-        <p matLine> {{execution?.taps[0]?.timeOf | date: 'dd/MM' }} </p>
+        <div class="d-flex flex-row justify-content-between align-items-end">
+          <p matLine> {{execution?.taps[0]?.timeOf | date: 'dd/MM' }} </p>
+        </div>
       </ng-container>
       <mat-divider></mat-divider>
     </mat-list-option>
-    
+    <!-- style="transform: translateX(20px);" -->
   </mat-selection-list>
-
 </div>

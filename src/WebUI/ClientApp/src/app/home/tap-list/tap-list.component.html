@@ -2,9 +2,9 @@
   <h2 class="">Tap List</h2>
 </div>
 <div class="action-buttons">
-  <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled">Toggle</mat-slide-toggle>
+  <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled"></mat-slide-toggle>
 </div>
-<div *ngIf="selectedExecution" [@fadeInOut]>
+<div *ngIf="selectedExecution" >
   <mat-accordion class="headers-align" multi>
     <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
 
@@ -49,12 +49,12 @@
             <div><span class="hiddenInfo">After: </span>{{tap.balanceAfter}}</div>
           </div>
           <div class="tl-edit">
-            <button mat-mini-fab color="accent" (click)="editTap(tap.id)">
+            <button mat-mini-fab color="accent" class="menuSmallButton" (click)="editTap(tap.id)">
               <mat-icon>edit</mat-icon>
             </button>
           </div>
           <div class="tl-delete">
-            <button mat-mini-fab color="warn" (click)="deleteTap(tap.id)">
+            <button mat-mini-fab color="warn" class="menuSmallButton" (click)="deleteTap(tap.id)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

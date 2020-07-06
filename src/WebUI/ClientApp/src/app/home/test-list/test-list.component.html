@@ -2,15 +2,30 @@
 
   <div class="clearfix">
     <h2 class="float-left pt-1">Test List</h2>
-    <button class="btn btn-default float-" title="Add List"
-      (click)="showAddTestModal(addTestModalTemplate)">
-      <fa-icon size="lg" [icon]="faPlusSquare" style="color: #ffd740;"></fa-icon>
-    </button>
+  </div>
+
+  <div class="action-buttons justify-content-between d-flex flex-row">
+    <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled"></mat-slide-toggle>
+    <div *ngIf="selectedStage && isChecked" [@fadeInOut]>
+      <button mat-mini-fab color="warn" *ngIf="selectedTest" [@fadeInOut] class="menuSmallButton trashButton" (click)="deleteTest(selectedTest.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-mini-fab color="primary" class="menuSmallButton addListItemButton" (click)="showAddTestModal(addTestModalTemplate)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
 
   <mat-selection-list #tests [multiple]="false">
     <mat-list-option *ngFor="let test of testList" [value]="test" (click)="select(test.id)"> 
-      {{test.jiraTestNumber}}
+      <div class="d-flex flex-row justify-content-between align-items-end">
+        <p>{{test.jiraTestNumber}}</p>
+        <div *ngIf="isChecked" style="transform: translateX(20px);" [@fadeInOut]>
+          <button mat-mini-fab color="accent" class="menuSmallButton" (click)="showUpdateTestModal(updateTestModalTemplate, test.jiraTestNumber)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
       <mat-divider></mat-divider>
     </mat-list-option>
   </mat-selection-list>
@@ -41,6 +56,35 @@
     <div class="text-right">
       <button class="btn btn-default" (click)="addTestCancelled()">Cancel</button>
       <button class="btn btn-primary" (click)="persistTest()">Create</button>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #updateTestModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">Update Test</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="updateTestCancelled()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="updateTitle">Jira Test Number</label>
+      <input type="text" class="form-control" id="updateTitle" placeholder="Test title..." [(ngModel)]="updateTestEditor.title"
+        [ngClass]="{ 'is-invalid': updateTestEditor.error }" (keyup.enter)="updateTestName()" />
+      <div *ngIf="updateTestEditor.error" class="invalid-feedback">
+        {{ updateTestEditor.error }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ updateTestEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="text-right">
+      <button class="btn btn-default" (click)="updateTestCancelled()">Cancel</button>
+      <button class="btn btn-primary" (click)="updateTestName()">Update</button>
     </div>
   </div>
 </ng-template>

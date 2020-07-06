@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
           TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
-import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import {style, state, animate, transition, trigger} from '@angular/animations';
 
 @Component({
@@ -21,9 +21,12 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   testDeatil: TestDto;
   selectedExecution: TestExecutionDto2;
   faPlusSquare = faPlusSquare;
+  faMinusSquare = faMinusSquare;
 
   @Input() selectedStage: StageDto;
   @Input() selectedTest: TestDto;
+  isChecked = false;
+  isDisabled = this.selectedTest ? false : true;
   // tslint:disable-next-line: no-output-on-prefix
   @Output() onSelect: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
   select(execution: TestExecutionDto2) {
@@ -38,26 +41,36 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-      for (const propName in changes) {
-        if (changes.hasOwnProperty(propName)) {
-          switch (propName) {
-            case 'selectedTest': {
-              this.getExecutions(this.selectedTest);
-            }
-            break;
-            case 'selectedStage': {
-              this.testExecutions = null;
-              this.testDeatil = null;
-              this.selectedExecution = null;
-            break;
-            }
+    for (const propName in changes) {
+      if (changes.hasOwnProperty(propName)) {
+        switch (propName) {
+          case 'selectedTest': {
+            this.getExecutions(this.selectedTest);
+            this.isChecked = false;
+            this.isDisabled = false;
+            // console.log(this.selectedTest);
+            // console.log(this.testExecutions);
+            // if (this.testExecutions == null || this.testExecutions.length === 0) {
+            //   this.isDisabled = true;
+            // } else {
+            //   this.isDisabled = false;
+            // }
+          }
+          break;
+          case 'selectedStage': {
+            this.testExecutions = null;
+            this.testDeatil = null;
+            this.selectedExecution = null;
+          break;
           }
         }
       }
+    }
   }
 
   getExecutions(test: TestDto): void {
     if (test !== null && test !== undefined) {
+      this.selectedExecution = null;
       this.testExecutions = [];
       this.testsClient.getDetailedTest(test.id).subscribe(
         result => {
@@ -86,4 +99,24 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       console.error('errors while creating execution' + error);
     });
   }
+
+  // TODO
+  deleteExecution(id: number) {
+    if (confirm('All taps will be lost! Are you sure to delete the execution?' + id)) {
+      const index = this.testExecutions.findIndex(x => x.id === id);
+      this.testExecutions.splice(index, 1);
+      this.select(null);
+
+      this.executionsClient.delete(id).subscribe(response => {
+        // TODO: What to do with NoContent response?
+      }, error => {
+        console.error('Error deleting tap id: ' + id + ' ' + error);
+      });
+    }
+  }
+
+  makeListEditable(e: Event) {
+    this.isChecked = !this.isChecked;
+  }
+
 }

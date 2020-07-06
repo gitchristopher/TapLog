@@ -22,7 +22,9 @@ code {
 .ng-invalid:not(form)  {
   border-left: 5px solid #a94442;
 }
-/* html, body { height: 100%; } */
+/* html { 
+  overflow-y: scroll;
+} */
 
 * {
   box-sizing: border-box;
