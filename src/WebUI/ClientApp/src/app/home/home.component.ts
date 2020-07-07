@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   // Id passed by the <app-stage-list> components event emitter "@Output() onSelect"
   selectStage(idFromStageList: number): void {
     this.selectedExecution = null;
-    this.selectedTest = null;
+    // this.selectedTest = null;
     this.selectedStage = this.stageList.find(s => s.id === Number(idFromStageList));
     this.testsClient.getAll(idFromStageList).subscribe(
       result => {

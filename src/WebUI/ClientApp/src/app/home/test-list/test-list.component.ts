@@ -40,6 +40,8 @@ export class TestListComponent implements OnInit, OnChanges {
   // tslint:disable-next-line: no-output-on-prefix
   @Output() onSelect: EventEmitter<number> = new EventEmitter<number>();
   select(e: number) {
+    console.log('testlist emitting');
+    
     this.onSelect.emit(e);
     this.selectedTest = this.testList.find(t => t.id === e);
   }
@@ -142,7 +144,9 @@ export class TestListComponent implements OnInit, OnChanges {
     const newTitle = this.updateTestEditor.title;
     console.log('edit test ' + testId);
     this.testsClient.update(testId, new UpdateTestCommand({id: testId, jiraTestNumber: newTitle})).subscribe( result => {
+      this.selectedTest = null;
       this.testList.find(t => t.id === testId).jiraTestNumber = newTitle;
+      // this.select(testId);
       // TODO: what to do with NoContent response
       this.updateTestModalRef.hide();
       this.updateTestEditor = {};

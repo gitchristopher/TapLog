@@ -2,15 +2,24 @@
   <h2 class="">Add Tap</h2>
 </div>
 
-<div> 
-  <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container">
 
-    <div class="tl-cardRadio">
+<div class="tl-cardRadio switch-padding-bottom">
+  <mat-radio-group aria-label="Select an option" formControlName="cardType">
+    <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
+    <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+
+<div> 
+  <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container bg-raised">
+
+    <!-- <div class="tl-cardRadio">
       <mat-radio-group aria-label="Select an option" formControlName="cardType">
         <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
         <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
       </mat-radio-group>
-    </div>
+    </div> -->
 
     <div class="tl-card">
       <mat-form-field appearance="outline" class="example-full-width">

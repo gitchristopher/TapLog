@@ -5,7 +5,7 @@
 .tap-log-grid-container {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    grid-template-rows: min-content min-content min-content min-content min-content min-content 3em 4em;
+    grid-template-rows: min-content min-content min-content min-content min-content min-content 3em 3em;
     gap: 3px 1em;
     grid-template-areas: 
     "cardRadio empty" 
@@ -79,4 +79,17 @@
 
 .mat-button-toggle-checked {
     color: accent;
+}
+
+.bg-raised {
+    background-color: white;
+    border-color: black;
+    border-width: 1px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.switch-padding-bottom {
+    padding-bottom: 6px;
 }

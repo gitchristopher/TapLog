@@ -8,7 +8,7 @@
 .tap-grid-container {
     display: grid;
     grid-template-columns: 13em 13em 35em auto;
-    grid-template-rows: 4em 3em auto auto;
+    grid-template-rows: 4em 3em 40.5em auto;
     gap: 5px 50px;
     grid-template-areas: 
     "stage header header header" 
@@ -40,4 +40,8 @@
 }
 .tladd {
     grid-area: add;
+}
+.tlnothing {
+    grid-area: nothing;
+    background-color: blue;
 }

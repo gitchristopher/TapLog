@@ -9,11 +9,11 @@ code {
   color: #e01a76;
 }
 
-.btn-primary {
+/* .btn-primary {
   color: #F5F5F5;
   background-color: #424B54;
   border-color: #E1CE7A;
-}
+} */
 
 .ng-valid[required], .ng-valid.required  {
   border-left: 5px solid #42A948;

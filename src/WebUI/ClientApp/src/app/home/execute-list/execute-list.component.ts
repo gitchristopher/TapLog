@@ -45,6 +45,9 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       if (changes.hasOwnProperty(propName)) {
         switch (propName) {
           case 'selectedTest': {
+            console.log('this.selectedTest in exe lit changes');
+            console.log(this.selectedTest);
+            
             this.getExecutions(this.selectedTest);
             this.isChecked = false;
             this.isDisabled = false;
@@ -74,6 +77,9 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       this.testExecutions = [];
       this.testsClient.getDetailedTest(test.id).subscribe(
         result => {
+          console.log('in get exe');
+          
+          this.testDeatil = null;
             this.testDeatil = result;
             const selectedStageTestExecutions = result.stageTests.filter(x => x.stageId === this.selectedStage.id);
             selectedStageTestExecutions.forEach(element => {

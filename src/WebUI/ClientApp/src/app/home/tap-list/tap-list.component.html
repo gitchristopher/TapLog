@@ -1,7 +1,7 @@
 <div class="d-flex align-items-start justify-content-center pb-1">
   <h2 class="">Tap List</h2>
 </div>
-<div class="action-buttons">
+<div class="action-buttons2">
   <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled"></mat-slide-toggle>
 </div>
 <div *ngIf="selectedExecution" >
@@ -62,11 +62,11 @@
       </mat-expansion-panel>
 
       <!-- Static panel -->
-      <mat-expansion-panel disabled>
+      <mat-expansion-panel disabled  *ngIf="!isLast">
         <mat-expansion-panel-header>
           <mat-panel-description>
             <p></p>
-            <div *ngIf="!isLast" class="m-2">
+            <div class="m-2">
               <p class="iconText">{{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p> 
               <mat-icon style="margin-left: 7px; margin-top: 7px; ">timer</mat-icon>
             </div>
