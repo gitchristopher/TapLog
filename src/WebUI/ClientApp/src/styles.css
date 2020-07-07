@@ -1,19 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+* {
+  box-sizing: border-box;
 }
 
-code {
-  color: #e01a76;
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  height: 100vh;
+  background-color: #fafafa;
 }
-
-/* .btn-primary {
-  color: #F5F5F5;
-  background-color: #424B54;
-  border-color: #E1CE7A;
-} */
 
 .ng-valid[required], .ng-valid.required  {
   border-left: 5px solid #42A948;
@@ -22,19 +19,4 @@ code {
 .ng-invalid:not(form)  {
   border-left: 5px solid #a94442;
 }
-/* html { 
-  overflow-y: scroll;
-} */
 
-* {
-  box-sizing: border-box;
-}
-
-body { 
-  margin: 0; 
-  /* font-family: Roboto, "Helvetica Neue", sans-serif;  */
-  height: 100vh;
-  background-color: #fafafa;
-}
-
-@import '@angular/material/prebuilt-themes/deeppurple-amber.css';

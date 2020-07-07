@@ -1,7 +1,11 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
-import { TestExecutionDto2, TapDto2, TapsClient } from 'src/app/taplog-api';
+import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand } from 'src/app/taplog-api';
 import {style, state, animate, transition, trigger} from '@angular/animations';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import { networkInterfaces } from 'os';
 
 @Component({
   selector: 'app-tap-list',
@@ -9,7 +13,11 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
   styleUrls: ['./tap-list.component.css'],
   animations: [
     trigger('fadeInOut', [
-      transition(':enter', [ style({opacity: 0 }), animate('500ms 100ms ease-in', style({opacity: 1 })) ]),
+      transition(':enter', [ style({opacity: 0 }), animate('1000ms ease-in-out', style({opacity: 1 })) ]),
+      // transition(':leave', [ animate('500ms ease-out', style({opacity: 0 })) ])
+    ]),
+    trigger('fadeOutIn', [
+      transition(':enter', [ style({opacity: 0 }), animate('500ms 500ms ease-in-out', style({opacity: 1 })) ]),
       transition(':leave', [ animate('500ms ease-out', style({opacity: 0 })) ])
     ])
   ]
@@ -21,9 +29,18 @@ export class TapListComponent implements OnInit, OnChanges {
 
   isChecked = false;
   isDisabled = this.selectedExecution ? false : true;
+  isEditing: number;
+
+  updateTapForm: FormGroup;
+  fb: FormBuilder;
+  deviceList: DeviceDto[];
+  cardList: CardDto[];
+  filteredOptions: Observable<CardDto[]>;
+  mytime: Date = new Date();
 
   constructor(private tapsClient: TapsClient) {
     this.isChecked = false;
+    this.isEditing = null;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -36,6 +53,7 @@ export class TapListComponent implements OnInit, OnChanges {
               this.isDisabled = true;
             } else {
               this.isDisabled = false;
+              this.cancelEdit();
             }
           }
         }
@@ -44,6 +62,19 @@ export class TapListComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.updateTapForm = new FormGroup({
+      cardType: new FormControl(),
+      card: new FormControl(),
+      device: new FormControl(),
+      result: new FormControl(),
+      expectedResult: new FormControl(),
+      time: new FormControl(),
+      date: new FormControl(),
+      fare: new FormControl(),
+      balanceBefore: new FormControl(),
+      balanceAfter: new FormControl(),
+      notes: new FormControl(),
+    });
   }
 
   deleteTap(id: number) {
@@ -61,10 +92,173 @@ export class TapListComponent implements OnInit, OnChanges {
   editTap(id: number) {
     // TODO
     console.log(id);
+    console.log(this.selectedExecution);
+    this.isEditing = id;
+
+    if (this.cardList == null || this.deviceList == null) {
+      console.log('getting information from api');
+      this.getFormInformationFromApi();
+      console.log(this.selectedExecution);
+    } else {
+      console.log(this.selectedExecution);
+      this.loadDataIntoForm();
+    }
+  }
+
+  loadDataIntoForm() {
+    const id = this.isEditing;
+    console.log('id ' + id);
+    const tap = this.selectedExecution.taps.find(x => Number(x.id) === Number(id));
+    console.log('loaddataintoform');
+    console.log(tap);
+    console.log(this.cardList);
+    console.log(this.deviceList);
+
+    // let newDateAndTime: Date = new Date(Date.now());
+    // if (this.selectedExecution?.taps?.length > 0) {
+    //   const currentTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1];
+    //   const dateAndTime = currentTap.timeOf;
+    //   newDateAndTime = new Date(dateAndTime.getTime() + 0.25 * 60000);
+    //   const card = this.cardList.find(c => Number(c.id) === Number(currentTap.cardId));
+    //   this.updateTapForm.get('card').setValue(card);
+    // }
+    const card = this.cardList.find(c => Number(c.id) === Number(tap.cardId));
+    this.updateTapForm.get('card').setValue(card);
+    this.updateTapForm.patchValue({
+      notes: tap.notes,
+      balanceAfter: tap.balanceAfter,
+      balanceBefore: tap.balanceBefore,
+      fare: tap.fare,
+      expectedResult: Number(tap.wasResultExpected),
+      result: Number(tap.result),
+      time: tap.timeOf,
+      date: tap.timeOf,
+      device: tap.deviceId
+    });
+  }
+
+  getFormInformationFromApi() {
+    this.tapsClient.getTapForm().subscribe( result => {
+      this.cardList = new Array<CardDto>();
+      result.cards.forEach( card => {
+        if (card.alias == null) {
+          card.alias = 'Go Card';
+        }
+        card.alias = card.alias.concat(' - ', card.number);
+        this.cardList.push(card);
+      });
+      this.deviceList = result.devices;
+
+      this.filteredOptions = this.updateTapForm.get('card').valueChanges.pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.alias),
+        map(alias => alias ? this._filter(alias) : this.cardList.slice())
+      );
+
+      this.loadDataIntoForm();
+    }, error => {
+      console.error('error loading tap form VM ' + error);
+    });
   }
 
   toggleChanged(e: Event) {
     this.isChecked = !this.isChecked;
     this.isChecked ? this.accordion.openAll() : this.accordion.closeAll();
+    if (this.isChecked === false) {
+      this.cancelEdit();
+    }
+  }
+
+  cancelEdit() {
+    console.log('cancel edit');
+    this.isEditing = null;
+  }
+
+  updateTap(data: any) {
+    console.log(this.isEditing);
+    const tap = new UpdateTapCommand(data);
+    console.log(tap);
+
+    this.tapsClient.update(Number(this.isEditing), tap).subscribe(
+        result => {
+          // TODO: what to do with NoContent response
+          const newTap = new TapDto2(data);
+          const card = this.cardList.find(x => Number(x.id) === Number(newTap.cardId));
+          newTap.cardAlias = card?.alias ? card.alias : 'Go Card';
+          newTap.cardNumber = card.number;
+          newTap.cardSupplierName = card.supplierName;
+          const device = this.deviceList.find(x => x.id === newTap.deviceId);
+          newTap.deviceName = device.name;
+          newTap.deviceCode = device.code;
+          const index = this.selectedExecution.taps.findIndex(x => x.id === Number(newTap.id));
+          this.selectedExecution.taps.splice(index, 1, newTap);
+          console.log('newTap');
+          console.log(newTap);
+
+          // this.submitted = true;
+          // this.updateTapForm();
+          // this.savedTap(this.selectedExecution);
+        },
+        error => {
+            console.error('error when updating tap');
+            console.error(error);
+        }
+    );
+    this.isEditing = null;
+  }
+
+  onSubmit() {
+    console.log('submit');
+    console.log(this.isEditing);
+
+    const card = this.cardList.find(c => c.id === Number(this.updateTapForm.value.card.id));
+    const device = this.deviceList.find(d => d.id === Number(this.updateTapForm.value.device));
+    const time = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date);
+    this.mytime = this.updateTapForm.value.time;
+    const data = {
+      testExecutionId: this.selectedExecution.id,
+      balanceAfter: Number(this.updateTapForm.value.balanceAfter),
+      balanceBefore: Number(this.updateTapForm.value.balanceBefore),
+      cardId: Number(this.updateTapForm.value.card.id),
+      caseNumber: '?',
+      deviceId: Number(this.updateTapForm.value.device),
+      fare: Number(this.updateTapForm.value.fare),
+      id: Number(this.isEditing),
+      notes: this.updateTapForm.value.notes,
+      result: Number(this.updateTapForm.value.result),
+      testerId: 'Current User',
+      timeOf: time,
+      wasResultExpected: Number(this.updateTapForm.value.expectedResult),
+    };
+    this.updateTap(data);
+  }
+  formatTimeAndDate = (timeFromForm: Date, dateFromForm: Date): Date => {
+    const time = new Date();
+    const fixedDate = dateFromForm.getDate() + 1;
+    const newDate = new Date(fixedDate);
+    console.log('time');
+    console.log(newDate);
+    const t = this.addDays(timeFromForm, 1);
+    time.setUTCDate(newDate.getUTCDate());
+    time.setUTCHours(timeFromForm.getUTCHours());
+    time.setUTCMinutes(timeFromForm.getUTCMinutes());
+    time.setUTCSeconds(timeFromForm.getUTCSeconds());
+    return time;
+  }
+
+  displayFn(card: CardDto): string {
+    return card && card.alias ? card.alias : '';
+  }
+
+  private _filter(alias: string): CardDto[] {
+    const filterValue = alias.toLowerCase();
+
+    return this.cardList.filter(card => card.alias.toLowerCase().indexOf(filterValue) >= 0);
+  }
+
+  addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
   }
 }

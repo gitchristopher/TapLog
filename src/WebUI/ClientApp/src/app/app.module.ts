@@ -39,6 +39,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
@@ -69,6 +70,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'tap-logger', component: TapLoggerComponent, canActivate: [AuthorizeGuard]  },
     ]),
+    CommonModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatButtonModule,

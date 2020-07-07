@@ -77,10 +77,6 @@
     align-items: center;
 }
 
-.mat-button-toggle-checked {
-    color: accent;
-}
-
 .bg-raised {
     background-color: white;
     border-color: black;
@@ -93,3 +89,5 @@
 .switch-padding-bottom {
     padding-bottom: 6px;
 }
+
+

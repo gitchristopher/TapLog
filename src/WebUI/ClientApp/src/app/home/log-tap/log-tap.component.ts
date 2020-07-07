@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2 } from 'src/app/taplog-api';
+import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto } from 'src/app/taplog-api';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-log-tap',
@@ -14,8 +16,9 @@ export class LogTapComponent implements OnInit, OnChanges {
   fb: FormBuilder;
   deviceList: DeviceDto[];
   cardList: CardDto[];
+  filteredOptions: Observable<CardDto[]>;
   submitted = false;
-  mytime: Date = new Date();
+  mytime: Date = new Date(Date.now() + 86400);
   selectedCardType: number;
 
   @Input() selectedExecution: TestExecutionDto2;
@@ -33,6 +36,7 @@ export class LogTapComponent implements OnInit, OnChanges {
         if (changes.hasOwnProperty(propName)) {
           switch (propName) {
             case 'selectedExecution': {
+              console.log('on changes selectedExecution');
               this.updateTapForm();
             }
           }
@@ -42,12 +46,7 @@ export class LogTapComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.tapsClient.getTapForm().subscribe( result => {
-      this.cardList = result.cards;
-      this.deviceList = result.devices;
-    }, error => {
-      console.error('error loading tap form VM ' + error);
-    });
+    console.log('ngOnInit LogTapComponent');
 
     this.addTapForm = new FormGroup({
       cardType: new FormControl(),
@@ -63,12 +62,32 @@ export class LogTapComponent implements OnInit, OnChanges {
       notes: new FormControl(),
     });
 
-    this.updateTapForm();
+    this.tapsClient.getTapForm().subscribe( result => {
+      this.cardList = new Array<CardDto>();
+      result.cards.forEach( card => {
+        if (card.alias == null) {
+          card.alias = 'Go Card';
+        }
+        card.alias = card.alias.concat(' - ', card.number);
+        this.cardList.push(card);
+      });
+      this.deviceList = result.devices;
 
+      this.filteredOptions = this.addTapForm.get('card').valueChanges.pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.alias),
+        map(alias => alias ? this._filter(alias) : this.cardList.slice())
+      );
+    }, error => {
+      console.error('error loading tap form VM ' + error);
+    });
   }
 
   addTap(data: any): void {
     const tap = new CreateTapCommand(data);
+    if (this.selectedExecution == null) {
+      this.selectedExecution.taps = new Array<TapDto2>();
+    }
     this.tapsClient.create(tap).subscribe(
         result => {
           const newTap = new TapDto2(data);
@@ -86,16 +105,13 @@ export class LogTapComponent implements OnInit, OnChanges {
   }
 
   updateTapForm() {
-    let newDateAndTime: Date = new Date(Date.now());
+    const newDateAndTime: Date = new Date(Date.now() + 86400);
     if (this.selectedExecution?.taps?.length > 0) {
-      const currentTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1]
-      const dateAndTime = currentTap.timeOf;
-      newDateAndTime = new Date(dateAndTime.getTime() + 0.25 * 60000);
-      const c = this.cardList.find(ca => Number(ca.id) === Number(currentTap.cardId));
-
-      this.addTapForm.patchValue({
-        card: this.cardList.find(car => Number(car.id) === Number(currentTap.cardId)).id,
-      });
+      const currentTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1];
+      // const dateAndTime = currentTap.timeOf;
+      // newDateAndTime = new Date(dateAndTime.getTime() + 15 + 86400);
+      const card = this.cardList.find(c => Number(c.id) === Number(currentTap.cardId));
+      this.addTapForm.get('card').setValue(card);
     }
 
     this.addTapForm.patchValue({
@@ -104,14 +120,15 @@ export class LogTapComponent implements OnInit, OnChanges {
       balanceBefore: null,
       fare: null,
       expectedResult: 0,
-      result: 0,
+      result: null,
       time: newDateAndTime,
       date: newDateAndTime,
       device: null
     });
   }
+
   onSubmit() {
-    const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card));
+    const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card.id));
     const device = this.deviceList.find(d => d.id === Number(this.addTapForm.value.device));
     const time = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);
     this.mytime = this.addTapForm.value.time;
@@ -120,7 +137,7 @@ export class LogTapComponent implements OnInit, OnChanges {
       balanceAfter: Number(this.addTapForm.value.balanceAfter),
       balanceBefore: Number(this.addTapForm.value.balanceBefore),
       cardAlias: card.alias,
-      cardId: Number(this.addTapForm.value.card),
+      cardId: Number(this.addTapForm.value.card.id),
       cardNumber: card.number,
       cardSupplierName: card.supplierName,
       caseNumber: '?',
@@ -148,21 +165,32 @@ export class LogTapComponent implements OnInit, OnChanges {
   }
 
   selectCardType(num: number) {
-    this.selectedCardType = num;
-    switch (num) {
-      case 0:
-        this.addTapForm.patchValue({
-          card: this.cardList.filter(ct => Number(ct.supplierId) !== Number(4)),
-        });
-        break;
-      case 1:
-        this.addTapForm.patchValue({
-          card: this.cardList.filter(ct => Number(ct.supplierId) === Number(4)),
-        })
-        break;
-      default:
-        console.error('Something when wrong in log-tap cardtype section');
-        break;
-    }
+    console.log('probably dont need this');
+    // this.selectedCardType = num;
+    // switch (num) {
+    //   case 0:
+    //     this.addTapForm.patchValue({
+    //       card: this.cardList.filter(ct => Number(ct.supplierId) !== Number(4)),
+    //     });
+    //     break;
+    //   case 1:
+    //     this.addTapForm.patchValue({
+    //       card: this.cardList.filter(ct => Number(ct.supplierId) === Number(4)),
+    //     })
+    //     break;
+    //   default:
+    //     console.error('Something when wrong in log-tap cardtype section');
+    //     break;
+    // }
+  }
+
+  displayFn(card: CardDto): string {
+    return card && card.alias ? card.alias : '';
+  }
+
+  private _filter(alias: string): CardDto[] {
+    const filterValue = alias.toLowerCase();
+
+    return this.cardList.filter(card => card.alias.toLowerCase().indexOf(filterValue) >= 0);
   }
 }

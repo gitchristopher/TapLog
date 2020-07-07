@@ -4,7 +4,7 @@
 
 
 <div class="tl-cardRadio switch-padding-bottom">
-  <mat-radio-group aria-label="Select an option" formControlName="cardType">
+  <mat-radio-group aria-label="Select an option"><!-- formControlName="cardType" -->
     <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
     <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
   </mat-radio-group>
@@ -14,13 +14,24 @@
 <div> 
   <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container bg-raised">
 
-    <!-- <div class="tl-cardRadio">
-      <mat-radio-group aria-label="Select an option" formControlName="cardType">
-        <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
-        <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
-      </mat-radio-group>
-    </div> -->
-
+    <div class="div tl-card">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <input type="text"
+        placeholder="Card"
+        aria-label="Number"
+        matInput
+        formControlName="card"
+        [matAutocomplete]="auto"
+        required>
+        <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">    <!-- autoActiveFirstOption -->
+          <mat-option *ngFor="let c of filteredOptions | async" [value]="c">
+            {{c.alias}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    
+    <!-- 
     <div class="tl-card">
       <mat-form-field appearance="outline" class="example-full-width">
         <mat-label>Card</mat-label>
@@ -30,7 +41,8 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
+    </div> 
+    -->
 
     <div class="tl-device">
       <mat-form-field appearance="outline" class="example-full-width">
@@ -57,7 +69,7 @@
 
     <div class="tl-expectation">
       <mat-button-toggle-group #group="matButtonToggleGroup"  formControlName="expectedResult" required>
-        <mat-button-toggle value="0" aria-label="Expected">
+        <mat-button-toggle value="0" aria-label="Expected" >
           <mat-icon>thumb_up</mat-icon>
         </mat-button-toggle>
         <mat-button-toggle value="1" aria-label="Unexpected">
@@ -78,7 +90,7 @@
     </div>
       
     <div class="tl-date">
-      <input type="text" placeholder="Datepicker" formControlName="date" bsDatepicker [bsConfig]="{ adaptivePosition: true }"/>
+      <input type="text" placeholder="Datepicker" formControlName="date" bsDatepicker [bsConfig]="{ adaptivePosition: true, dateInputFormat: 'YYYY-MM-DD' }"/>
     </div>
 
 
