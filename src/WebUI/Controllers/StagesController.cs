@@ -13,6 +13,7 @@ using TapLog.Application.Stages.Query.GetStage;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class StagesController : ApiController
     {
         [HttpGet]

@@ -13,6 +13,7 @@ using TapLog.Application.Tests.Query.GetTest;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class TestsController : ApiController
     {
         [HttpGet]

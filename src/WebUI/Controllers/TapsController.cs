@@ -14,6 +14,7 @@ using TapLog.Application.Taps.Query.GetTapForm;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class TapsController : ApiController
     {
         [HttpGet("/addtapform")]

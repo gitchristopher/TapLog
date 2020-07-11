@@ -13,6 +13,7 @@ using TapLog.Application.Cards.Query.GetCard;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class CardsController : ApiController
     {
         [HttpGet]

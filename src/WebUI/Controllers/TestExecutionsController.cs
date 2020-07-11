@@ -13,6 +13,7 @@ using TapLog.Application.TestExecutions.Commands.DeleteTestExecution;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class TestExecutionsController : ApiController
     {
         [HttpGet]

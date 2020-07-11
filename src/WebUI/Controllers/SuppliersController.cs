@@ -19,6 +19,7 @@ using TapLog.Application.Suppliers.Query.GetSupplier;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class SuppliersController : ApiController
     {
         [HttpGet]

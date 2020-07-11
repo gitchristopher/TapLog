@@ -13,6 +13,7 @@ using TapLog.Application.Devices.Query.GetDevice;
 
 namespace TapLog.WebUI.Controllers
 {
+    [Authorize]
     public class DevicesController : ApiController
     {
         [HttpGet]
