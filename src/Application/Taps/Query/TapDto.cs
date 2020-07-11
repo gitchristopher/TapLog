@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System;
+using System.Globalization;
 using TapLog.Application.Common.Mappings;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -22,7 +23,7 @@ namespace TapLog.Application.Taps.Query
         public string CaseNumber { get; set; }
         public int Result { get; set; }
         public int WasResultExpected { get; set; }
-        public DateTime TimeOf { get; set; }
+        public string TimeOf { get; set; }
         public decimal? Fare { get; set; }
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
@@ -34,7 +35,8 @@ namespace TapLog.Application.Taps.Query
             profile.CreateMap<Tap, TapDto>()
                 .ForMember(d => d.Result, opt => opt.MapFrom(s => (int)s.Result))
                 .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected))
-                .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy));
+                .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy))
+                .ForMember(d => d.TimeOf, opt => opt.MapFrom(s => s.TimeOf.ToLocalTime().ToString("s", CultureInfo.CreateSpecificCulture("en-AU"))));
         }
     }
 }

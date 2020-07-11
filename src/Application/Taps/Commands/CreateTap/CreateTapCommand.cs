@@ -11,7 +11,8 @@ using TapLog.Application.Common.Exceptions;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
-using TapLog.Application.Common.Interfaces;
+//using TapLog.Application.Common.Interfaces;
+using System.Globalization;
 
 namespace TapLog.Application.Taps.Commands.CreateTap
 {
@@ -26,7 +27,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
-        public DateTime TimeOf { get; set; }
+        public string TimeOf { get; set; }
         public decimal? Fare { get; set; }
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
@@ -64,6 +65,30 @@ namespace TapLog.Application.Taps.Commands.CreateTap
             {
                 throw new NotFoundException(nameof(Device), request.DeviceId);
             }
+            var styles = DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal;
+            var parseWorked = DateTime.TryParse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture, styles, out DateTime dateTime);
+            if (!parseWorked)
+            {
+                // TODO Fix
+                throw new NotFoundException("DateTime", request.TimeOf);
+            }
+            //DateTime w = new DateTime();
+            //DateTime x = new DateTime();
+            //string y;
+            //string z;
+            //try
+            //{
+            //    w = DateTime.Parse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture);
+            //    x = DateTime.Parse(request.TimeOf);
+
+            //    y = DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+            //    z = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+            //}
+            //catch (Exception e)
+            //{
+
+            //    throw e;
+            //}
 
             //var userId = _currentUserService.UserId ?? string.Empty;
 
@@ -76,7 +101,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 CaseNumber = request.CaseNumber,
                 Result = request.Result,
                 WasResultExpected = request.WasResultExpected,
-                TimeOf = request.TimeOf,
+                TimeOf = dateTime,
                 Fare = request?.Fare,
                 BalanceBefore = request?.BalanceBefore,
                 BalanceAfter = request?.BalanceAfter,

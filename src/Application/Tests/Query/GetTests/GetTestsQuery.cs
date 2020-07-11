@@ -32,35 +32,27 @@ namespace TapLog.Application.Tests.Query.GetTests
 
         public async Task<List<TestDto>> Handle(GetTestsQuery request, CancellationToken cancellationToken)
         {
-            if (request.StageId != null)
-            {
-                var testListDto = await _context.StageTests.Where(x => x.StageId == request.StageId).Include(s => s.Test).Select(z => new TestDto{Id = z.TestId, JiraTestNumber = z.Test.JiraTestNumber }).ToListAsync();
-                //var testListDto = _mapper.Map<List<Test>, List<TestDto>>(l);
-                
-                var list = await _context.Tests.Include(t => t.StageTests).ThenInclude(st => st.Stage).ToListAsync();
-                var testList = list.SelectMany(x => x.StageTests).Where(x => x.StageId == request.StageId);
-                
-                var listDto = _mapper.Map<List<Test>, List<TestDto>>(list);
+            var testListDto = await _context.StageTests.Where(x => x.StageId == request.StageId).Include(s => s.Test).Select(z => new TestDto { Id = z.TestId, JiraTestNumber = z.Test.JiraTestNumber }).ToListAsync();
 
-                return testListDto;
-            }
+            return testListDto;
 
-            var entities = await _context.Tests
-                                         .Include(t => t.StageTests)
-                                            .ThenInclude(st => st.Stage)
-                                         .Include(t => t.StageTests)
-                                            .ThenInclude(st => st.TestExecutions)
-                                                .ThenInclude(te => te.Taps)
-                                                    .ThenInclude(t => t.Card)
-                                                        .ThenInclude(c => c.Supplier)
-                                         .Include(t => t.StageTests)
-                                            .ThenInclude(st => st.TestExecutions)
-                                                .ThenInclude(te => te.Taps)
-                                                    .ThenInclude(t => t.Device)
-                                         .ToListAsync();
-            var responseDto = _mapper.Map<List<Test>, List<TestDto>>(entities);
+            //Not used anymore?
+            //var entities = await _context.Tests
+            //                             .Include(t => t.StageTests)
+            //                                .ThenInclude(st => st.Stage)
+            //                             .Include(t => t.StageTests)
+            //                                .ThenInclude(st => st.TestExecutions)
+            //                                    .ThenInclude(te => te.Taps)
+            //                                        .ThenInclude(t => t.Card)
+            //                                            .ThenInclude(c => c.Supplier)
+            //                             .Include(t => t.StageTests)
+            //                                .ThenInclude(st => st.TestExecutions)
+            //                                    .ThenInclude(te => te.Taps)
+            //                                        .ThenInclude(t => t.Device)
+            //                             .ToListAsync();
+            //var responseDto = _mapper.Map<List<Test>, List<TestDto>>(entities);
 
-            return responseDto;
+            //return responseDto;
         }
     }
 }

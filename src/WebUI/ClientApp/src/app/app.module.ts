@@ -25,6 +25,8 @@ import { TestListComponent } from './home/test-list/test-list.component';
 import { ExecuteListComponent } from './home/execute-list/execute-list.component';
 import { LogTapComponent } from './home/log-tap/log-tap.component';
 import { TapListComponent } from './home/tap-list/tap-list.component';
+import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
+import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
 
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
@@ -55,7 +57,9 @@ import { CommonModule } from '@angular/common';
       TestListComponent,
       ExecuteListComponent,
       LogTapComponent,
-      TapListComponent
+      TapListComponent,
+      ResultEnumPipe,
+      ExpectedEnumPipe
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

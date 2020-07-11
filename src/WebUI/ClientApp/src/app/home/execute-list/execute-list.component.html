@@ -28,7 +28,7 @@
       <ng-container *ngIf="execution?.taps?.length > 0"  >
         <p matLine>
           <span> {{execution?.taps[0]?.timeOf | date: 'EEEE' }} </span>
-          <span class="float-right ml-2"> {{execution?.taps[0]?.timeOf | date: 'hh:mm:ss' }}  </span>
+          <span class="float-right ml-2"> {{execution?.taps[0]?.timeOf | date: 'HH:mm:ss' }}  </span>
         </p>
         <div class="d-flex flex-row justify-content-between align-items-end">
           <p matLine> {{execution?.taps[0]?.timeOf | date: 'dd/MM' }} </p>

@@ -2668,7 +2668,7 @@ export class TapDto implements ITapDto {
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
@@ -2698,7 +2698,7 @@ export class TapDto implements ITapDto {
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
-            this.timeOf = _data["timeOf"] ? new Date(_data["timeOf"].toString()) : <any>undefined;
+            this.timeOf = _data["timeOf"];
             this.fare = _data["fare"];
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
@@ -2728,7 +2728,7 @@ export class TapDto implements ITapDto {
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
-        data["timeOf"] = this.timeOf ? this.timeOf.toISOString() : <any>undefined;
+        data["timeOf"] = this.timeOf;
         data["fare"] = this.fare;
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
@@ -2751,7 +2751,7 @@ export interface ITapDto {
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
@@ -3634,7 +3634,7 @@ export class CreateTapCommand implements ICreateTapCommand {
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
@@ -3658,7 +3658,7 @@ export class CreateTapCommand implements ICreateTapCommand {
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
-            this.timeOf = _data["timeOf"] ? new Date(_data["timeOf"].toString()) : <any>undefined;
+            this.timeOf = _data["timeOf"];
             this.fare = _data["fare"];
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
@@ -3682,7 +3682,7 @@ export class CreateTapCommand implements ICreateTapCommand {
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
-        data["timeOf"] = this.timeOf ? this.timeOf.toISOString() : <any>undefined;
+        data["timeOf"] = this.timeOf;
         data["fare"] = this.fare;
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
@@ -3699,7 +3699,7 @@ export interface ICreateTapCommand {
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
@@ -3728,7 +3728,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
@@ -3753,7 +3753,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
-            this.timeOf = _data["timeOf"] ? new Date(_data["timeOf"].toString()) : <any>undefined;
+            this.timeOf = _data["timeOf"];
             this.fare = _data["fare"];
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
@@ -3778,7 +3778,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
-        data["timeOf"] = this.timeOf ? this.timeOf.toISOString() : <any>undefined;
+        data["timeOf"] = this.timeOf;
         data["fare"] = this.fare;
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
@@ -3796,7 +3796,7 @@ export interface IUpdateTapCommand {
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
-    timeOf?: Date;
+    timeOf?: string | undefined;
     fare?: number | undefined;
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;

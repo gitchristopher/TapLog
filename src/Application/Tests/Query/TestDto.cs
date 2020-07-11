@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TapLog.Application.Common.Mappings;
 using TapLog.Application.StageTests;
 using TapLog.Domain.Entities;
@@ -55,7 +56,8 @@ namespace TapLog.Application.Tests.Query
                 profile.CreateMap<Tap, TapDto>()
                     .ForMember(d => d.Result, opt => opt.MapFrom(s => (int)s.Result))
                     .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected))
-                    .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy));
+                    .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy))
+                    .ForMember(d => d.TimeOf, opt => opt.MapFrom(s => s.TimeOf.ToLocalTime().ToString("s", CultureInfo.CreateSpecificCulture("en-AU"))));
             }
         }
     }

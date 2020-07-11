@@ -1,9 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { Result } from '../app/taplog-api';
 
-@Pipe({name: 'resultEnumPipe'})
+@Pipe({name: 'resultEnum'})
 export class ResultEnumPipe implements PipeTransform {
-  transform(value): Object {
+  transform(value): string {
     // tslint:disable-next-line: arrow-return-shorthand
-    return Object.keys(value).filter(e => !isNaN(+e)).map(o => { return {index: +o, name: value[o]}; });
+    return Result[value];
   }
 }

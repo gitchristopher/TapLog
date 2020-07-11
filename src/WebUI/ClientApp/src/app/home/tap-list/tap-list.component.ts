@@ -2,10 +2,11 @@ import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@
 import { MatAccordion } from '@angular/material/expansion';
 import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand } from 'src/app/taplog-api';
 import {style, state, animate, transition, trigger} from '@angular/animations';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { networkInterfaces } from 'os';
+import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+
 
 @Component({
   selector: 'app-tap-list',
@@ -30,13 +31,12 @@ export class TapListComponent implements OnInit, OnChanges {
   isChecked = false;
   isDisabled = this.selectedExecution ? false : true;
   isEditing: number;
-
+  isDecending = true;
   updateTapForm: FormGroup;
   fb: FormBuilder;
   deviceList: DeviceDto[];
   cardList: CardDto[];
   filteredOptions: Observable<CardDto[]>;
-  mytime: Date = new Date();
 
   constructor(private tapsClient: TapsClient) {
     this.isChecked = false;
@@ -54,6 +54,7 @@ export class TapListComponent implements OnInit, OnChanges {
             } else {
               this.isDisabled = false;
               this.cancelEdit();
+              // this.selectedExecution = this.sort(this.selectedExecution);
             }
           }
         }
@@ -64,7 +65,7 @@ export class TapListComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.updateTapForm = new FormGroup({
       cardType: new FormControl(),
-      card: new FormControl(),
+      card: new FormControl('', [Validators.required, RequireMatch]),
       device: new FormControl(),
       result: new FormControl(),
       expectedResult: new FormControl(),
@@ -90,49 +91,32 @@ export class TapListComponent implements OnInit, OnChanges {
   }
 
   editTap(id: number) {
-    // TODO
-    console.log(id);
-    console.log(this.selectedExecution);
     this.isEditing = id;
-
     if (this.cardList == null || this.deviceList == null) {
-      console.log('getting information from api');
       this.getFormInformationFromApi();
-      console.log(this.selectedExecution);
     } else {
-      console.log(this.selectedExecution);
       this.loadDataIntoForm();
     }
   }
 
   loadDataIntoForm() {
     const id = this.isEditing;
-    console.log('id ' + id);
     const tap = this.selectedExecution.taps.find(x => Number(x.id) === Number(id));
-    console.log('loaddataintoform');
-    console.log(tap);
-    console.log(this.cardList);
-    console.log(this.deviceList);
+    // HACK: There has to be a better way
+    const tempDate = new Date(tap.timeOf);
+    tempDate.setHours(13);
 
-    // let newDateAndTime: Date = new Date(Date.now());
-    // if (this.selectedExecution?.taps?.length > 0) {
-    //   const currentTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1];
-    //   const dateAndTime = currentTap.timeOf;
-    //   newDateAndTime = new Date(dateAndTime.getTime() + 0.25 * 60000);
-    //   const card = this.cardList.find(c => Number(c.id) === Number(currentTap.cardId));
-    //   this.updateTapForm.get('card').setValue(card);
-    // }
     const card = this.cardList.find(c => Number(c.id) === Number(tap.cardId));
     this.updateTapForm.get('card').setValue(card);
+    this.updateTapForm.get('result').setValue(tap.result.toString());
+    this.updateTapForm.get('expectedResult').setValue(tap.wasResultExpected.toString());
     this.updateTapForm.patchValue({
       notes: tap.notes,
       balanceAfter: tap.balanceAfter,
       balanceBefore: tap.balanceBefore,
       fare: tap.fare,
-      expectedResult: Number(tap.wasResultExpected),
-      result: Number(tap.result),
       time: tap.timeOf,
-      date: tap.timeOf,
+      date: tempDate,
       device: tap.deviceId
     });
   }
@@ -170,19 +154,16 @@ export class TapListComponent implements OnInit, OnChanges {
   }
 
   cancelEdit() {
-    console.log('cancel edit');
     this.isEditing = null;
   }
 
   updateTap(data: any) {
-    console.log(this.isEditing);
     const tap = new UpdateTapCommand(data);
-    console.log(tap);
-
     this.tapsClient.update(Number(this.isEditing), tap).subscribe(
         result => {
           // TODO: what to do with NoContent response
           const newTap = new TapDto2(data);
+          newTap.timeOf = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date);
           const card = this.cardList.find(x => Number(x.id) === Number(newTap.cardId));
           newTap.cardAlias = card?.alias ? card.alias : 'Go Card';
           newTap.cardNumber = card.number;
@@ -192,8 +173,6 @@ export class TapListComponent implements OnInit, OnChanges {
           newTap.deviceCode = device.code;
           const index = this.selectedExecution.taps.findIndex(x => x.id === Number(newTap.id));
           this.selectedExecution.taps.splice(index, 1, newTap);
-          console.log('newTap');
-          console.log(newTap);
 
           // this.submitted = true;
           // this.updateTapForm();
@@ -208,13 +187,10 @@ export class TapListComponent implements OnInit, OnChanges {
   }
 
   onSubmit() {
-    console.log('submit');
-    console.log(this.isEditing);
-
     const card = this.cardList.find(c => c.id === Number(this.updateTapForm.value.card.id));
     const device = this.deviceList.find(d => d.id === Number(this.updateTapForm.value.device));
-    const time = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date);
-    this.mytime = this.updateTapForm.value.time;
+    const time = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date).toISOString();
+    // this.mytime = this.updateTapForm.value.time;
     const data = {
       testExecutionId: this.selectedExecution.id,
       balanceAfter: Number(this.updateTapForm.value.balanceAfter),
@@ -234,15 +210,8 @@ export class TapListComponent implements OnInit, OnChanges {
   }
   formatTimeAndDate = (timeFromForm: Date, dateFromForm: Date): Date => {
     const time = new Date();
-    const fixedDate = dateFromForm.getDate() + 1;
-    const newDate = new Date(fixedDate);
-    console.log('time');
-    console.log(newDate);
-    const t = this.addDays(timeFromForm, 1);
-    time.setUTCDate(newDate.getUTCDate());
-    time.setUTCHours(timeFromForm.getUTCHours());
-    time.setUTCMinutes(timeFromForm.getUTCMinutes());
-    time.setUTCSeconds(timeFromForm.getUTCSeconds());
+    time.setTime(timeFromForm.getTime());
+    time.setDate(dateFromForm.getDate());
     return time;
   }
 
@@ -256,9 +225,14 @@ export class TapListComponent implements OnInit, OnChanges {
     return this.cardList.filter(card => card.alias.toLowerCase().indexOf(filterValue) >= 0);
   }
 
-  addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
+  // sort() {
+  //   this.selectedExecution.taps.sort((a: TapDto2, b: TapDto2) => {
+  //     if (this.isDecending) {
+  //       return a.timeOf.getTime() - b.timeOf.getTime();
+  //     } else {
+  //       return b.timeOf.getTime() - a.timeOf.getTime();
+  //     }
+  //   });
+  //   this.isDecending = !this.isDecending;
+  // }
 }

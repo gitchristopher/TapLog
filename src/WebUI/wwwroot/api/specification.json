@@ -1631,7 +1631,7 @@
           },
           "timeOf": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "fare": {
             "type": "number",
@@ -2079,7 +2079,7 @@
           },
           "timeOf": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "fare": {
             "type": "number",
@@ -2168,7 +2168,7 @@
           },
           "timeOf": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "fare": {
             "type": "number",

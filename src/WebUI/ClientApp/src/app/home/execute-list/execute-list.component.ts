@@ -31,7 +31,7 @@ export class ExecuteListComponent implements OnInit, OnChanges {
   @Output() onSelect: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
   select(execution: TestExecutionDto2) {
     this.selectedExecution = execution;
-    this.onSelect.emit(execution);
+    this.onSelect.emit(this.selectedExecution);
   }
 
   constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient) { }
@@ -45,19 +45,9 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       if (changes.hasOwnProperty(propName)) {
         switch (propName) {
           case 'selectedTest': {
-            console.log('this.selectedTest in exe lit changes');
-            console.log(this.selectedTest);
-            
             this.getExecutions(this.selectedTest);
             this.isChecked = false;
             this.isDisabled = false;
-            // console.log(this.selectedTest);
-            // console.log(this.testExecutions);
-            // if (this.testExecutions == null || this.testExecutions.length === 0) {
-            //   this.isDisabled = true;
-            // } else {
-            //   this.isDisabled = false;
-            // }
           }
           break;
           case 'selectedStage': {
@@ -77,8 +67,6 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       this.testExecutions = [];
       this.testsClient.getDetailedTest(test.id).subscribe(
         result => {
-          console.log('in get exe');
-          
           this.testDeatil = null;
             this.testDeatil = result;
             const selectedStageTestExecutions = result.stageTests.filter(x => x.stageId === this.selectedStage.id);
@@ -98,6 +86,7 @@ export class ExecuteListComponent implements OnInit, OnChanges {
 
     this.executionsClient.create(execution).subscribe(result => {
       const newExecution = new TestExecutionDto2({id: result});
+      newExecution.taps = new Array<TapDto2>();
       this.testExecutions.push(newExecution);
       this.select(newExecution);
     },

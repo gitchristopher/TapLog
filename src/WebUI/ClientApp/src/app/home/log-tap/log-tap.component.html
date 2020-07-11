@@ -15,7 +15,7 @@
   <form (ngSubmit)="onSubmit()" [formGroup]="addTapForm" class="tap-log-grid-container bg-raised">
 
     <div class="div tl-card">
-      <mat-form-field class="example-full-width" appearance="outline">
+      <mat-form-field class="example-full-width" appearance="outline" >
         <input type="text"
         placeholder="Card"
         aria-label="Number"
@@ -23,11 +23,20 @@
         formControlName="card"
         [matAutocomplete]="auto"
         required>
-        <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">    <!-- autoActiveFirstOption -->
+        <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">
           <mat-option *ngFor="let c of filteredOptions | async" [value]="c">
             {{c.alias}}
           </mat-option>
         </mat-autocomplete>
+
+        <mat-error *ngIf="this.addTapForm.controls['card'].hasError('required')">
+          Please enter a value
+      </mat-error>
+
+      <mat-error *ngIf="this.addTapForm.controls['card'].hasError('incorrect')">
+          Please select a valid card
+      </mat-error>
+
       </mat-form-field>
     </div>
     
@@ -118,12 +127,15 @@
     <div class="tl-notes">
       <mat-form-field class="example-full-width"  appearance="outline">
         <mat-label>Notes</mat-label>
-        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=9 matAutosizeMaxRows=10></textarea>
+        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=9 matAutosizeMaxRows=10 formControlName="notes" ></textarea>
+        <button mat-button *ngIf="this.addTapForm.controls['notes'].value" matSuffix mat-icon-button aria-label="Clear" (click)="this.addTapForm.get('notes').setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 
     <div class="tl-save">
-      <button mat-raised-button color="primary" type="submit" [disabled]="!this.addTapForm.valid">Save Tap</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="(this.selectedExecution === null || !this.addTapForm.valid)">Save Tap</button>
     </div>
 
   </form>

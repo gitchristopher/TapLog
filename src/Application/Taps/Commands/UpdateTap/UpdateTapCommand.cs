@@ -3,6 +3,7 @@ using FluentValidation;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
-        public DateTime TimeOf { get; set; }
+        public string TimeOf { get; set; }
         public decimal? Fare { get; set; }
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
@@ -69,6 +70,13 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
                 throw new NotFoundException(nameof(Device), request.DeviceId);
             }
 
+            var styles = DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal;
+            var parseWorked = DateTime.TryParse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture, styles, out DateTime dateTime);
+            if (!parseWorked)
+            {
+                // TODO Fix
+                throw new NotFoundException("DateTime", request.TimeOf);
+            }
 
             // Update the entity
             entity.TestExecutionId = request.TestExecutionId;
@@ -78,7 +86,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.CaseNumber = request.CaseNumber;
             entity.Result = request.Result;
             entity.WasResultExpected = request.WasResultExpected;
-            entity.TimeOf = request.TimeOf;
+            entity.TimeOf = dateTime;
             entity.Fare = request?.Fare;
             entity.BalanceBefore = request?.BalanceBefore;
             entity.BalanceAfter = request?.BalanceAfter;
