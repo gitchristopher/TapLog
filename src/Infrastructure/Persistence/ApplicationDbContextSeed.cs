@@ -3,6 +3,8 @@ using TapLog.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.ComponentModel.Design.Serialization;
 
 namespace TapLog.Infrastructure.Persistence
 {
@@ -39,6 +41,31 @@ namespace TapLog.Infrastructure.Persistence
                     }
                 });
 
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Devices.Any())
+            {
+                context.Devices.Add(new Device { Name = "BWP", Code = "01" });
+                context.Devices.Add(new Device { Name = "SPN", Code = "07" });
+                context.Devices.Add(new Device { Name = "MBA", Code = "12" });
+                context.Devices.Add(new Device { Name = "MBB", Code = "15" });
+                await context.SaveChangesAsync();
+            }
+            if (!context.Cards.Any())
+            {
+                context.Cards.Add(new Card { Alias = "MC ALICE", Number = "1234554321", Supplier = new Supplier { Name = "MC" } });
+                context.Cards.Add(new Card { Alias = "AM BOB", Number = "2233445566", Supplier = new Supplier { Name = "AM" } });
+                context.Cards.Add(new Card { Alias = "VC EVE", Number = "3216544321", Supplier = new Supplier { Name = "VC" } });
+                context.Cards.Add(new Card { Alias = "GC IRINA", Number = "1234321566", Supplier = new Supplier { Name = "GC" } });
+                await context.SaveChangesAsync();
+            }
+            if (!context.Stages.Any())
+            {
+                context.Stages.Add(new Stage { Name = "A", IsCurrent = true });
+                context.Stages.Add(new Stage { Name = "B", IsCurrent = false });
+                context.Stages.Add(new Stage { Name = "C", IsCurrent = false });
+                context.Stages.Add(new Stage { Name = "D", IsCurrent = false });
                 await context.SaveChangesAsync();
             }
         }
