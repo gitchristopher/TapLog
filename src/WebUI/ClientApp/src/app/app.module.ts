@@ -20,6 +20,7 @@ import { ButtonsModule } from 'ngx-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
+import { HomeComponent } from './home/home.component';
 
 import { TapperComponent } from './tapper/tapper.component';
 import { StageListComponent } from './tapper/stage-list/stage-list.component';
@@ -66,6 +67,7 @@ import { EffectsModule } from '@ngrx/effects';
     CounterComponent,
     FetchDataComponent,
     TodoComponent,
+    HomeComponent,
     TapLoggerComponent,
     StageListComponent,
     TestListComponent,
@@ -87,8 +89,8 @@ import { EffectsModule } from '@ngrx/effects';
     FormsModule,
     ApiAuthorizationModule,
     RouterModule.forRoot([
-      // { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthorizeGuard]  },
-      { path: '', component: CounterComponent },
+      { path: '', component: HomeComponent, pathMatch: 'full'},
+      { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },

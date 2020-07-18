@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow" style="background-color: #673ab7;">
     <div class="container-fluid justify-content-between">
-      <a class="navbar-brand" [routerLink]="['/']">Tap Logger</a>
+      <a class="navbar-brand" [routerLink]="['/']">Logger</a>
       <button class="navbar-toggler"
               type="button"
               data-toggle="collapse"
@@ -15,15 +15,21 @@
       <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
            [ngClass]="{ show: isExpanded }">
         <ul class="navbar-nav flex-grow">
-          <li class="nav-item"
+          <!-- <li class="nav-item"
               [routerLinkActive]="['link-active']"
               [routerLinkActiveOptions]="{ exact: true }">
-            <a class="nav-link text-light" [routerLink]="['/home']">Home</a>
+            <a class="nav-link text-light" [routerLink]="['']">Home</a>
+          </li> -->
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/zapolnit']">V3</a>
           </li>
-          <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/tap-logger']">Tap Logger</a>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/versionTwo']">V2</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/versionOne']">V1</a>
+          </li>
+          <!-- <li class="nav-item">
             <a class="nav-link text-light" href="/api" target="_blank">API</a>
           </li> -->
         </ul>
