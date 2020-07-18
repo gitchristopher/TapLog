@@ -3,11 +3,11 @@ import { StagesClient, CreateTestCommand, ICreateTestCommand, TestDto,
          StageDto, ITestExecutionDto2, TestsClient, TapDto2, TestExecutionDto2 } from '../taplog-api';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-tapper',
+  templateUrl: './tapper.component.html',
+  styleUrls: ['./tapper.component.css']
 })
-export class HomeComponent implements OnInit {
+export class TapperComponent implements OnInit {
 
   stageList: StageDto[];
   selectedStage: StageDto;

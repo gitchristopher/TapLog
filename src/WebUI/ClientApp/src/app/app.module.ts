@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { TodoComponent } from './todo/todo.component';
@@ -21,11 +20,14 @@ import { ButtonsModule } from 'ngx-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { TapLoggerComponent } from './tap-logger/tap-logger.component';
-import { StageListComponent } from './home/stage-list/stage-list.component';
-import { TestListComponent } from './home/test-list/test-list.component';
-import { ExecuteListComponent } from './home/execute-list/execute-list.component';
-import { LogTapComponent } from './home/log-tap/log-tap.component';
-import { TapListComponent } from './home/tap-list/tap-list.component';
+
+import { TapperComponent } from './tapper/tapper.component';
+import { StageListComponent } from './tapper/stage-list/stage-list.component';
+import { TestListComponent } from './tapper/test-list/test-list.component';
+import { ExecuteListComponent } from './tapper/execute-list/execute-list.component';
+import { LogTapComponent } from './tapper/log-tap/log-tap.component';
+import { TapListComponent } from './tapper/tap-list/tap-list.component';
+
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
 
@@ -60,7 +62,7 @@ import { EffectsModule } from '@ngrx/effects';
    declarations: [
     AppComponent,
     NavMenuComponent,
-    HomeComponent,
+    TapperComponent,
     CounterComponent,
     FetchDataComponent,
     TodoComponent,
@@ -86,11 +88,12 @@ import { EffectsModule } from '@ngrx/effects';
     ApiAuthorizationModule,
     RouterModule.forRoot([
       // { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthorizeGuard]  },
-      { path: 'home', component: HomeComponent, pathMatch: 'full', canActivate: [AuthorizeGuard]  },
       { path: '', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
-      { path: 'tap-logger', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
+      { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
+      { path: 'versionTwo', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard]  },
+      { path: 'zapolnit', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
     ]),
     CommonModule,
     ReactiveFormsModule,
