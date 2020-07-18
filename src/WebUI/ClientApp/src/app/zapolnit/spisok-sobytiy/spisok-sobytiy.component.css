@@ -1,0 +1,88 @@
+  .action-buttons2 {
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .action-buttons {
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .menuSmallButton {
+    transform: scale(0.75);
+  }
+  
+  .headers-align .mat-expansion-panel-header-title,
+  .headers-align .mat-expansion-panel-header-description {
+    flex-basis: 0;
+  }
+  
+  .headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .headers-align .mat-form-field + .mat-form-field {
+    margin-left: 8px;
+  }
+  
+  .tap-list-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 5em;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 1px 1px;
+    grid-template-areas: 
+    "number result before edit" 
+    "alias expectation fare delete" 
+    "supplier notes after delete"
+  }
+  
+  
+  .tl-number {
+    grid-area: number;
+  }
+  .tl-alias {
+    grid-area: alias;
+  }
+  .tl-supplier {
+    grid-area: supplier;
+  }
+  .tl-result {
+    grid-area: result;
+  }
+  .tl-expectation {
+    grid-area: expectation;
+  }
+  .tl-notes {
+    grid-area: notes;
+  }
+  .tl-before {
+    grid-area: before;
+  }
+  .tl-fare {
+    grid-area: fare;
+  }
+  .tl-after {
+    grid-area: after;
+  }
+  .tl-edit {
+    grid-area: edit;
+    justify-self: center;
+  }
+  .tl-delete {
+    grid-area: delete;
+    justify-self: center;
+    align-self: center;
+  }
+  .iconText {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+  .hiddenInfo {
+    font-weight: bold; 
+    margin-right: 5px;
+  }
+  
+

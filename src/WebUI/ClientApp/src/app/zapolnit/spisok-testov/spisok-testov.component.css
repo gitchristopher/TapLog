@@ -1,0 +1,11 @@
+.menuSmallButton {
+    transform: scale(0.75);
+}
+.trashButton {
+    margin-top: -10px;
+    margin-right: 12px;
+}
+.addListItemButton {
+    margin-top: -10px;
+    margin-right: 12px;
+}

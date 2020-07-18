@@ -1,3 +1,23 @@
-<p>
-  zapolnit works!
-</p>
+<div class="tap-grid-container">
+  <div class="tlheader">
+  </div>
+  <div class="tlstage">
+    <app-stage-list  (onSelect)="selectStage($event)" [stageList]="stageList"></app-stage-list>
+  </div>
+  <div class="tltest">
+    <app-test-list (onSelect)="selectTest($event)" [testList]="testList" [selectedStage]="selectedStage"></app-test-list>
+  </div>
+  <div class="tlexecutions">
+    <app-execute-list 
+      (onSelect)="selectExecution($event)" 
+      [selectedTest]="selectedTest" 
+      [selectedStage]="selectedStage">
+    </app-execute-list>
+  </div>
+  <div class="tlcurrent">
+    <app-tap-list [selectedExecution]="selectedExecution"></app-tap-list>
+  </div>
+  <div class="tladd">
+    <app-log-tap (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"></app-log-tap>
+  </div>
+</div>

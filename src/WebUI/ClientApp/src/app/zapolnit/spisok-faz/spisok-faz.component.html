@@ -1,3 +1,8 @@
-<p>
-  spisok-faz works!
-</p>
+<form [formGroup]="stageForm" *ngIf="stageList != null" [@fadeInOut]> 
+  <mat-form-field appearance="standard">
+    <mat-label>Select a stage</mat-label>
+    <mat-select formControlName="stageSelect" (selectionChange)="select($event.value)">
+      <mat-option *ngFor="let stage of stageList" [value]="stage">{{stage.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>

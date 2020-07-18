@@ -1,0 +1,29 @@
+.tap-grid-container {
+    display: grid;
+    grid-template-columns: 13.5em 13.5em 35em auto;
+    grid-template-rows: 4em 3em 40.5em auto;
+    gap: 5px 50px;
+    grid-template-areas: 
+    "stage header header header" 
+    "test executions add current" 
+    "test executions add current"
+    "test executions . ."
+}
+.tlheader {
+    grid-area: header;
+}
+.tlstage {
+    grid-area: stage;
+}
+.tltest {
+    grid-area: test;
+}
+.tlexecutions {
+    grid-area: executions;
+}
+.tlcurrent {
+    grid-area: current;
+}
+.tladd {
+    grid-area: add;
+}
