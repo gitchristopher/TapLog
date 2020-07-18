@@ -29,6 +29,12 @@ import { TapListComponent } from './home/tap-list/tap-list.component';
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
 
+import { ZapolnitComponent } from './zapolnit/zapolnit.component';
+import { SpisokFazComponent } from './zapolnit/spisok-faz/spisok-faz.component';
+import { SpisokKazneyComponent } from './zapolnit/spisok-kazney/spisok-kazney.component';
+import { SpisokSobytiyComponent } from './zapolnit/spisok-sobytiy/spisok-sobytiy.component';
+import { SpisokTestovComponent } from './zapolnit/spisok-testov/spisok-testov.component';
+
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { MatButtonModule } from '@angular/material/button';
@@ -49,22 +55,28 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { EffectsModule } from '@ngrx/effects';
 
+
 @NgModule({
    declarations: [
-      AppComponent,
-      NavMenuComponent,
-      HomeComponent,
-      CounterComponent,
-      FetchDataComponent,
-      TodoComponent,
-      TapLoggerComponent,
-      StageListComponent,
-      TestListComponent,
-      ExecuteListComponent,
-      LogTapComponent,
-      TapListComponent,
-      ResultEnumPipe,
-      ExpectedEnumPipe
+    AppComponent,
+    NavMenuComponent,
+    HomeComponent,
+    CounterComponent,
+    FetchDataComponent,
+    TodoComponent,
+    TapLoggerComponent,
+    StageListComponent,
+    TestListComponent,
+    ExecuteListComponent,
+    LogTapComponent,
+    TapListComponent,
+    ResultEnumPipe,
+    ExpectedEnumPipe,
+    ZapolnitComponent,
+    SpisokFazComponent,
+    SpisokKazneyComponent,
+    SpisokSobytiyComponent,
+    SpisokTestovComponent,
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
