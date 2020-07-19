@@ -1459,7 +1459,7 @@ export class TapsClient implements ITapsClient {
 }
 
 export interface ITestExecutionsClient {
-    getAll(): Observable<TestExecutionDto[]>;
+    getAll(testId: number | null | undefined, stageId: number | null | undefined): Observable<TestExecutionDto[]>;
     create(command: CreateTestExecutionCommand): Observable<number>;
     get(id: number): Observable<TestExecutionDto>;
     update(id: number, command: UpdateTestExecutionCommand): Observable<FileResponse>;
@@ -1479,8 +1479,12 @@ export class TestExecutionsClient implements ITestExecutionsClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    getAll(): Observable<TestExecutionDto[]> {
-        let url_ = this.baseUrl + "/api/TestExecutions";
+    getAll(testId: number | null | undefined, stageId: number | null | undefined): Observable<TestExecutionDto[]> {
+        let url_ = this.baseUrl + "/api/TestExecutions?";
+        if (testId !== undefined)
+            url_ += "testId=" + encodeURIComponent("" + testId) + "&"; 
+        if (stageId !== undefined)
+            url_ += "stageId=" + encodeURIComponent("" + stageId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

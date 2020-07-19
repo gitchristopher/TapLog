@@ -3,6 +3,13 @@ import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
           TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import {style, state, animate, transition, trigger} from '@angular/animations';
+import { Store } from '@ngrx/store';
+import { AppState, ExecutionsState } from 'src/app/app.state';
+import { selectTestsList, selectSelectedTestId, selectSelectedTest } from '../spisok-testov/spisok-testov.reducers';
+import { selectSelectedStageId } from '../spisok-faz/spisok-faz.reducers';
+import { Observable } from 'rxjs';
+import { selectExecutionsList, selectSelectedExecutionId } from './spisok-kazney.reducers';
+import { CREATE_EXECUTION_REQUEST, DESELECT_EXECUTION, DELETE_EXECUTION_REQUEST } from './spisok-kazney.actions';
 
 @Component({
   selector: 'app-spisok-kazney',
@@ -14,102 +21,47 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
     ])
   ]
 })
-export class SpisokKazneyComponent implements OnInit, OnChanges {
-  testExecutions: ITestExecutionDto2[] = [];
-  testDeatil: TestDto;
-  selectedExecution: TestExecutionDto2;
-  faPlusSquare = faPlusSquare;
-  faMinusSquare = faMinusSquare;
 
-  @Input() selectedStage: StageDto;
-  @Input() selectedTest: TestDto;
+export class SpisokKazneyComponent implements OnInit {
+
+  @Input() executionsState: ExecutionsState;
+  @Output() select: EventEmitter<number> = new EventEmitter<number>();
+  lists$: Observable<TestExecutionDto[]>;
+  selectedExecutionId: number;
+  selectedStageId: number;
+  selectedTestId: number;
+  selectedTest: TestDto;
+
   isChecked = false;
-  isDisabled = this.selectedTest ? false : true;
-  // tslint:disable-next-line: no-output-on-prefix
-  @Output() onSelect: EventEmitter<TestExecutionDto2> = new EventEmitter<TestExecutionDto2>();
-  select(execution: TestExecutionDto2) {
-    this.selectedExecution = execution;
-    this.onSelect.emit(this.selectedExecution);
-  }
+  isDisabled = false;
 
-  constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient) { }
+  constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient, private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.getExecutions(this.selectedTest);
+    this.lists$ = this.store.select(selectExecutionsList);
+    this.store.select(selectSelectedExecutionId).subscribe((executionId => this.selectedExecutionId = Number(executionId)));
+    this.store.select(selectSelectedStageId).subscribe((stageId => this.selectedStageId = Number(stageId)));
+    this.store.select(selectSelectedTestId).subscribe((testId => this.selectedTestId = Number(testId)));
+    this.store.select(selectSelectedTest).subscribe((test => this.selectedTest = test));
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    for (const propName in changes) {
-      if (changes.hasOwnProperty(propName)) {
-        switch (propName) {
-          case 'selectedTest': {
-            this.getExecutions(this.selectedTest);
-            this.isChecked = false;
-            this.isDisabled = false;
-          }
-          break;
-          case 'selectedStage': {
-            this.testExecutions = null;
-            this.testDeatil = null;
-            this.selectedExecution = null;
-          break;
-          }
-        }
-      }
-    }
-  }
-
-  getExecutions(test: TestDto): void {
-    if (test !== null && test !== undefined) {
-      this.selectedExecution = null;
-      this.testExecutions = [];
-      this.testsClient.getDetailedTest(test.id).subscribe(
-        result => {
-          this.testDeatil = null;
-            this.testDeatil = result;
-            const selectedStageTestExecutions = result.stageTests.filter(x => x.stageId === this.selectedStage.id);
-            selectedStageTestExecutions.forEach(element => {
-              element.testExecutions.forEach(execution => {
-                this.testExecutions.push(execution);
-              });
-            });
-        },
-        error => console.error(error)
-      );
-    }
-  }
-
-  createExecution() {
-    const execution = new CreateTestExecutionCommand({stageId: this.selectedStage.id, testId: this.selectedTest.id});
-
-    this.executionsClient.create(execution).subscribe(result => {
-      const newExecution = new TestExecutionDto2({id: result});
-      newExecution.taps = new Array<TapDto2>();
-      this.testExecutions.push(newExecution);
-      this.select(newExecution);
-    },
-    error => {
-      console.error('errors while creating execution' + error);
-    });
-  }
-
-  // TODO
-  deleteExecution(id: number) {
-    if (confirm('All taps will be lost! Are you sure to delete the execution?' + id)) {
-      const index = this.testExecutions.findIndex(x => x.id === id);
-      this.testExecutions.splice(index, 1);
-      this.select(null);
-
-      this.executionsClient.delete(id).subscribe(response => {
-        // TODO: What to do with NoContent response?
-      }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
-      });
-    }
+  selectExecution(e: number) {
+    this.select.emit(e);
   }
 
   makeListEditable(e: Event) {
     this.isChecked = !this.isChecked;
   }
 
+  createExecution() {
+    const execution = new CreateTestExecutionCommand({stageId: this.selectedStageId, testId: this.selectedTestId});
+    this.store.dispatch(CREATE_EXECUTION_REQUEST({execution: execution}));
+  }
+
+  deleteExecution(id: number) {
+    if (confirm('All taps will be lost! Are you sure to delete the execution? ' + id)) {
+      this.store.dispatch(DELETE_EXECUTION_REQUEST({executionId: id}));
+      this.store.dispatch(DESELECT_EXECUTION());
+    }
+  }
 }

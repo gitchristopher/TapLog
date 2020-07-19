@@ -53,10 +53,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { EffectsModule } from '@ngrx/effects';
+import { fazReducer } from '../app/zapolnit/spisok-faz/spisok-faz.reducers';
+import { testovReducer } from '../app/zapolnit/spisok-testov/spisok-testov.reducers';
+import { FazEffects } from '../app/zapolnit/spisok-faz/spisok-faz.effects';
+import { TestovEffects } from '../app/zapolnit/spisok-testov/spisok-testov.effects';
+import { kazneyReducer } from './zapolnit/spisok-kazney/spisok-kazney.reducers';
+import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
 
 
 @NgModule({
@@ -115,11 +120,13 @@ import { EffectsModule } from '@ngrx/effects';
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),
     BsDatepickerModule.forRoot(),
-    StoreModule.forRoot(reducers, {
-      metaReducers
+    StoreModule.forRoot({
+      stages: fazReducer,
+      tests: testovReducer,
+      executions: kazneyReducer
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    EffectsModule.forRoot([])
+    EffectsModule.forRoot([FazEffects, TestovEffects, KazneyEffects])
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },

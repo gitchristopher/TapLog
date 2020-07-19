@@ -17,9 +17,9 @@ namespace TapLog.WebUI.Controllers
     public class TestExecutionsController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<TestExecutionDto>>> Get()
+        public async Task<ActionResult<List<TestExecutionDto>>> Get([FromQuery] int? testId, [FromQuery] int? stageId)
         {
-            return await Mediator.Send(new GetTestExecutionsQuery());
+            return await Mediator.Send(new GetTestExecutionsQuery { TestId = testId, StageId = stageId });
         }
 
         [HttpGet("{id}")]

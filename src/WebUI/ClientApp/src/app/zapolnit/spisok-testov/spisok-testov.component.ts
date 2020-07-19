@@ -1,9 +1,13 @@
-import { Component, OnInit, TemplateRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, TemplateRef, Input, Output, EventEmitter } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { TestsClient, CreateTestCommand, ICreateTestCommand, 
-          TestDto, StageDto, ITestExecutionDto2, UpdateTestCommand } from '../../taplog-api';
-import { faPlus, faPlusSquare, faEllipsisH, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
-import {style, state, animate, transition, trigger} from '@angular/animations';
+import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, UpdateTestCommand } from '../../taplog-api';
+import { style, animate, transition, trigger} from '@angular/animations';
+import { AppState, TestsState } from '../../app.state';
+import { Store } from '@ngrx/store';
+import { selectTestsList } from './spisok-testov.reducers';
+import { Observable } from 'rxjs';
+import { selectSelectedStageId } from '../spisok-faz/spisok-faz.reducers';
+import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT_TEST } from './spisok-testov.actions';
 
 @Component({
   selector: 'app-spisok-testov',
@@ -16,145 +20,90 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
     ])
   ]
 })
-export class SpisokTestovComponent implements OnInit, OnChanges {
-  @Input() testList: TestDto[];
-  @Input() selectedStage: StageDto;
 
-  isChecked = false;
-  isDisabled = this.selectedStage ? false : true;
+export class SpisokTestovComponent implements OnInit {
 
-  debug = true;
-  selectedTest: TestDto;
-  testExecutions: ITestExecutionDto2[] = [];
-  testDeatils: TestDto;
-  faPlus = faPlus;
-  faPlusSquare = faPlusSquare;
-  faMinusSquare = faMinusSquare;
-  // modal
+  @Input() testsState: TestsState;
+  @Output() select: EventEmitter<number> = new EventEmitter<number>();
+  list$: Observable<TestDto[]>;
+  selectedStageId: number;
+
   addTestModalRef: BsModalRef;
   addTestEditor: any = {};
   updateTestModalRef: BsModalRef;
   updateTestEditor: any = {};
 
+  isChecked = false;
+  isDisabled = false;
+  debug = false;
 
-  // tslint:disable-next-line: no-output-on-prefix
-  @Output() onSelect: EventEmitter<number> = new EventEmitter<number>();
-  select(e: number) {
-    this.onSelect.emit(e);
-    this.selectedTest = this.testList.find(t => t.id === e);
-  }
-
-
-  constructor(private modalService: BsModalService, private testsClient: TestsClient) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    for (const propName in changes) {
-      if (changes.hasOwnProperty(propName)) {
-        switch (propName) {
-          case 'selectedStage': {
-            this.isChecked = false;
-            if (this.selectedStage == null) {
-              this.isDisabled = true;
-            } else {
-              this.isDisabled = false;
-            }
-          } break;
-          case 'testList': {
-            this.selectedTest = null;
-          }
-        }
-      }
-    }
-  }
+  constructor(private modalService: BsModalService, private testsClient: TestsClient, private store: Store<AppState>) { }
 
   ngOnInit() {
+    this.list$ = this.store.select(selectTestsList);
+    this.store.select(selectSelectedStageId).subscribe((stageId => this.selectedStageId = Number(stageId)));
   }
 
-  // Shows the test modal
+  selectTest(e: number) {
+    this.select.emit(e);
+  }
+
+  //#region UI functions
+
+  makeListEditable(e: Event) {
+    this.isChecked = !this.isChecked;
+  }
+
   showAddTestModal(template: TemplateRef<any>): void {
     this.addTestModalRef = this.modalService.show(template);
     setTimeout(() => document.getElementById('title').focus(), 250);
   }
 
-  // Hides the modal on cancel
-  addTestCancelled(): void {
+  hideAddTestModal(): void {
     this.addTestModalRef.hide();
     this.addTestEditor = {};
   }
-  // Shows the test modal
+
   showUpdateTestModal(template: TemplateRef<any>, name: string): void {
     this.updateTestEditor.title = name;
     this.updateTestModalRef = this.modalService.show(template);
     setTimeout(() => document.getElementById('updateTitle').focus(), 250);
   }
 
-  // Hides the modal on cancel
-  updateTestCancelled(): void {
+  hideUpdateTestModal(): void {
     this.updateTestModalRef.hide();
     this.updateTestEditor = {};
   }
+  //#endregion UI functions
 
-  // Persists the new test data from the modal back to the API
-  persistTest(): void {
-    const test: ICreateTestCommand = {jiraTestNumber: this.addTestEditor.title, stageId: this.selectedStage.id};
-
-    this.testsClient.create(CreateTestCommand.fromJS(test)).subscribe(
-        result => {
-          const newTest = new TestDto({id: result, jiraTestNumber: test.jiraTestNumber});
-            this.testList.push(newTest);
-            this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
-            this.addTestModalRef.hide();
-            this.addTestEditor = {};
-        },
-        error => {
-            const errors = JSON.parse(error.response);
-            console.error('error while uploading test');
-
-            if (errors && errors.Title) {
-                this.addTestEditor.error = errors.Title[0];
-            }
-
-            setTimeout(() => document.getElementById('title').focus(), 250);
-        }
-    );
+  createTest() {
+    const text: string = this.addTestEditor.title as string;
+    if (text.trim().length > 0) {
+      const iTest: ICreateTestCommand = {jiraTestNumber: text.trim(), stageId: Number(this.selectedStageId)};
+      const test = CreateTestCommand.fromJS(iTest);
+      this.store.dispatch(CREATE_TEST_REQUEST({test: test}));
+    }
+    this.hideAddTestModal();
   }
 
   deleteTest(id: number) {
-    if (confirm('All taps will be lost! Are you sure to delete the test?' + id)) {
-      const index = this.testList.findIndex(x => x.id === id);
-      this.testList.splice(index, 1);
-      this.select(null);
-
-      this.testsClient.delete(id).subscribe(response => {
-        // TODO: What to do with NoContent response?
-      }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
-      });
+    if (confirm('All taps will be lost! Are you sure to delete the test? ' + id)) {
+      if (this.testsState.list.find(x => x.id === id)) {
+        this.store.dispatch(DELETE_TEST_REQUEST({testId: id}));
+        this.store.dispatch(DESELECT_TEST());
+      }
     }
   }
 
-  makeListEditable(e: Event) {
-    this.isChecked = !this.isChecked;
-  }
-
   updateTestName() {
-    const testId = this.selectedTest.id;
-    const newTitle = this.updateTestEditor.title;
-    this.testsClient.update(testId, new UpdateTestCommand({id: testId, jiraTestNumber: newTitle})).subscribe( result => {
-      this.selectedTest = null;
-      this.testList.find(t => t.id === testId).jiraTestNumber = newTitle;
-      // this.select(testId);
-      // TODO: what to do with NoContent response
-      this.updateTestModalRef.hide();
-      this.updateTestEditor = {};
-    }, error => {
-      console.error('Error updating test id: ' + testId + ' ' + error);
-      const errors = JSON.parse(error.response);
-      if (errors && errors.Title) {
-        this.addTestEditor.error = errors.Title[0];
-      }
-
-      setTimeout(() => document.getElementById('title').focus(), 250);
-    });
+    const text: string = this.updateTestEditor.title as string;
+    const testId = Number(this.testsState.selectedId);
+    const newTitle = text.trim();
+    if (newTitle.length > 0) {
+      const updatedTest = new UpdateTestCommand({id: testId, jiraTestNumber: newTitle});
+      this.store.dispatch(UPDATE_TEST_REQUEST({stageId: Number(this.selectedStageId), testId: testId, testUpdate: updatedTest}));
+      this.store.dispatch(DESELECT_TEST());
+    }
+    this.hideUpdateTestModal();
   }
 }

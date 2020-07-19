@@ -1,13 +1,12 @@
-<div *ngIf="testList != null" [@fadeInOut]>
-
+<div>
   <div class="clearfix">
     <h2 class="float-left pt-1">Test List</h2>
   </div>
 
   <div class="action-buttons justify-content-between d-flex flex-row">
     <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled"></mat-slide-toggle>
-    <div *ngIf="selectedStage && isChecked" [@fadeInOut]>
-      <button mat-mini-fab color="warn" *ngIf="selectedTest" [@fadeInOut] class="menuSmallButton trashButton" (click)="deleteTest(selectedTest.id)">
+    <div *ngIf="isChecked" [@fadeInOut]>   <!-- selectedStage &&  -->
+      <button mat-mini-fab color="warn" *ngIf="testsState.selectedId > 0" [@fadeInOut] class="menuSmallButton trashButton" (click)="deleteTest(testsState.selectedId)">
         <mat-icon>delete</mat-icon>
       </button>
       <button mat-mini-fab color="primary" class="menuSmallButton addListItemButton" (click)="showAddTestModal(addTestModalTemplate)">
@@ -16,8 +15,8 @@
     </div>
   </div>
 
-  <mat-selection-list #tests [multiple]="false">
-    <mat-list-option *ngFor="let test of testList" [value]="test" (click)="select(test.id)"> 
+  <mat-selection-list #tests [multiple]="false" *ngIf="testsState.loaded" [@fadeInOut]>
+    <mat-list-option *ngFor="let test of testsState?.list" [value]="test" (click)="selectTest(test.id)"> 
       <div class="d-flex flex-row justify-content-between align-items-end">
         <p>{{test.jiraTestNumber}}</p>
         <div *ngIf="isChecked" style="transform: translateX(20px);" [@fadeInOut]>
@@ -29,13 +28,17 @@
       <mat-divider></mat-divider>
     </mat-list-option>
   </mat-selection-list>
-
+  <div *ngIf="debug" > 
+    <div *ngFor="let item of list$ | async as TestDto">
+      {{item.jiraTestNumber}}
+    </div>
+  </div>
 </div>
 
 <ng-template #addTestModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">New Test</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="addTestCancelled()">
+    <button type="button" class="close float-right" aria-label="Close" (click)="hideAddTestModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -43,7 +46,7 @@
     <div class="form-group">
       <label for="title">Jira Test Number</label>
       <input type="text" class="form-control" id="title" placeholder="Test title..." [(ngModel)]="addTestEditor.title"
-        [ngClass]="{ 'is-invalid': addTestEditor.error }" (keyup.enter)="persistTest()" />
+        [ngClass]="{ 'is-invalid': addTestEditor.error }" (keyup.enter)="createTest()" />
       <div *ngIf="addTestEditor.error" class="invalid-feedback">
         {{ addTestEditor.error }}
       </div>
@@ -54,8 +57,8 @@
   </div>
   <div class="modal-footer">
     <div class="text-right">
-      <button class="btn btn-default" (click)="addTestCancelled()">Cancel</button>
-      <button class="btn btn-primary" (click)="persistTest()">Create</button>
+      <button class="btn btn-default" (click)="hideAddTestModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="createTest()">Create</button>
     </div>
   </div>
 </ng-template>
@@ -64,7 +67,7 @@
 <ng-template #updateTestModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">Update Test</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="updateTestCancelled()">
+    <button type="button" class="close float-right" aria-label="Close" (click)="hideUpdateTestModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -83,7 +86,7 @@
   </div>
   <div class="modal-footer">
     <div class="text-right">
-      <button class="btn btn-default" (click)="updateTestCancelled()">Cancel</button>
+      <button class="btn btn-default" (click)="hideUpdateTestModal()">Cancel</button>
       <button class="btn btn-primary" (click)="updateTestName()">Update</button>
     </div>
   </div>

@@ -962,6 +962,28 @@
           "TestExecutions"
         ],
         "operationId": "TestExecutions_GetAll",
+        "parameters": [
+          {
+            "name": "testId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "stageId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

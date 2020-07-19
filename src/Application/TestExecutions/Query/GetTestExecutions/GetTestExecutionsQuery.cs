@@ -3,6 +3,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +17,8 @@ namespace TapLog.Application.TestExecutions.Query.GetTestExecutions
 
     public class GetTestExecutionsQuery : IRequest<List<TestExecutionDto>>
     {
+        public int? TestId { get; set; }
+        public int? StageId { get; set; }
     }
 
     public partial class GetTestExecutionsQueryHandler : IRequestHandler<GetTestExecutionsQuery, List<TestExecutionDto>>
@@ -30,7 +34,7 @@ namespace TapLog.Application.TestExecutions.Query.GetTestExecutions
 
         public async Task<List<TestExecutionDto>> Handle(GetTestExecutionsQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _context.TestExecutions
+            var query = _context.TestExecutions
                                             .Include(te => te.Taps)
                                                 .ThenInclude(t => t.Device)
                                             .Include(te => te.Taps)
@@ -40,7 +44,15 @@ namespace TapLog.Application.TestExecutions.Query.GetTestExecutions
                                                 .ThenInclude(st => st.Stage)
                                             .Include(te => te.StageTest)
                                                 .ThenInclude(st => st.Test)
-                                            .ToListAsync();
+                                            .AsQueryable();
+
+            if (request.StageId != null && request.TestId != null)
+            {
+                query = query.Where(x => x.TestId == request.TestId && x.StageId == request.StageId);
+            }
+
+            var entities = await query.ToListAsync();
+
             var responseDto = _mapper.Map<List<TestExecution>, List<TestExecutionDto>>(entities);
 
             return responseDto;
