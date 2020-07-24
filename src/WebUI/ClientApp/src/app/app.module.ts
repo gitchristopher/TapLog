@@ -28,9 +28,14 @@ import { TestListComponent } from './tapper/test-list/test-list.component';
 import { ExecuteListComponent } from './tapper/execute-list/execute-list.component';
 import { LogTapComponent } from './tapper/log-tap/log-tap.component';
 import { TapListComponent } from './tapper/tap-list/tap-list.component';
+import { StolComponent } from './stol/stol.component';
+import { ZaprosComponent } from './stol/zapros/zapros.component';
 
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
+import { TapActionToArrayPipe } from '../_pipes/TapActionToArray.pipe';
+import { TapActionEnumPipe } from '../_pipes/TapActionEnum.pipe';
+import { TesterNamePipe } from '../_pipes/TesterName.pipe';
 
 import { ZapolnitComponent } from './zapolnit/zapolnit.component';
 import { SpisokFazComponent } from './zapolnit/spisok-faz/spisok-faz.component';
@@ -51,6 +56,17 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatBadgeModule } from '@angular/material/badge';
+
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -65,7 +81,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
 
 
 @NgModule({
-   declarations: [
+  declarations: [
     AppComponent,
     NavMenuComponent,
     TapperComponent,
@@ -81,26 +97,32 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
     TapListComponent,
     ResultEnumPipe,
     ExpectedEnumPipe,
+    TapActionEnumPipe,
+    TapActionToArrayPipe,
+    TesterNamePipe,
     ZapolnitComponent,
     SpisokFazComponent,
     SpisokKazneyComponent,
     SpisokSobytiyComponent,
     SpisokTestovComponent,
-   ],
-   imports: [
+    StolComponent,
+    ZaprosComponent
+  ],
+  imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     FontAwesomeModule,
     HttpClientModule,
     FormsModule,
     ApiAuthorizationModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full'},
+      { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'versionTwo', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard]  },
+      { path: 'tapper', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
       { path: 'zapolnit', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
+      { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] },
     ]),
     CommonModule,
     ReactiveFormsModule,
@@ -116,6 +138,15 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
     MatExpansionModule,
     MatSlideToggleModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCheckboxModule,
+    MatTableExporterModule,
+    MatBadgeModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),
@@ -130,6 +161,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-AU'}
   ],
   bootstrap: [AppComponent]
 })

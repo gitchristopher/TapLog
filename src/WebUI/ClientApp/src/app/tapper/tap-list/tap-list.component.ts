@@ -68,6 +68,7 @@ export class TapListComponent implements OnInit, OnChanges {
       card: new FormControl('', [Validators.required, RequireMatch]),
       device: new FormControl(),
       result: new FormControl(),
+      action: new FormControl(),
       expectedResult: new FormControl(),
       time: new FormControl(),
       date: new FormControl(),
@@ -109,6 +110,7 @@ export class TapListComponent implements OnInit, OnChanges {
     const card = this.cardList.find(c => Number(c.id) === Number(tap.cardId));
     this.updateTapForm.get('card').setValue(card);
     this.updateTapForm.get('result').setValue(tap.result.toString());
+    this.updateTapForm.get('action').setValue(tap.action.toString());
     this.updateTapForm.get('expectedResult').setValue(tap.wasResultExpected.toString());
     this.updateTapForm.patchValue({
       notes: tap.notes,
@@ -202,7 +204,8 @@ export class TapListComponent implements OnInit, OnChanges {
       id: Number(this.isEditing),
       notes: this.updateTapForm.value.notes,
       result: Number(this.updateTapForm.value.result),
-      testerId: 'Current User',
+      action: Number(this.updateTapForm.value.action),
+      tester: 'Current User',
       timeOf: time,
       wasResultExpected: Number(this.updateTapForm.value.expectedResult),
     };

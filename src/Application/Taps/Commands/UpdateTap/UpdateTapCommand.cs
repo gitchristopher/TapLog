@@ -22,7 +22,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
         public int TestExecutionId { get; set; }
         public int CardId { get; set; }
         public int DeviceId { get; set; }
-        public string TesterId { get; set; }
+        public string Tester { get; set; }
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
@@ -31,6 +31,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
+        public TapAction Action { get; set; }
     }
 
     public class UpdateTapCommandHandler : IRequestHandler<UpdateTapCommand>
@@ -82,7 +83,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.TestExecutionId = request.TestExecutionId;
             entity.CardId = request.CardId;
             entity.DeviceId = request.DeviceId;
-            //entity.TesterId = request.TesterId;
+            //entity.Tester = request.Tester;
             entity.CaseNumber = request.CaseNumber;
             entity.Result = request.Result;
             entity.WasResultExpected = request.WasResultExpected;
@@ -91,6 +92,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.BalanceBefore = request?.BalanceBefore;
             entity.BalanceAfter = request?.BalanceAfter;
             entity.Notes = request.Notes;
+            entity.Action = request.Action;
 
             await _context.SaveChangesAsync(cancellationToken);
 

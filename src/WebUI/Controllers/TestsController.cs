@@ -10,6 +10,7 @@ using TapLog.Application.Tests.Commands.UpdateTest;
 using TapLog.Application.Tests.Commands.CreateTest;
 using TapLog.Application.Tests.Query.GetTests;
 using TapLog.Application.Tests.Query.GetTest;
+using TapLog.Application.Tests.Query.GetCurrentTests;
 
 namespace TapLog.WebUI.Controllers
 {
@@ -26,6 +27,12 @@ namespace TapLog.WebUI.Controllers
         public async Task<ActionResult<TestDto>> GetDetailedTest([FromRoute] int id)
         {
             return await Mediator.Send(new GetTestQuery { Id = id } );
+        }
+
+        [HttpGet("current")]
+        public async Task<ActionResult<List<TestDto>>> GetCurrentTests()
+        {
+            return await Mediator.Send(new GetCurrentTestsQuery());
         }
 
         [HttpPost]

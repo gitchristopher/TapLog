@@ -28,6 +28,10 @@
           <mat-expansion-panel-header>
             <mat-panel-title>
               <ng-container *ngIf="isEditing != tap.id;">
+                <ng-container 
+                  [ngTemplateOutlet]="matIcon" 
+                  [ngTemplateOutletContext]="{value: tap.action}">
+                </ng-container> 
                 {{tap.deviceName}}
               </ng-container>
 
@@ -152,7 +156,7 @@
 
             <div class="tl-before">
               <div *ngIf="isEditing != tap.id;else beforeFormItem">
-                <span class="hiddenInfo">Before: </span>{{tap.balanceBefore}}</div>
+                <span class="hiddenInfo">Before: </span>{{tap.balanceBefore | currency}}</div>
                 <ng-template #beforeFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline">
                     <mat-label>Balance before</mat-label>
@@ -163,7 +167,7 @@
 
             <div class="tl-fare">
               <div *ngIf="isEditing != tap.id;else fareFormItem">
-                <span class="hiddenInfo">Fare: </span>{{tap.fare}}</div>
+                <span class="hiddenInfo">Fare: </span>{{tap.fare | currency}}</div>
                 <ng-template #fareFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline" >
                     <mat-label>Fare</mat-label>
@@ -174,7 +178,7 @@
 
             <div class="tl-after">
               <div *ngIf="isEditing != tap.id;else afterFormItem">
-                <span class="hiddenInfo">After: </span>{{tap.balanceAfter}}</div>
+                <span class="hiddenInfo">After: </span>{{tap.balanceAfter | currency}}</div>
                 <ng-template #afterFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline" >
                     <mat-label>Balance after</mat-label>
@@ -183,8 +187,34 @@
                 </ng-template>
             </div>
             
-              <div class="tl-edit">
-                <ng-container [ngSwitch]="isEditing">
+            <div class="tl-action">
+              <div *ngIf="isEditing != tap.id;else actionFormItem"><span class="hiddenInfo">Action: </span>
+                {{tap.action | TapActionEnum}}
+              </div>
+              <ng-template #actionFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Action</mat-label>
+                  <mat-select formControlName="action" required>
+                    <mat-option value="0">Entry</mat-option>
+                    <mat-option value="1">Exit</mat-option>
+                    <mat-option value="6">Transfer</mat-option>
+                    <mat-option value="5">Cancel</mat-option>
+                    <mat-option value="2">ForcedEntry</mat-option>
+                    <mat-option value="3">ForcedExit</mat-option>
+                    <mat-option value="4">Undo</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
+            <div class="tl-tester">
+              <div><span class="hiddenInfo">Tester: </span>
+                {{tap.tester | TesterName}}
+              </div>
+            </div>
+
+            <div class="tl-edit">
+              <ng-container [ngSwitch]="isEditing">
                 <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton" type="button" (click)="editTap(tap.id)">
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -195,10 +225,10 @@
                   <mat-icon>edit</mat-icon>
                 </button>
               </ng-container>
-              </div>
+            </div>
 
-              <div class="tl-delete">
-                <ng-container [ngSwitch]="isEditing">
+            <div class="tl-delete">
+              <ng-container [ngSwitch]="isEditing">
                 <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton" type="button" (click)="deleteTap(tap.id)">
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -209,7 +239,7 @@
                   <mat-icon>delete</mat-icon>
                 </button>
               </ng-container>
-              </div>
+            </div>
 
           </div>
         </mat-expansion-panel>
@@ -234,4 +264,17 @@
 
 
 
-
+<ng-template #matIcon let-value="value">
+  <ng-container [ngSwitch]="value">
+    <!-- the same view can be shown in more than one case -->
+    <mat-icon *ngSwitchCase="0" class="mr-3" color="primary">south_east</mat-icon> 
+    <mat-icon *ngSwitchCase="1" class="mr-3" color="primary">north_west</mat-icon> 
+    <mat-icon *ngSwitchCase="6" class="mr-3" color="accent">east</mat-icon>
+    <mat-icon *ngSwitchCase="5" class="mr-3" color="warn">close</mat-icon>
+    <mat-icon *ngSwitchCase="2" class="mr-3" color="warn">double_arrow</mat-icon>
+    <mat-icon *ngSwitchCase="3" class="mr-3" color="warn" style="transform: rotate(180deg)">double_arrow</mat-icon>
+    <mat-icon *ngSwitchCase="4" class="mr-3" color="accent">undo</mat-icon>
+    <!--default case when there are no matches -->
+    <mat-icon *ngSwitchDefault class="mr-3" color="warn">error</mat-icon>
+  </ng-container>
+</ng-template>

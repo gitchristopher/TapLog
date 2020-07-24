@@ -12,7 +12,7 @@ namespace TapLog.Domain.Entities
         public int TestExecutionId { get; set; } 
         public int CardId { get; set; }
         public int DeviceId { get; set; }
-        public int TesterId { get; set; }
+        public string Tester { get; set; }
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
@@ -21,6 +21,7 @@ namespace TapLog.Domain.Entities
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
+        public TapAction Action { get; set; }
 
 
         //Navigational properties

@@ -52,6 +52,8 @@ export class TapperComponent implements OnInit {
   selectTest(idFromTestList: number): void {
     this.selectedExecution = null;
     this.selectedTest = this.testList.find(t => t.id === Number(idFromTestList));
+    console.log(this.selectedTest);
+    
   }
 
 

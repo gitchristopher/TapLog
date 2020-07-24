@@ -1,17 +1,28 @@
 ﻿using AutoMapper;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using TapLog.Application.Common.Mappings;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
 
-namespace TapLog.Application.Taps.Query
+namespace TapLog.Application.Taps.Query.GetTapsData
 {
-    public class TapDto : IMapFrom<Tap>
+    public class TapDataVM
+    {
+        public IEnumerable<TapDataRowDto> TapDataRow { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+    public class TapDataRowDto : IMapFrom<Tap>
     {
         public int Id { get; set; }
         public int TestExecutionId { get; set; }
-        public string TestJiraTestNumber { get; set; }
+        public int TestId { get; set; }
+        public string Jira { get; set; }
+        public string Stage { get; set; }
+        public bool IsCurrentStage { get; set; }
         public int CardId { get; set; }
         public string CardNumber { get; set; }
         public string CardAlias { get; set; }
@@ -32,11 +43,14 @@ namespace TapLog.Application.Taps.Query
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Tap, TapDto>()
+            profile.CreateMap<Tap, TapDataRowDto>()
                 .ForMember(d => d.Result, opt => opt.MapFrom(s => (int)s.Result))
                 .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected))
                 .ForMember(d => d.Action, opt => opt.MapFrom(s => (int)s.Action))
-                //.ForMember(d => d.Tester, opt => opt.MapFrom(s => s.Tester))
+                .ForMember(d => d.Stage, opt => opt.MapFrom(s => s.TestExecution.StageTest.Stage.Name))
+                .ForMember(d => d.IsCurrentStage, opt => opt.MapFrom(s => s.TestExecution.StageTest.Stage.IsCurrent))
+                .ForMember(d => d.TestId, opt => opt.MapFrom(s => s.TestExecution.StageTest.Test.Id))
+                .ForMember(d => d.Jira, opt => opt.MapFrom(s => s.TestExecution.StageTest.Test.JiraTestNumber))
                 .ForMember(d => d.TimeOf, opt => opt.MapFrom(s => s.TimeOf.ToLocalTime().ToString("s", CultureInfo.CreateSpecificCulture("en-AU"))));
         }
     }

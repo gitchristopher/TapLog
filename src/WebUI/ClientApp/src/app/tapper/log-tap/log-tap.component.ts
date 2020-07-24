@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto } from 'src/app/taplog-api';
+import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto, TapAction } from 'src/app/taplog-api';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 
 @Component({
   selector: 'app-log-tap',
@@ -21,6 +22,7 @@ export class LogTapComponent implements OnInit, OnChanges {
   submitted = false;
   // mytime: Date = new Date(); // Date.now() + 86400
   selectedCardType: number;
+  userName$: Observable<string>;
 
   @Input() selectedExecution: TestExecutionDto2;
   // tslint:disable-next-line: no-output-on-prefix
@@ -29,7 +31,7 @@ export class LogTapComponent implements OnInit, OnChanges {
     this.onSave.emit(e);
   }
 
-  constructor(private tapsClient: TapsClient) {
+  constructor(private tapsClient: TapsClient, private authorizeService: AuthorizeService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -47,9 +49,11 @@ export class LogTapComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.userName$ = this.authorizeService.getUser().pipe(map(u => u && u.name));
     this.addTapForm = new FormGroup({
       cardType: new FormControl(),
       card: new FormControl('', [Validators.required, RequireMatch]),
+      action: new FormControl(),
       device: new FormControl(),
       result: new FormControl(),
       expectedResult: new FormControl(),
@@ -123,6 +127,7 @@ export class LogTapComponent implements OnInit, OnChanges {
 
     this.addTapForm.get('result').setValue('0');
     this.addTapForm.get('expectedResult').setValue('0');
+    this.addTapForm.get('action').setValue('0');
 
     if (this.selectedExecution?.taps?.length > 0) {
       const lastTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1];
@@ -146,7 +151,7 @@ export class LogTapComponent implements OnInit, OnChanges {
       device: null,
       notes: null
     });
-    
+
     if (this.selectedExecution) {
       this.addTapForm.enable();
     }
@@ -174,10 +179,11 @@ export class LogTapComponent implements OnInit, OnChanges {
         id: 0,
         notes: this.addTapForm.value.notes,
         result: Number(this.addTapForm.value.result),
-        testerId: 'Current User',
+        tester: 'Refresh to see tester',
         timeOf: time,
         wasResultExpected: Number(this.addTapForm.value.expectedResult),
         testExecutionId: this.selectedExecution.id,
+        action: Number(this.addTapForm.value.action),
       };
       this.addTap(data);
     }

@@ -746,7 +746,7 @@
         ]
       }
     },
-    "/addtapform": {
+    "/api/Taps/addtapform": {
       "get": {
         "tags": [
           "Taps"
@@ -835,12 +835,69 @@
         ]
       }
     },
-    "/api/Taps/{id}": {
+    "/api/Taps/data": {
       "get": {
         "tags": [
           "Taps"
         ],
         "operationId": "Taps_Get",
+        "parameters": [
+          {
+            "name": "TestId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TapDataVM"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Taps/{id}": {
+      "get": {
+        "tags": [
+          "Taps"
+        ],
+        "operationId": "Taps_Get2",
         "parameters": [
           {
             "name": "id",
@@ -1360,6 +1417,34 @@
         ]
       }
     },
+    "/api/Tests/current": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "operationId": "Tests_GetCurrentTests",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/TodoItems": {
       "post": {
         "tags": [
@@ -1787,6 +1872,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "testJiraTestNumber": {
+            "type": "string",
+            "nullable": true
+          },
           "cardId": {
             "type": "integer",
             "format": "int32"
@@ -1815,7 +1904,7 @@
             "type": "string",
             "nullable": true
           },
-          "testerId": {
+          "tester": {
             "type": "string",
             "nullable": true
           },
@@ -1853,8 +1942,33 @@
           "notes": {
             "type": "string",
             "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
           }
         }
+      },
+      "TapAction": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Entry",
+          "Exit",
+          "ForcedEntry",
+          "ForcedExit",
+          "Undo",
+          "Cancel",
+          "Transfer"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
       },
       "CreateCardCommand": {
         "type": "object",
@@ -1979,7 +2093,7 @@
             "type": "string",
             "nullable": true
           },
-          "testerId": {
+          "tester": {
             "type": "string",
             "nullable": true
           },
@@ -2017,6 +2131,9 @@
           "notes": {
             "type": "string",
             "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
           }
         }
       },
@@ -2249,6 +2366,122 @@
           }
         }
       },
+      "TapDataVM": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tapDataRow": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/TapDataRowDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TapDataRowDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "testExecutionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "testId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jira": {
+            "type": "string",
+            "nullable": true
+          },
+          "stage": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCurrentStage": {
+            "type": "boolean"
+          },
+          "cardId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cardNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardAlias": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardSupplierName": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deviceCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "tester": {
+            "type": "string",
+            "nullable": true
+          },
+          "caseNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "result": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wasResultExpected": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "timeOf": {
+            "type": "string",
+            "nullable": true
+          },
+          "fare": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "balanceBefore": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "balanceAfter": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
+          }
+        }
+      },
       "CreateTapCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -2265,7 +2498,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "testerId": {
+          "tester": {
             "type": "string",
             "nullable": true
           },
@@ -2301,6 +2534,9 @@
           "notes": {
             "type": "string",
             "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
           }
         }
       },
@@ -2354,7 +2590,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "testerId": {
+          "tester": {
             "type": "string",
             "nullable": true
           },
@@ -2390,6 +2626,9 @@
           "notes": {
             "type": "string",
             "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
           }
         }
       },
@@ -2515,7 +2754,7 @@
             "type": "string",
             "nullable": true
           },
-          "testerId": {
+          "tester": {
             "type": "string",
             "nullable": true
           },
@@ -2553,6 +2792,9 @@
           "notes": {
             "type": "string",
             "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/TapAction"
           }
         }
       },

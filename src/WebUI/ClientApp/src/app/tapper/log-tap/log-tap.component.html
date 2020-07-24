@@ -5,8 +5,8 @@
 
 <div class="tl-cardRadio switch-padding-bottom">
   <mat-radio-group aria-label="Select an option"><!-- formControlName="cardType" -->
-    <mat-radio-button value="0" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
-    <mat-radio-button value="1" (click)="selectCardType(1)">Go Card</mat-radio-button>
+    <mat-radio-button value="0" disabled="true" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
+    <mat-radio-button value="1" disabled="true" (click)="selectCardType(1)">Go Card</mat-radio-button>
   </mat-radio-group>
 </div>
 
@@ -40,18 +40,23 @@
       </mat-form-field>
     </div>
     
-    <!-- 
-    <div class="tl-card">
+    
+    <div class="tl-action">
       <mat-form-field appearance="outline" class="example-full-width">
-        <mat-label>Card</mat-label>
-        <mat-select formControlName="card" required>
-          <mat-option *ngFor="let c of cardList" [value]="c.id">
-            {{c.number}} - {{c.alias}}
-          </mat-option>
+        <mat-label>Action</mat-label>
+        <mat-select formControlName="action" required>
+          <!-- <mat-option *ngFor="let ta of keys(tapActions)" [value]="ta" style="width: 100%;">{{tapActions[ta]}}</mat-option> -->
+          <mat-option value="0">Entry</mat-option>
+          <mat-option value="1">Exit</mat-option>
+          <mat-option value="6">Transfer</mat-option>
+          <mat-option value="5">Cancel</mat-option>
+          <mat-option value="2">ForcedEntry</mat-option>
+          <mat-option value="3">ForcedExit</mat-option>
+          <mat-option value="4">Undo</mat-option>
         </mat-select>
       </mat-form-field>
     </div> 
-    -->
+   
 
     <div class="tl-device">
       <mat-form-field appearance="outline" class="example-full-width">

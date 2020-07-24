@@ -51,7 +51,7 @@ namespace TapLog.Application.Taps.Query.GetTap
             //    CardSupplierName = t.Card.Supplier.Name,
             //    DeviceId = t.DeviceId,
             //    DeviceCode = t.Device.Code,
-            //    TesterId = t.TesterId,
+            //    Tester = t.Tester,
             //    CaseNumber = t.CaseNumber,
             //    Result = (int)t.Result,
             //    WasResultExpected = (int)t.WasResultExpected,
@@ -60,6 +60,7 @@ namespace TapLog.Application.Taps.Query.GetTap
             //    BalanceBefore = t.BalanceBefore,
             //    BalanceAfter = t.BalanceAfter,
             //    Notes = t.Notes,
+            //    TapAction = t.Action
             //}).FirstOrDefaultAsync(t => t.Id == request.Id);
 
             return responseDto;

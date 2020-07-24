@@ -5,13 +5,14 @@
 .tap-log-grid-container {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    grid-template-rows: min-content min-content min-content min-content min-content min-content 3em 3em;
+    grid-template-rows: min-content min-content min-content min-content min-content min-content min-content 3em 3em;
     gap: 3px 1em;
     grid-template-areas: 
-    "cardRadio empty" 
+    "cardRadio empty"  
     "card fare" 
-    "device before" 
-    "result after" 
+    "action before" 
+    "device after" 
+    "result notes" 
     "expectation notes" 
     "time notes" 
     "date notes" 
@@ -29,6 +30,12 @@
 .tl-card {
     grid-area: card;
     /* background-color: rgba(104, 151, 28, 0.541); */
+    /* display: flex;
+    flex: auto; */
+}
+.tl-action {
+    grid-area: action;
+    /* background-color: rgba(101, 111, 128, 0.141); */
     /* display: flex;
     flex: auto; */
 }

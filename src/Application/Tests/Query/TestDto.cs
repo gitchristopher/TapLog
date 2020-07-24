@@ -41,7 +41,7 @@ namespace TapLog.Application.Tests.Query
             public int DeviceId { get; set; }
             public string DeviceCode { get; set; }
             public string DeviceName { get; set; }
-            public string TesterId { get; set; }
+            public string Tester { get; set; }
             public string CaseNumber { get; set; }
             public int Result { get; set; }
             public int WasResultExpected { get; set; }
@@ -50,13 +50,15 @@ namespace TapLog.Application.Tests.Query
             public decimal? BalanceBefore { get; set; }
             public decimal? BalanceAfter { get; set; }
             public string Notes { get; set; }
+            public TapAction Action { get; set; }
 
             public void Mapping(Profile profile)
             {
                 profile.CreateMap<Tap, TapDto>()
                     .ForMember(d => d.Result, opt => opt.MapFrom(s => (int)s.Result))
                     .ForMember(d => d.WasResultExpected, opt => opt.MapFrom(s => (int)s.WasResultExpected))
-                    .ForMember(d => d.TesterId, opt => opt.MapFrom(s => s.CreatedBy))
+                    .ForMember(d => d.Action, opt => opt.MapFrom(s => (int)s.Action))
+                    //.ForMember(d => d.Tester, opt => opt.MapFrom(s => s.CreatedBy))
                     .ForMember(d => d.TimeOf, opt => opt.MapFrom(s => s.TimeOf.ToLocalTime().ToString("s", CultureInfo.CreateSpecificCulture("en-AU"))));
             }
         }

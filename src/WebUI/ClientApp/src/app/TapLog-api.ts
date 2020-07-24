@@ -1134,7 +1134,8 @@ export interface ITapsClient {
     getTapForm(): Observable<AddTapVM>;
     getAll(): Observable<TapDto[]>;
     create(command: CreateTapCommand): Observable<number>;
-    get(id: number): Observable<TapDto>;
+    get(testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM>;
+    get2(id: number): Observable<TapDto>;
     update(id: number, command: UpdateTapCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
 }
@@ -1153,7 +1154,7 @@ export class TapsClient implements ITapsClient {
     }
 
     getTapForm(): Observable<AddTapVM> {
-        let url_ = this.baseUrl + "/addtapform";
+        let url_ = this.baseUrl + "/api/Taps/addtapform";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1304,11 +1305,14 @@ export class TapsClient implements ITapsClient {
         return _observableOf<number>(<any>null);
     }
 
-    get(id: number): Observable<TapDto> {
-        let url_ = this.baseUrl + "/api/Taps/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+    get(testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM> {
+        let url_ = this.baseUrl + "/api/Taps/data?";
+        if (testId !== undefined)
+            url_ += "TestId=" + encodeURIComponent("" + testId) + "&"; 
+        if (startDate !== undefined)
+            url_ += "StartDate=" + encodeURIComponent("" + startDate) + "&"; 
+        if (endDate !== undefined)
+            url_ += "EndDate=" + encodeURIComponent("" + endDate) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1326,6 +1330,57 @@ export class TapsClient implements ITapsClient {
                 try {
                     return this.processGet(<any>response_);
                 } catch (e) {
+                    return <Observable<TapDataVM>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TapDataVM>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<TapDataVM> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TapDataVM.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TapDataVM>(<any>null);
+    }
+
+    get2(id: number): Observable<TapDto> {
+        let url_ = this.baseUrl + "/api/Taps/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet2(<any>response_);
+                } catch (e) {
                     return <Observable<TapDto>><any>_observableThrow(e);
                 }
             } else
@@ -1333,7 +1388,7 @@ export class TapsClient implements ITapsClient {
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<TapDto> {
+    protected processGet2(response: HttpResponseBase): Observable<TapDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1747,6 +1802,7 @@ export interface ITestsClient {
     getDetailedTest(id: number): Observable<TestDto>;
     update(id: number, command: UpdateTestCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
+    getCurrentTests(): Observable<TestDto[]>;
 }
 
 @Injectable({
@@ -2019,6 +2075,58 @@ export class TestsClient implements ITestsClient {
             }));
         }
         return _observableOf<FileResponse>(<any>null);
+    }
+
+    getCurrentTests(): Observable<TestDto[]> {
+        let url_ = this.baseUrl + "/api/Tests/current";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCurrentTests(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCurrentTests(<any>response_);
+                } catch (e) {
+                    return <Observable<TestDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TestDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCurrentTests(response: HttpResponseBase): Observable<TestDto[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TestDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TestDto[]>(<any>null);
     }
 }
 
@@ -2661,6 +2769,7 @@ export interface ICardDto {
 export class TapDto implements ITapDto {
     id?: number;
     testExecutionId?: number;
+    testJiraTestNumber?: string | undefined;
     cardId?: number;
     cardNumber?: string | undefined;
     cardAlias?: string | undefined;
@@ -2668,7 +2777,7 @@ export class TapDto implements ITapDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2677,6 +2786,7 @@ export class TapDto implements ITapDto {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 
     constructor(data?: ITapDto) {
         if (data) {
@@ -2691,6 +2801,7 @@ export class TapDto implements ITapDto {
         if (_data) {
             this.id = _data["id"];
             this.testExecutionId = _data["testExecutionId"];
+            this.testJiraTestNumber = _data["testJiraTestNumber"];
             this.cardId = _data["cardId"];
             this.cardNumber = _data["cardNumber"];
             this.cardAlias = _data["cardAlias"];
@@ -2698,7 +2809,7 @@ export class TapDto implements ITapDto {
             this.deviceId = _data["deviceId"];
             this.deviceCode = _data["deviceCode"];
             this.deviceName = _data["deviceName"];
-            this.testerId = _data["testerId"];
+            this.tester = _data["tester"];
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
@@ -2707,6 +2818,7 @@ export class TapDto implements ITapDto {
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
+            this.action = _data["action"];
         }
     }
 
@@ -2721,6 +2833,7 @@ export class TapDto implements ITapDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["testExecutionId"] = this.testExecutionId;
+        data["testJiraTestNumber"] = this.testJiraTestNumber;
         data["cardId"] = this.cardId;
         data["cardNumber"] = this.cardNumber;
         data["cardAlias"] = this.cardAlias;
@@ -2728,7 +2841,7 @@ export class TapDto implements ITapDto {
         data["deviceId"] = this.deviceId;
         data["deviceCode"] = this.deviceCode;
         data["deviceName"] = this.deviceName;
-        data["testerId"] = this.testerId;
+        data["tester"] = this.tester;
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
@@ -2737,6 +2850,7 @@ export class TapDto implements ITapDto {
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
+        data["action"] = this.action;
         return data; 
     }
 }
@@ -2744,6 +2858,7 @@ export class TapDto implements ITapDto {
 export interface ITapDto {
     id?: number;
     testExecutionId?: number;
+    testJiraTestNumber?: string | undefined;
     cardId?: number;
     cardNumber?: string | undefined;
     cardAlias?: string | undefined;
@@ -2751,7 +2866,7 @@ export interface ITapDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2760,6 +2875,17 @@ export interface ITapDto {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
+}
+
+export enum TapAction {
+    Entry = 0,
+    Exit = 1,
+    ForcedEntry = 2,
+    ForcedExit = 3,
+    Undo = 4,
+    Cancel = 5,
+    Transfer = 6,
 }
 
 export class CreateCardCommand implements ICreateCardCommand {
@@ -2964,7 +3090,7 @@ export class TapDetailDto implements ITapDetailDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -2973,6 +3099,7 @@ export class TapDetailDto implements ITapDetailDto {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 
     constructor(data?: ITapDetailDto) {
         if (data) {
@@ -2994,7 +3121,7 @@ export class TapDetailDto implements ITapDetailDto {
             this.deviceId = _data["deviceId"];
             this.deviceCode = _data["deviceCode"];
             this.deviceName = _data["deviceName"];
-            this.testerId = _data["testerId"];
+            this.tester = _data["tester"];
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
@@ -3003,6 +3130,7 @@ export class TapDetailDto implements ITapDetailDto {
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
+            this.action = _data["action"];
         }
     }
 
@@ -3024,7 +3152,7 @@ export class TapDetailDto implements ITapDetailDto {
         data["deviceId"] = this.deviceId;
         data["deviceCode"] = this.deviceCode;
         data["deviceName"] = this.deviceName;
-        data["testerId"] = this.testerId;
+        data["tester"] = this.tester;
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
@@ -3033,6 +3161,7 @@ export class TapDetailDto implements ITapDetailDto {
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
+        data["action"] = this.action;
         return data; 
     }
 }
@@ -3047,7 +3176,7 @@ export interface ITapDetailDto {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -3056,6 +3185,7 @@ export interface ITapDetailDto {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 }
 
 export class CreateDeviceCommand implements ICreateDeviceCommand {
@@ -3630,11 +3760,183 @@ export interface IAddTapVM {
     cards?: CardDto[] | undefined;
 }
 
+export class TapDataVM implements ITapDataVM {
+    tapDataRow?: TapDataRowDto[] | undefined;
+    totalCount?: number;
+
+    constructor(data?: ITapDataVM) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["tapDataRow"])) {
+                this.tapDataRow = [] as any;
+                for (let item of _data["tapDataRow"])
+                    this.tapDataRow!.push(TapDataRowDto.fromJS(item));
+            }
+            this.totalCount = _data["totalCount"];
+        }
+    }
+
+    static fromJS(data: any): TapDataVM {
+        data = typeof data === 'object' ? data : {};
+        let result = new TapDataVM();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.tapDataRow)) {
+            data["tapDataRow"] = [];
+            for (let item of this.tapDataRow)
+                data["tapDataRow"].push(item.toJSON());
+        }
+        data["totalCount"] = this.totalCount;
+        return data; 
+    }
+}
+
+export interface ITapDataVM {
+    tapDataRow?: TapDataRowDto[] | undefined;
+    totalCount?: number;
+}
+
+export class TapDataRowDto implements ITapDataRowDto {
+    id?: number;
+    testExecutionId?: number;
+    testId?: number;
+    jira?: string | undefined;
+    stage?: string | undefined;
+    isCurrentStage?: boolean;
+    cardId?: number;
+    cardNumber?: string | undefined;
+    cardAlias?: string | undefined;
+    cardSupplierName?: string | undefined;
+    deviceId?: number;
+    deviceCode?: string | undefined;
+    deviceName?: string | undefined;
+    tester?: string | undefined;
+    caseNumber?: string | undefined;
+    result?: number;
+    wasResultExpected?: number;
+    timeOf?: string | undefined;
+    fare?: number | undefined;
+    balanceBefore?: number | undefined;
+    balanceAfter?: number | undefined;
+    notes?: string | undefined;
+    action?: TapAction;
+
+    constructor(data?: ITapDataRowDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.testExecutionId = _data["testExecutionId"];
+            this.testId = _data["testId"];
+            this.jira = _data["jira"];
+            this.stage = _data["stage"];
+            this.isCurrentStage = _data["isCurrentStage"];
+            this.cardId = _data["cardId"];
+            this.cardNumber = _data["cardNumber"];
+            this.cardAlias = _data["cardAlias"];
+            this.cardSupplierName = _data["cardSupplierName"];
+            this.deviceId = _data["deviceId"];
+            this.deviceCode = _data["deviceCode"];
+            this.deviceName = _data["deviceName"];
+            this.tester = _data["tester"];
+            this.caseNumber = _data["caseNumber"];
+            this.result = _data["result"];
+            this.wasResultExpected = _data["wasResultExpected"];
+            this.timeOf = _data["timeOf"];
+            this.fare = _data["fare"];
+            this.balanceBefore = _data["balanceBefore"];
+            this.balanceAfter = _data["balanceAfter"];
+            this.notes = _data["notes"];
+            this.action = _data["action"];
+        }
+    }
+
+    static fromJS(data: any): TapDataRowDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TapDataRowDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["testExecutionId"] = this.testExecutionId;
+        data["testId"] = this.testId;
+        data["jira"] = this.jira;
+        data["stage"] = this.stage;
+        data["isCurrentStage"] = this.isCurrentStage;
+        data["cardId"] = this.cardId;
+        data["cardNumber"] = this.cardNumber;
+        data["cardAlias"] = this.cardAlias;
+        data["cardSupplierName"] = this.cardSupplierName;
+        data["deviceId"] = this.deviceId;
+        data["deviceCode"] = this.deviceCode;
+        data["deviceName"] = this.deviceName;
+        data["tester"] = this.tester;
+        data["caseNumber"] = this.caseNumber;
+        data["result"] = this.result;
+        data["wasResultExpected"] = this.wasResultExpected;
+        data["timeOf"] = this.timeOf;
+        data["fare"] = this.fare;
+        data["balanceBefore"] = this.balanceBefore;
+        data["balanceAfter"] = this.balanceAfter;
+        data["notes"] = this.notes;
+        data["action"] = this.action;
+        return data; 
+    }
+}
+
+export interface ITapDataRowDto {
+    id?: number;
+    testExecutionId?: number;
+    testId?: number;
+    jira?: string | undefined;
+    stage?: string | undefined;
+    isCurrentStage?: boolean;
+    cardId?: number;
+    cardNumber?: string | undefined;
+    cardAlias?: string | undefined;
+    cardSupplierName?: string | undefined;
+    deviceId?: number;
+    deviceCode?: string | undefined;
+    deviceName?: string | undefined;
+    tester?: string | undefined;
+    caseNumber?: string | undefined;
+    result?: number;
+    wasResultExpected?: number;
+    timeOf?: string | undefined;
+    fare?: number | undefined;
+    balanceBefore?: number | undefined;
+    balanceAfter?: number | undefined;
+    notes?: string | undefined;
+    action?: TapAction;
+}
+
 export class CreateTapCommand implements ICreateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3643,6 +3945,7 @@ export class CreateTapCommand implements ICreateTapCommand {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 
     constructor(data?: ICreateTapCommand) {
         if (data) {
@@ -3658,7 +3961,7 @@ export class CreateTapCommand implements ICreateTapCommand {
             this.testExecutionId = _data["testExecutionId"];
             this.cardId = _data["cardId"];
             this.deviceId = _data["deviceId"];
-            this.testerId = _data["testerId"];
+            this.tester = _data["tester"];
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
@@ -3667,6 +3970,7 @@ export class CreateTapCommand implements ICreateTapCommand {
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
+            this.action = _data["action"];
         }
     }
 
@@ -3682,7 +3986,7 @@ export class CreateTapCommand implements ICreateTapCommand {
         data["testExecutionId"] = this.testExecutionId;
         data["cardId"] = this.cardId;
         data["deviceId"] = this.deviceId;
-        data["testerId"] = this.testerId;
+        data["tester"] = this.tester;
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
@@ -3691,6 +3995,7 @@ export class CreateTapCommand implements ICreateTapCommand {
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
+        data["action"] = this.action;
         return data; 
     }
 }
@@ -3699,7 +4004,7 @@ export interface ICreateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3708,6 +4013,7 @@ export interface ICreateTapCommand {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 }
 
 export enum Result {
@@ -3728,7 +4034,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3737,6 +4043,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 
     constructor(data?: IUpdateTapCommand) {
         if (data) {
@@ -3753,7 +4060,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
             this.testExecutionId = _data["testExecutionId"];
             this.cardId = _data["cardId"];
             this.deviceId = _data["deviceId"];
-            this.testerId = _data["testerId"];
+            this.tester = _data["tester"];
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
@@ -3762,6 +4069,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
+            this.action = _data["action"];
         }
     }
 
@@ -3778,7 +4086,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
         data["testExecutionId"] = this.testExecutionId;
         data["cardId"] = this.cardId;
         data["deviceId"] = this.deviceId;
-        data["testerId"] = this.testerId;
+        data["tester"] = this.tester;
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
@@ -3787,6 +4095,7 @@ export class UpdateTapCommand implements IUpdateTapCommand {
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
+        data["action"] = this.action;
         return data; 
     }
 }
@@ -3796,7 +4105,7 @@ export interface IUpdateTapCommand {
     testExecutionId?: number;
     cardId?: number;
     deviceId?: number;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: Result;
     wasResultExpected?: Expected;
@@ -3805,6 +4114,7 @@ export interface IUpdateTapCommand {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 }
 
 export class CreateTestExecutionCommand implements ICreateTestExecutionCommand {
@@ -4048,7 +4358,7 @@ export class TapDto2 implements ITapDto2 {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -4057,6 +4367,7 @@ export class TapDto2 implements ITapDto2 {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 
     constructor(data?: ITapDto2) {
         if (data) {
@@ -4077,7 +4388,7 @@ export class TapDto2 implements ITapDto2 {
             this.deviceId = _data["deviceId"];
             this.deviceCode = _data["deviceCode"];
             this.deviceName = _data["deviceName"];
-            this.testerId = _data["testerId"];
+            this.tester = _data["tester"];
             this.caseNumber = _data["caseNumber"];
             this.result = _data["result"];
             this.wasResultExpected = _data["wasResultExpected"];
@@ -4086,6 +4397,7 @@ export class TapDto2 implements ITapDto2 {
             this.balanceBefore = _data["balanceBefore"];
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
+            this.action = _data["action"];
         }
     }
 
@@ -4106,7 +4418,7 @@ export class TapDto2 implements ITapDto2 {
         data["deviceId"] = this.deviceId;
         data["deviceCode"] = this.deviceCode;
         data["deviceName"] = this.deviceName;
-        data["testerId"] = this.testerId;
+        data["tester"] = this.tester;
         data["caseNumber"] = this.caseNumber;
         data["result"] = this.result;
         data["wasResultExpected"] = this.wasResultExpected;
@@ -4115,6 +4427,7 @@ export class TapDto2 implements ITapDto2 {
         data["balanceBefore"] = this.balanceBefore;
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
+        data["action"] = this.action;
         return data; 
     }
 }
@@ -4128,7 +4441,7 @@ export interface ITapDto2 {
     deviceId?: number;
     deviceCode?: string | undefined;
     deviceName?: string | undefined;
-    testerId?: string | undefined;
+    tester?: string | undefined;
     caseNumber?: string | undefined;
     result?: number;
     wasResultExpected?: number;
@@ -4137,6 +4450,7 @@ export interface ITapDto2 {
     balanceBefore?: number | undefined;
     balanceAfter?: number | undefined;
     notes?: string | undefined;
+    action?: TapAction;
 }
 
 export class CreateTestCommand implements ICreateTestCommand {

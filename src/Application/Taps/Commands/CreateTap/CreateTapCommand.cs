@@ -23,7 +23,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public int TestExecutionId { get; set; }
         public int CardId { get; set; }
         public int DeviceId { get; set; }
-        public string TesterId { get; set; }
+        public string Tester { get; set; }
         public string CaseNumber { get; set; }
         public Result Result { get; set; }
         public Expected WasResultExpected { get; set; }
@@ -32,6 +32,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public decimal? BalanceBefore { get; set; }
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
+        public TapAction Action { get; set; }
     }
 
     public class CreateTapCommandHandler : IRequestHandler<CreateTapCommand, int>
@@ -39,12 +40,14 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IIdentityService _identityService;
 
-        public CreateTapCommandHandler(IApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService)
+        public CreateTapCommandHandler(IApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService, IIdentityService identityService)
         {
             _context = context;
             _mapper = mapper;
             _currentUserService = currentUserService;
+            _identityService = identityService;
         }
 
         public async Task<int> Handle(CreateTapCommand request, CancellationToken cancellationToken)
@@ -72,32 +75,15 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 // TODO Fix
                 throw new NotFoundException("DateTime", request.TimeOf);
             }
-            //DateTime w = new DateTime();
-            //DateTime x = new DateTime();
-            //string y;
-            //string z;
-            //try
-            //{
-            //    w = DateTime.Parse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture);
-            //    x = DateTime.Parse(request.TimeOf);
-
-            //    y = DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-            //    z = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-            //}
-            //catch (Exception e)
-            //{
-
-            //    throw e;
-            //}
-
-            //var userId = _currentUserService.UserId ?? string.Empty;
+            var userId = _currentUserService.UserId;
+            var user = await _identityService.GetUserNameAsync(userId);
 
             var entity = new Tap
             {
                 TestExecutionId = request.TestExecutionId,
                 CardId = request.CardId,
                 DeviceId = request.DeviceId,
-                //TesterId = userId,
+                Tester = user,
                 CaseNumber = request.CaseNumber,
                 Result = request.Result,
                 WasResultExpected = request.WasResultExpected,
@@ -106,6 +92,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 BalanceBefore = request?.BalanceBefore,
                 BalanceAfter = request?.BalanceAfter,
                 Notes = request.Notes,
+                Action = request.Action
             };
 
             _context.Taps.Add(entity);

@@ -11,13 +11,14 @@ using TapLog.Application.Taps.Commands.CreateTap;
 using TapLog.Application.Taps.Commands.UpdateTap;
 using TapLog.Application.Taps.Commands.DeleteTap;
 using TapLog.Application.Taps.Query.GetTapForm;
+using TapLog.Application.Taps.Query.GetTapsData;
 
 namespace TapLog.WebUI.Controllers
 {
     [Authorize]
     public class TapsController : ApiController
     {
-        [HttpGet("/addtapform")]
+        [HttpGet("addtapform")]
         public async Task<ActionResult<AddTapVM>> GetTapForm()
         {
             return await Mediator.Send(new GetTapFormQuery());
@@ -27,6 +28,12 @@ namespace TapLog.WebUI.Controllers
         public async Task<ActionResult<List<TapDto>>> Get()
         {
             return await Mediator.Send(new GetTapsQuery());
+        }
+
+        [HttpGet("data")]
+        public async Task<ActionResult<TapDataVM>> Get([FromQuery] int? TestId, [FromQuery] string StartDate = "", [FromQuery] string EndDate = "")
+        {
+            return await Mediator.Send(new GetTapsDataQuery { TestId = TestId, StartDate = StartDate, EndDate = EndDate });
         }
 
         [HttpGet("{id}")]

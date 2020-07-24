@@ -14,10 +14,11 @@ namespace TapLog.Infrastructure.Persistence.Configurations
             builder.Property(t => t.TestExecutionId).IsRequired();
             builder.Property(t => t.CardId).IsRequired();
             builder.Property(t => t.DeviceId).IsRequired();
-            builder.Property(t => t.TesterId).IsRequired();
+            builder.Property(t => t.Tester).IsRequired().HasMaxLength(64);
             builder.Property(t => t.CaseNumber).HasMaxLength(16);
             builder.Property(t => t.Result).IsRequired();
             builder.Property(t => t.WasResultExpected).IsRequired();
+            builder.Property(t => t.Action).IsRequired();
             builder.Property(t => t.TimeOf).IsRequired();
             builder.Property(t => t.Fare).HasColumnType("decimal(3,2)");
             builder.Property(t => t.BalanceBefore).HasColumnType("decimal(5,2)");
