@@ -32,13 +32,12 @@ export class StolComponent {
   constructor(private tapsClient: TapsClient) { }
 
   submitForm(query: TapQuery) {
-    console.log('submitForm(query: TapQuery)');
     merge()
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.tapsClient.get(query.testId, query.startDate, query.endDate);
+          return this.tapsClient.get(query.stageId, query.testId, query.startDate, query.endDate);
         }),
         map(data => {
           // Flip flag to show that loading has finished.

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
@@ -41,12 +43,35 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
                 throw new NotFoundException(nameof(Test), request.Id);
             }
 
+            var jiraNumber = CleanInput(request.JiraTestNumber).Trim();
+            
+            var existingTest = await _context.Tests.FirstOrDefaultAsync(x => x.JiraTestNumber == jiraNumber);
+            if (existingTest == null)
+            {
+                return Unit.Value; // TODO fix returns
+            }
             // Update the entity
-            entity.JiraTestNumber = request.JiraTestNumber;
+            entity.JiraTestNumber = jiraNumber;
 
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
+        }
+
+        private static string CleanInput(string strIn)
+        {
+            // Replace invalid characters with empty strings.
+            try
+            {
+                return Regex.Replace(strIn, @"[^\w\.@-]", "",
+                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            }
+            // If we timeout when replacing invalid characters,
+            // we should return Empty.
+            catch (RegexMatchTimeoutException)
+            {
+                return String.Empty;
+            }
         }
     }
 

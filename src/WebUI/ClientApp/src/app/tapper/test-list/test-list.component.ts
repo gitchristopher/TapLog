@@ -100,11 +100,15 @@ export class TestListComponent implements OnInit, OnChanges {
 
     this.testsClient.create(CreateTestCommand.fromJS(test)).subscribe(
         result => {
-          const newTest = new TestDto({id: result, jiraTestNumber: test.jiraTestNumber});
-            this.testList.push(newTest);
-            this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
-            this.addTestModalRef.hide();
-            this.addTestEditor = {};
+          if (result < 0) {
+            this.addTestEditor.error = 'Stage doesnot exist or Test already exists for this stage.';
+          } else {
+            const newTest = new TestDto({id: result, jiraTestNumber: test.jiraTestNumber});
+              this.testList.push(newTest);
+              this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
+              this.addTestModalRef.hide();
+              this.addTestEditor = {};
+          }
         },
         error => {
             const errors = JSON.parse(error.response);

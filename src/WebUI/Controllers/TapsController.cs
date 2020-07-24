@@ -31,9 +31,9 @@ namespace TapLog.WebUI.Controllers
         }
 
         [HttpGet("data")]
-        public async Task<ActionResult<TapDataVM>> Get([FromQuery] int? TestId, [FromQuery] string StartDate = "", [FromQuery] string EndDate = "")
+        public async Task<ActionResult<TapDataVM>> Get([FromQuery] int? StageId, [FromQuery] int? TestId, [FromQuery] string StartDate = "", [FromQuery] string EndDate = "")
         {
-            return await Mediator.Send(new GetTapsDataQuery { TestId = TestId, StartDate = StartDate, EndDate = EndDate });
+            return await Mediator.Send(new GetTapsDataQuery { StageId = StageId, TestId = TestId, StartDate = StartDate, EndDate = EndDate });
         }
 
         [HttpGet("{id}")]

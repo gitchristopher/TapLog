@@ -843,7 +843,7 @@
         "operationId": "Taps_Get",
         "parameters": [
           {
-            "name": "TestId",
+            "name": "StageId",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -853,6 +853,16 @@
             "x-position": 1
           },
           {
+            "name": "TestId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
             "name": "StartDate",
             "in": "query",
             "schema": {
@@ -860,7 +870,7 @@
               "default": "",
               "nullable": true
             },
-            "x-position": 2
+            "x-position": 3
           },
           {
             "name": "EndDate",
@@ -870,7 +880,7 @@
               "default": "",
               "nullable": true
             },
-            "x-position": 3
+            "x-position": 4
           }
         ],
         "responses": {
@@ -1226,18 +1236,6 @@
           "Tests"
         ],
         "operationId": "Tests_GetAll",
-        "parameters": [
-          {
-            "name": "stageId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
@@ -1417,12 +1415,24 @@
         ]
       }
     },
-    "/api/Tests/current": {
+    "/api/Tests/stage/{stageId}": {
       "get": {
         "tags": [
           "Tests"
         ],
-        "operationId": "Tests_GetCurrentTests",
+        "operationId": "Tests_GetTestsForStage",
+        "parameters": [
+          {
+            "name": "stageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

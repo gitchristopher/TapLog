@@ -16,7 +16,6 @@ namespace TapLog.Application.Tests.Query.GetTests
 
     public class GetTestsQuery : IRequest<List<TestDto>>
     {
-        public int? StageId { get; set; }
     }
 
     public partial class GetTestsQueryHandler : IRequestHandler<GetTestsQuery, List<TestDto>>
@@ -32,8 +31,9 @@ namespace TapLog.Application.Tests.Query.GetTests
 
         public async Task<List<TestDto>> Handle(GetTestsQuery request, CancellationToken cancellationToken)
         {
-            var testListDto = await _context.StageTests.Where(x => x.StageId == request.StageId).Include(s => s.Test).Select(z => new TestDto { Id = z.TestId, JiraTestNumber = z.Test.JiraTestNumber }).ToListAsync();
-
+            //var testListDto = await _context.StageTests.Where(x => x.StageId == request.StageId).Include(s => s.Test).Select(z => new TestDto { Id = z.TestId, JiraTestNumber = z.Test.JiraTestNumber }).ToListAsync();
+            var testList = await _context.Tests.ToListAsync();
+            var testListDto = _mapper.Map <List<TestDto>>(testList);
             return testListDto;
 
             //Not used anymore?

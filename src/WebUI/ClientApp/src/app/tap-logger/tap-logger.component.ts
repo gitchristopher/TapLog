@@ -99,7 +99,7 @@ export class TapLoggerComponent implements OnInit {
   selectStage(stage: taplog.StageDto): void {
     this.selectedStage = stage;
 
-    this.testsClient.getAll(stage.id).subscribe(
+    this.testsClient.getTestsForStage(stage.id).subscribe(
       result => {
           this.testList = result;
           // if (this.testList.length) {

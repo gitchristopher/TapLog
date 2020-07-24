@@ -19,6 +19,7 @@ namespace TapLog.Application.Taps.Query.GetTapsData
 
     public class GetTapsDataQuery : IRequest<TapDataVM>
     {
+        public int? StageId { get; set; }
         public int? TestId { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
@@ -52,6 +53,10 @@ namespace TapLog.Application.Taps.Query.GetTapsData
                                             .ThenInclude(st => st.Stage)
                                       .AsQueryable();
 
+            if (request.StageId != null)
+            {
+                query = query.Where(t => t.TestExecution.StageTest.StageId == request.StageId);
+            }
             if (request.TestId != null)
             {
                 query = query.Where(t => t.TestExecution.StageTest.TestId == request.TestId);

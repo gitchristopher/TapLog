@@ -14,28 +14,29 @@ using TapLog.Domain.Enums;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-namespace TapLog.Application.Tests.Query.GetCurrentTests
+namespace TapLog.Application.Tests.Query.GetTestsForStage
 {
 
-    public class GetCurrentTestsQuery : IRequest<List<TestDto>>
+    public class GetTestsForStageQuery : IRequest<List<TestDto>>
     {
+        public int StageId { get; set; }
     }
 
-    public class GetCurrentTestsQueryHandler : IRequestHandler<GetCurrentTestsQuery, List<TestDto>>
+    public class GetTestsForStageQueryHandler : IRequestHandler<GetTestsForStageQuery, List<TestDto>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetCurrentTestsQueryHandler(IApplicationDbContext context, IMapper mapper)
+        public GetTestsForStageQueryHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<List<TestDto>> Handle(GetCurrentTestsQuery request, CancellationToken cancellationToken)
+        public async Task<List<TestDto>> Handle(GetTestsForStageQuery request, CancellationToken cancellationToken)
         {
             var testListDto = await _context.StageTests
-                .Where(s => s.Stage.IsCurrent)
+                .Where(s => s.Stage.Id == request.StageId)
                 .Include(s => s.Test)
                 .Select(t => new TestDto 
                 {

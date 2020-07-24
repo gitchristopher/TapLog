@@ -65,6 +65,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { MatTableExporterModule } from 'mat-table-exporter';
 
@@ -147,6 +148,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
     MatCheckboxModule,
     MatTableExporterModule,
     MatBadgeModule,
+    MatMenuModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

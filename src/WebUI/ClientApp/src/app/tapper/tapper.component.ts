@@ -40,7 +40,7 @@ export class TapperComponent implements OnInit {
     this.selectedExecution = null;
     // this.selectedTest = null;
     this.selectedStage = this.stageList.find(s => s.id === Number(idFromStageList));
-    this.testsClient.getAll(idFromStageList).subscribe(
+    this.testsClient.getTestsForStage(idFromStageList).subscribe(
       result => {
           this.testList = result;
       },

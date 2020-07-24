@@ -14,7 +14,7 @@ export class TestovEffects {
         this.actions$.pipe(
             ofType(testov.LOAD_TESTS_REQUEST),
             mergeMap((action) => {
-                return this.testClient.getAll(action.stageId).pipe(
+                return this.testClient.getTestsForStage(action.stageId).pipe(
                     map(tests => testov.LOAD_TESTS_SUCCESS({tests})),
                     catchError(error => of(testov.LOAD_TESTS_FAIL({ error }))));
             })

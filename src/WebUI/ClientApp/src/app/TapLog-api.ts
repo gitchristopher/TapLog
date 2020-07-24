@@ -1134,7 +1134,7 @@ export interface ITapsClient {
     getTapForm(): Observable<AddTapVM>;
     getAll(): Observable<TapDto[]>;
     create(command: CreateTapCommand): Observable<number>;
-    get(testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM>;
+    get(stageId: number | null | undefined, testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM>;
     get2(id: number): Observable<TapDto>;
     update(id: number, command: UpdateTapCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
@@ -1305,8 +1305,10 @@ export class TapsClient implements ITapsClient {
         return _observableOf<number>(<any>null);
     }
 
-    get(testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM> {
+    get(stageId: number | null | undefined, testId: number | null | undefined, startDate: string | null | undefined, endDate: string | null | undefined): Observable<TapDataVM> {
         let url_ = this.baseUrl + "/api/Taps/data?";
+        if (stageId !== undefined)
+            url_ += "StageId=" + encodeURIComponent("" + stageId) + "&"; 
         if (testId !== undefined)
             url_ += "TestId=" + encodeURIComponent("" + testId) + "&"; 
         if (startDate !== undefined)
@@ -1797,12 +1799,12 @@ export class TestExecutionsClient implements ITestExecutionsClient {
 }
 
 export interface ITestsClient {
-    getAll(stageId: number | null | undefined): Observable<TestDto[]>;
+    getAll(): Observable<TestDto[]>;
     create(command: CreateTestCommand): Observable<number>;
     getDetailedTest(id: number): Observable<TestDto>;
     update(id: number, command: UpdateTestCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    getCurrentTests(): Observable<TestDto[]>;
+    getTestsForStage(stageId: number): Observable<TestDto[]>;
 }
 
 @Injectable({
@@ -1818,10 +1820,8 @@ export class TestsClient implements ITestsClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    getAll(stageId: number | null | undefined): Observable<TestDto[]> {
-        let url_ = this.baseUrl + "/api/Tests?";
-        if (stageId !== undefined)
-            url_ += "stageId=" + encodeURIComponent("" + stageId) + "&"; 
+    getAll(): Observable<TestDto[]> {
+        let url_ = this.baseUrl + "/api/Tests";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -2077,8 +2077,11 @@ export class TestsClient implements ITestsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    getCurrentTests(): Observable<TestDto[]> {
-        let url_ = this.baseUrl + "/api/Tests/current";
+    getTestsForStage(stageId: number): Observable<TestDto[]> {
+        let url_ = this.baseUrl + "/api/Tests/stage/{stageId}";
+        if (stageId === undefined || stageId === null)
+            throw new Error("The parameter 'stageId' must be defined.");
+        url_ = url_.replace("{stageId}", encodeURIComponent("" + stageId)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -2090,11 +2093,11 @@ export class TestsClient implements ITestsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetCurrentTests(response_);
+            return this.processGetTestsForStage(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetCurrentTests(<any>response_);
+                    return this.processGetTestsForStage(<any>response_);
                 } catch (e) {
                     return <Observable<TestDto[]>><any>_observableThrow(e);
                 }
@@ -2103,7 +2106,7 @@ export class TestsClient implements ITestsClient {
         }));
     }
 
-    protected processGetCurrentTests(response: HttpResponseBase): Observable<TestDto[]> {
+    protected processGetTestsForStage(response: HttpResponseBase): Observable<TestDto[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

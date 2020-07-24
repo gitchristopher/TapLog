@@ -10,7 +10,7 @@ using TapLog.Application.Tests.Commands.UpdateTest;
 using TapLog.Application.Tests.Commands.CreateTest;
 using TapLog.Application.Tests.Query.GetTests;
 using TapLog.Application.Tests.Query.GetTest;
-using TapLog.Application.Tests.Query.GetCurrentTests;
+using TapLog.Application.Tests.Query.GetTestsForStage;
 
 namespace TapLog.WebUI.Controllers
 {
@@ -18,9 +18,9 @@ namespace TapLog.WebUI.Controllers
     public class TestsController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<TestDto>>> GetAll([FromQuery] int? stageId )
+        public async Task<ActionResult<List<TestDto>>> GetAll()
         {
-            return await Mediator.Send(new GetTestsQuery { StageId = stageId} );
+            return await Mediator.Send(new GetTestsQuery());
         }
 
         [HttpGet("{id}")]
@@ -29,10 +29,10 @@ namespace TapLog.WebUI.Controllers
             return await Mediator.Send(new GetTestQuery { Id = id } );
         }
 
-        [HttpGet("current")]
-        public async Task<ActionResult<List<TestDto>>> GetCurrentTests()
+        [HttpGet("stage/{stageId}")]
+        public async Task<ActionResult<List<TestDto>>> GetTestsForStage([FromRoute] int stageId)
         {
-            return await Mediator.Send(new GetCurrentTestsQuery());
+            return await Mediator.Send(new GetTestsForStageQuery { StageId = stageId});
         }
 
         [HttpPost]

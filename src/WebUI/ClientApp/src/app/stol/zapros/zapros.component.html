@@ -1,5 +1,18 @@
 <form (ngSubmit)="submit()" [formGroup]="queryForm" class="tap-log-grid-container bg-raised">
   <div class="d-flex align-items-center justify-content-center">
+
+    <div class="ml-5 mr-5 pt-4" >
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Stage</mat-label>
+        <mat-select formControlName="stageList">
+          <mat-option [value]="null" >None</mat-option>
+          <mat-option *ngFor="let s of stageList" [value]="s.id" style="width: 100%;">
+            {{s.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <div class="ml-5 mr-5 pt-4" >
       <mat-form-field appearance="outline" class="example-full-width">
         <mat-label>Test</mat-label>
