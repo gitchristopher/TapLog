@@ -1,0 +1,39 @@
+<form (ngSubmit)="submit()" [formGroup]="queryForm" class="tap-log-grid-container bg-raised">
+  <div class="d-flex align-items-center justify-content-center">
+    <div class="ml-5 mr-5 pt-4" >
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Test</mat-label>
+        <mat-select formControlName="testList">
+          <mat-option [value]="null" >None</mat-option>
+          <mat-option *ngFor="let t of testList" [value]="t.id" style="width: 100%;">
+            {{t.jiraTestNumber}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="ml-5 mr-5 pt-4" >
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Start of day</mat-label>
+        <input matInput [matDatepicker]="startPicker" disabled formControlName="startDate">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker disabled="false"></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="ml-5 mr-5 pt-4" >
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>End of day</mat-label>
+        <input matInput [matDatepicker]="endPicker" disabled formControlName="endDate">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker disabled="false"></mat-datepicker>
+      </mat-form-field>
+    </div>
+  
+    <!-- <mat-checkbox class="ml-5 mr-5" formControlName="groupBy">Group by Execution</mat-checkbox> -->
+  
+    <button mat-raised-button type="submit" color="primary" class="ml-5 mr-5">Query</button>
+
+    <!-- <p>Selected range: {{queryForm.value | json}}</p> -->
+
+  </div>
+</form>

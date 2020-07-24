@@ -1,11 +1,15 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
-import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand } from 'src/app/taplog-api';
+import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand, TestExecutionDto } from 'src/app/taplog-api';
 import { style, state, animate, transition, trigger } from '@angular/animations';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.state';
+import { selectExecutionsList, selectSelectedExecution, selectSelectedExecutionTapCount } from '../spisok-kazney/spisok-kazney.reducers';
+import { DELETE_TAP_REQUEST } from '../spisok-kazney/spisok-kazney.actions';
 
 @Component({
   selector: 'app-spisok-sobytiy',
@@ -23,43 +27,51 @@ import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch'
 })
 export class SpisokSobytiyComponent implements OnInit, OnChanges {
   @ViewChild(MatAccordion) accordion: MatAccordion;
+  selectedExecution$: Observable<TestExecutionDto>;
+  selectedExecutionz: TestExecutionDto;
+  selectedExecutionTapCount$: Observable<number>;
+  isChecked = false;
+  isDisabled = false;
+
   @Input() selectedExecution: TestExecutionDto2;
 
-  isChecked = false;
-  isDisabled = this.selectedExecution ? false : true;
   isEditing: number;
-  isDecending = true;
+  // isDecending = true;
   updateTapForm: FormGroup;
   fb: FormBuilder;
   deviceList: DeviceDto[];
   cardList: CardDto[];
   filteredOptions: Observable<CardDto[]>;
 
-  constructor(private tapsClient: TapsClient) {
+  constructor(private tapsClient: TapsClient, private store: Store<AppState>) {
     this.isChecked = false;
     this.isEditing = null;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    for (const propName in changes) {
-      if (changes.hasOwnProperty(propName)) {
-        switch (propName) {
-          case 'selectedExecution': {
-            this.isChecked = false;
-            if (this.selectedExecution == null) {
-              this.isDisabled = true;
-            } else {
-              this.isDisabled = false;
-              this.cancelEdit();
-              // this.selectedExecution = this.sort(this.selectedExecution);
-            }
-          }
-        }
-      }
-    }
+    // for (const propName in changes) {
+    //   if (changes.hasOwnProperty(propName)) {
+    //     switch (propName) {
+    //       case 'selectedExecution': {
+    //         this.isChecked = false;
+    //         if (this.selectedExecution == null) {
+    //           this.isDisabled = true;
+    //         } else {
+    //           this.isDisabled = false;
+    //           this.cancelEdit();
+    //           // this.selectedExecution = this.sort(this.selectedExecution);
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   ngOnInit() {
+    this.selectedExecution$ = this.store.select(selectSelectedExecution);
+    this.selectedExecutionTapCount$ = this.store.select(selectSelectedExecutionTapCount);
+    this.store.select(selectSelectedExecution).subscribe((execution => this.selectedExecutionz = execution));
+
     this.updateTapForm = new FormGroup({
       cardType: new FormControl(),
       card: new FormControl('', [Validators.required, RequireMatch]),
@@ -77,13 +89,7 @@ export class SpisokSobytiyComponent implements OnInit, OnChanges {
 
   deleteTap(id: number) {
     if (confirm('Are you sure to delete the tap? ' + id)) {
-      const index = this.selectedExecution.taps.findIndex(x => x.id === id);
-      this.selectedExecution.taps.splice(index, 1);
-      this.tapsClient.delete(id).subscribe(response => {
-        // TODO: What to do with NoContent response?
-      }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
-      });
+      this.store.dispatch(DELETE_TAP_REQUEST({execution: this.selectedExecutionz, tapId: id}));
     }
   }
 
@@ -194,7 +200,7 @@ export class SpisokSobytiyComponent implements OnInit, OnChanges {
       id: Number(this.isEditing),
       notes: this.updateTapForm.value.notes,
       result: Number(this.updateTapForm.value.result),
-      testerId: 'Current User',
+      tester: 'Current User',
       timeOf: time,
       wasResultExpected: Number(this.updateTapForm.value.expectedResult),
     };

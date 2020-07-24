@@ -1,0 +1,60 @@
+.temp {
+    background-color: blueviolet;
+    height: 94.5%;
+}
+
+
+
+/* Structure */
+.example-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.example-table-container {
+  position: relative;
+  max-height: 600px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.example-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 56px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Column Widths */
+.mat-column-cardSupplierName,
+.mat-column-wasResultExpected,
+.mat-column-fare,
+.mat-column-balanceBefore,
+.mat-column-balanceAfter {
+  max-width: 40px;
+}
+
+.mat-column-testExecutionId,
+.mat-column-result,
+.mat-column-timeOf,
+.mat-column-tester,
+.mat-column-jira {
+  max-width: 64px;
+}
+
+.mat-column-cardAlias,
+.mat-column-action,
+.mat-column-deviceCode,
+.mat-column-cardNumber {
+  max-width: 124px;
+}

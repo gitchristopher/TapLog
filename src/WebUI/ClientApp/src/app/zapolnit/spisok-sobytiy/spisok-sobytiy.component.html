@@ -4,22 +4,22 @@
 <div class="action-buttons2">
   <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled"></mat-slide-toggle>
 </div>
-<ng-container *ngIf="(selectedExecution && selectedExecution.taps.length < 1 ) || !selectedExecution ">
+<ng-container *ngIf="((selectedExecution$ | async ) && ((selectedExecution$ | async ).taps.length < 1) ) || !(selectedExecution$ | async) ">
   <mat-accordion class="headers-align" disabled>
     <mat-expansion-panel [hideToggle]="true">
       <mat-expansion-panel-header>
         <mat-panel-title> </mat-panel-title>
       </mat-expansion-panel-header>
-      <p *ngIf="!selectedExecution">Select a test and execution.</p>
-      <p *ngIf="selectedExecution && selectedExecution?.taps?.length === 0">You dont have any taps yet.</p>
+      <p *ngIf="!(selectedExecution$ | async)">Select a test and execution.</p>
+      <p *ngIf="(selectedExecution$ | async ) && ((selectedExecution$ | async ).taps.length === 0)">You dont have any taps yet.</p>
     </mat-expansion-panel>
   </mat-accordion>
 </ng-container>
-<div *ngIf="selectedExecution" >
+<div *ngIf="(selectedExecution$ | async )" >
   <form (ngSubmit)="onSubmit()" [formGroup]="updateTapForm">
 
     <mat-accordion class="headers-align" multi>
-      <ng-container *ngFor="let tap of selectedExecution.taps; index as i; trackBy:tap?.id; last as isLast">
+      <ng-container *ngFor="let tap of (selectedExecution$ | async ).taps; index as i; trackBy:tap?.id; last as isLast">
 
         <mat-expansion-panel [hideToggle]="true">
           <mat-expansion-panel-header>
@@ -217,7 +217,7 @@
             <mat-panel-description>
               <p></p>
               <div class="m-2">
-                <p class="iconText">{{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p> 
+                <p class="iconText">{{((selectedExecution$ | async ).taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p> 
                 <mat-icon style="margin-left: 7px; margin-top: 7px; ">timer</mat-icon>
               </div>
             </mat-panel-description>

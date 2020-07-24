@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import * as kazney from './spisok-kazney.actions';
-import { TestExecutionsClient } from 'src/app/taplog-api';
+import { TestExecutionsClient, TapsClient } from 'src/app/taplog-api';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 
 @Injectable()
 export class KazneyEffects {
-    constructor(private actions$: Actions, private executionClient: TestExecutionsClient) { }
+    constructor(private actions$: Actions, private executionClient: TestExecutionsClient, private tapsClient: TapsClient) { }
 
     loadExecutions$ = createEffect(() =>
         this.actions$.pipe(
@@ -39,6 +39,17 @@ export class KazneyEffects {
                 return this.executionClient.delete(action.executionId).pipe(
                     map(noContent => kazney.DELETE_EXECUTION_SUCCESS({executionId: action.executionId})),
                     catchError(error => of(kazney.CREATE_EXECUTION_FAIL({ error }))));
+            })
+        )
+    );
+
+    deleteTap$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(kazney.DELETE_TAP_REQUEST),
+            mergeMap((action) => {
+                return this.tapsClient.delete(action.tapId).pipe(
+                    map(noContent => kazney.LOAD_EXECUTIONS_REQUEST({stageId: action.execution.stageTest.stageId,testId: action.execution.stageTest.testId})),
+                    catchError(error => of(kazney.LOAD_EXECUTIONS_FAIL({ error }))));
             })
         )
     );

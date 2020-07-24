@@ -26,3 +26,8 @@ export const DELETE_EXECUTION_SUCCESS = createAction('[Zapolnit-kazney] Delete E
 
 // export const UPDATE_EXECUTION_REQUEST = createAction('[Zapolnit-kazney] Update Execution Request', props<{executionId: number, executionUpdate: UpdateTestExecutionCommand}>());
 // export const UPDATE_EXECUTION_FAIL = createAction('[Zapolnit-kazney] Update Execution Fail', props<{error: any}>());
+// export const UPDATE_EXECUTION_SUCCESS = createAction('[Zapolnit-kazney] Update Execution Success', props<{executionId: number, executionUpdate: UpdateTestExecutionCommand}>());
+
+export const DELETE_TAP_REQUEST = createAction('[Zapolnit-sobytiy] Delete Tap Request', props<{tapId: number, execution: TestExecutionDto}>());
+export const DELETE_TAP_FAIL = createAction('[Zapolnit-sobytiy] Delete Tap Fail', props<{error: any}>());
+export const DELETE_TAP_SUCCESS = createAction('[Zapolnit-sobytiy] Delete Tap Success', props<{tapId: number}>());
