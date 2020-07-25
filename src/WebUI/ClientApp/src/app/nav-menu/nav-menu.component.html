@@ -38,9 +38,13 @@
         </ul>
       </div>
 
+
       <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
            [ngClass]="{ show: isExpanded }">
         <app-login-menu></app-login-menu>
+        <button mat-flat-button color="primary" style="transform: rotate(180deg)" (click)="showInfoModal(addTestModalTemplate)">
+          <mat-icon>information</mat-icon>
+        </button>
         <ul class="navbar-nav flex-grow">
           <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
@@ -56,3 +60,175 @@
     </div>
   </nav>
 </header>
+<ng-template #addTestModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">Travel Information</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="hideInfoModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <p>Off-peak fares apply on:</p>
+      <ul>
+        <li><strong>weekdays:</strong> 8.30am–3.30pm and 7pm–6am the next day</li>
+        <li><strong>weekends:</strong> all day</li>
+        <li><strong>state-wide Queensland gazetted public holidays:</strong> all day.</li>
+      </ul>
+      <p>Off-peak fares are based on when you touch on.</p>
+      <p>If you transfer between services on a multi-trip journey across peak and off-peak times, your <em>go</em> card
+        will automatically calculate the fare as a combination of peak and off-peak.</p>
+    </div>
+
+    <h3>Adult</h3>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Zones travelled</th>
+            <th><em>go</em> card</th>
+            <th><em>go</em> card off-peak</th>
+            <th>Single paper ticket</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>$3.37</td>
+            <td>$2.70</td>
+            <td>$4.90</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>$4.11</td>
+            <td>$3.29</td>
+            <td>$6.00</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>$6.28</td>
+            <td>$5.02</td>
+            <td>$9.10</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>$8.26</td>
+            <td>$6.61</td>
+            <td>$12.00</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>$10.86</td>
+            <td>$8.69</td>
+            <td>$15.70</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>$13.79</td>
+            <td>$11.03</td>
+            <td>$20.00</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>$17.14</td>
+            <td>$13.71</td>
+            <td>$24.90</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>$20.34</td>
+            <td>$16.27</td>
+            <td>$29.50</td>
+          </tr>
+          <tr>
+            <td>Fine</td>
+            <td>$5.00</td>
+            <td>$5.00</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Fine</td>
+            <td>$10.00</td>
+            <td>$10.00</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Concession</h3>
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Zones travelled</th>
+            <th><em>go</em> card</th>
+            <th><em>go</em> card off-peak</th>
+            <th>Single paper ticket</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>$1.69</td>
+            <td>$1.35</td>
+            <td>$2.40</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>$2.06</td>
+            <td>$1.64</td>
+            <td>$3.00</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>$3.14</td>
+            <td>$2.51</td>
+            <td>$4.60</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>$4.13</td>
+            <td>$3.30</td>
+            <td>$6.00</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>$5.43</td>
+            <td>$4.34</td>
+            <td>$7.90</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>$6.90</td>
+            <td>$5.52</td>
+            <td>$10.00</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>$8.57</td>
+            <td>$6.86</td>
+            <td>$12.40</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>$10.17</td>
+            <td>$8.14</td>
+            <td>$14.70</td>
+          </tr>
+          <tr>
+            <td>Fine</td>
+            <td>$2.50</td>
+            <td>$2.50</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Fine</td>
+            <td>$5.00</td>
+            <td>$5.00</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</ng-template>

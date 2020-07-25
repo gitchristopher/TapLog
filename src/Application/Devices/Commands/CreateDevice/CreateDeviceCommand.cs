@@ -17,6 +17,9 @@ namespace TapLog.Application.Devices.Commands.CreateDevice
     {
         public string Code { get; set; }
         public string Name { get; set; }
+        public int Zone { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
     }
 
     public class CreateDeviceCommandHandler : IRequestHandler<CreateDeviceCommand, int>
@@ -36,7 +39,10 @@ namespace TapLog.Application.Devices.Commands.CreateDevice
             var entity = new Device
             {
                 Code = request.Code,
-                Name = request.Name
+                Name = request.Name,
+                Zone = request.Zone,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude
             };
 
             _context.Devices.Add(entity);

@@ -2987,6 +2987,9 @@ export class DeviceDto implements IDeviceDto {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 
     constructor(data?: IDeviceDto) {
         if (data) {
@@ -3002,6 +3005,9 @@ export class DeviceDto implements IDeviceDto {
             this.id = _data["id"];
             this.code = _data["code"];
             this.name = _data["name"];
+            this.zone = _data["zone"];
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
         }
     }
 
@@ -3017,6 +3023,9 @@ export class DeviceDto implements IDeviceDto {
         data["id"] = this.id;
         data["code"] = this.code;
         data["name"] = this.name;
+        data["zone"] = this.zone;
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
         return data; 
     }
 }
@@ -3025,12 +3034,18 @@ export interface IDeviceDto {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 }
 
 export class DeviceDetailDto implements IDeviceDetailDto {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
     taps?: TapDetailDto[] | undefined;
 
     constructor(data?: IDeviceDetailDto) {
@@ -3047,6 +3062,9 @@ export class DeviceDetailDto implements IDeviceDetailDto {
             this.id = _data["id"];
             this.code = _data["code"];
             this.name = _data["name"];
+            this.zone = _data["zone"];
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
             if (Array.isArray(_data["taps"])) {
                 this.taps = [] as any;
                 for (let item of _data["taps"])
@@ -3067,6 +3085,9 @@ export class DeviceDetailDto implements IDeviceDetailDto {
         data["id"] = this.id;
         data["code"] = this.code;
         data["name"] = this.name;
+        data["zone"] = this.zone;
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
         if (Array.isArray(this.taps)) {
             data["taps"] = [];
             for (let item of this.taps)
@@ -3080,6 +3101,9 @@ export interface IDeviceDetailDto {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
     taps?: TapDetailDto[] | undefined;
 }
 
@@ -3194,6 +3218,9 @@ export interface ITapDetailDto {
 export class CreateDeviceCommand implements ICreateDeviceCommand {
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 
     constructor(data?: ICreateDeviceCommand) {
         if (data) {
@@ -3208,6 +3235,9 @@ export class CreateDeviceCommand implements ICreateDeviceCommand {
         if (_data) {
             this.code = _data["code"];
             this.name = _data["name"];
+            this.zone = _data["zone"];
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
         }
     }
 
@@ -3222,6 +3252,9 @@ export class CreateDeviceCommand implements ICreateDeviceCommand {
         data = typeof data === 'object' ? data : {};
         data["code"] = this.code;
         data["name"] = this.name;
+        data["zone"] = this.zone;
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
         return data; 
     }
 }
@@ -3229,12 +3262,18 @@ export class CreateDeviceCommand implements ICreateDeviceCommand {
 export interface ICreateDeviceCommand {
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 }
 
 export class UpdateDeviceCommand implements IUpdateDeviceCommand {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 
     constructor(data?: IUpdateDeviceCommand) {
         if (data) {
@@ -3250,6 +3289,9 @@ export class UpdateDeviceCommand implements IUpdateDeviceCommand {
             this.id = _data["id"];
             this.code = _data["code"];
             this.name = _data["name"];
+            this.zone = _data["zone"];
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
         }
     }
 
@@ -3265,6 +3307,9 @@ export class UpdateDeviceCommand implements IUpdateDeviceCommand {
         data["id"] = this.id;
         data["code"] = this.code;
         data["name"] = this.name;
+        data["zone"] = this.zone;
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
         return data; 
     }
 }
@@ -3273,6 +3318,9 @@ export interface IUpdateDeviceCommand {
     id?: number;
     code?: string | undefined;
     name?: string | undefined;
+    zone?: number;
+    latitude?: string | undefined;
+    longitude?: string | undefined;
 }
 
 export class StageDto implements IStageDto {

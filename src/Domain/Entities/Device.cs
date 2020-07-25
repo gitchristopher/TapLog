@@ -14,6 +14,9 @@ namespace TapLog.Domain.Entities
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public int Zone { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
 
         //Navigational properties
         public IEnumerable<Tap> Taps { get; set; }

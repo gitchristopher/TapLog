@@ -19,6 +19,9 @@ namespace TapLog.Application.Devices.Commands.UpdateDevice
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public int Zone { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
     }
 
     public class UpdateDeviceCommandHandler : IRequestHandler<UpdateDeviceCommand>
@@ -45,6 +48,9 @@ namespace TapLog.Application.Devices.Commands.UpdateDevice
             // Update the entity
             entity.Code = request.Code;
             entity.Name = request.Name;
+            entity.Zone = request.Zone;
+            entity.Latitude = request.Latitude;
+            entity.Longitude = request.Longitude;
 
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -12,6 +12,9 @@ namespace TapLog.Infrastructure.Persistence.Configurations
             builder.Property(d => d.Name).HasMaxLength(64).IsRequired();
             builder.Property(c => c.CreatedBy).HasMaxLength(64);
             builder.Property(c => c.LastModifiedBy).HasMaxLength(64);
+            builder.Property(c => c.Latitude).HasMaxLength(16);
+            builder.Property(c => c.Longitude).HasMaxLength(16);
+            builder.Property(c => c.Zone).HasMaxLength(16).IsRequired();
 
             builder.HasMany(d => d.Taps).WithOne(t => t.Device).IsRequired();
         }

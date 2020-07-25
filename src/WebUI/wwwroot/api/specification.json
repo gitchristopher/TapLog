@@ -2035,6 +2035,18 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "zone": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2051,6 +2063,18 @@
             "nullable": true
           },
           "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "zone": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
             "type": "string",
             "nullable": true
           },
@@ -2158,6 +2182,18 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "zone": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2174,6 +2210,18 @@
             "nullable": true
           },
           "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "zone": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
             "type": "string",
             "nullable": true
           }

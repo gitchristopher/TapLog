@@ -46,10 +46,10 @@ namespace TapLog.Infrastructure.Persistence
 
             if (!context.Devices.Any())
             {
-                context.Devices.Add(new Device { Name = "BWP", Code = "01" });
-                context.Devices.Add(new Device { Name = "SPN", Code = "07" });
-                context.Devices.Add(new Device { Name = "MBA", Code = "12" });
-                context.Devices.Add(new Device { Name = "MBB", Code = "15" });
+                context.Devices.Add(new Device { Name = "BWP", Code = "01", Zone = 5, Latitude = "27.9637", Longitude = "153.4158" });
+                context.Devices.Add(new Device { Name = "SPN", Code = "07", Zone = 5, Latitude = "28.0000", Longitude = "153.4167" });
+                context.Devices.Add(new Device { Name = "MBA", Code = "12", Zone = 5, Latitude = "27.9630", Longitude = "153.4260" });
+                context.Devices.Add(new Device { Name = "MBB", Code = "15", Zone = 5, Latitude = "27.9630", Longitude = "153.4260" });
                 await context.SaveChangesAsync();
             }
             if (!context.Cards.Any())
