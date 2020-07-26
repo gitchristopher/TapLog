@@ -1,3 +1,20 @@
-<p>
-  smena works!
-</p>
+<mat-sidenav-container style="background-color: yellow;">
+  
+  <mat-sidenav #sidenav mode="side" opened [fixedTopGap]="52" [fixedInViewport]="true">
+    <mat-selection-list #entity [multiple]="false">
+      <mat-list-option *ngFor="let section of sections; last as last" [value]="section">
+        <mat-icon mat-list-icon>{{section.icon}}</mat-icon>
+        <h4 mat-line>{{section.title}}</h4>
+        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <p>
+      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
+    </p>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
+

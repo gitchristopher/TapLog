@@ -1,0 +1,17 @@
+.sidenav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    box-shadow: 10px 0px 20px rgba(0,0,0,0.19), 6px 0px 6px rgba(0,0,0,0.23);
+
+    /* background: rgba(255, 0, 0, 0.5); */
+  }
+  mat-list-option[aria-selected="true"] {
+    background:#FFC107;
+  }
+  mat-list-option:hover:not(.mat-option-disabled){background:#673AB7;color:white}
+
+  .sidenav-content {
+    padding: 2em;
+  }
