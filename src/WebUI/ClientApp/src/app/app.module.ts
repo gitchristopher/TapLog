@@ -30,6 +30,7 @@ import { LogTapComponent } from './tapper/log-tap/log-tap.component';
 import { TapListComponent } from './tapper/tap-list/tap-list.component';
 import { StolComponent } from './stol/stol.component';
 import { ZaprosComponent } from './stol/zapros/zapros.component';
+import { SmenaComponent } from './smena/smena.component';
 
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
@@ -82,34 +83,35 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavMenuComponent,
-    TapperComponent,
-    CounterComponent,
-    FetchDataComponent,
-    TodoComponent,
-    HomeComponent,
-    TapLoggerComponent,
-    StageListComponent,
-    TestListComponent,
-    ExecuteListComponent,
-    LogTapComponent,
-    TapListComponent,
-    ResultEnumPipe,
-    ExpectedEnumPipe,
-    TapActionEnumPipe,
-    TapActionToArrayPipe,
-    TesterNamePipe,
-    ZapolnitComponent,
-    SpisokFazComponent,
-    SpisokKazneyComponent,
-    SpisokSobytiyComponent,
-    SpisokTestovComponent,
-    StolComponent,
-    ZaprosComponent
-  ],
-  imports: [
+   declarations: [
+      AppComponent,
+      NavMenuComponent,
+      TapperComponent,
+      CounterComponent,
+      FetchDataComponent,
+      TodoComponent,
+      HomeComponent,
+      TapLoggerComponent,
+      StageListComponent,
+      TestListComponent,
+      ExecuteListComponent,
+      LogTapComponent,
+      TapListComponent,
+      ResultEnumPipe,
+      ExpectedEnumPipe,
+      TapActionEnumPipe,
+      TapActionToArrayPipe,
+      TesterNamePipe,
+      ZapolnitComponent,
+      SpisokFazComponent,
+      SpisokKazneyComponent,
+      SpisokSobytiyComponent,
+      SpisokTestovComponent,
+      StolComponent,
+      ZaprosComponent,
+      SmenaComponent
+   ],
+   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     FontAwesomeModule,
     HttpClientModule,
@@ -121,9 +123,10 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'tapper', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
+      { path: 'logger', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
       { path: 'zapolnit', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
       { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] },
+      { path: 'smena', component: SmenaComponent },
     ]),
     CommonModule,
     ReactiveFormsModule,
