@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { TestsClient, CreateTestCommand, ICreateTestCommand, 
+import { TestsClient, CreateTestCommand, ICreateTestCommand,
           TestDto, StageDto, ITestExecutionDto2, UpdateTestCommand } from '../../taplog-api';
 import { faPlus, faPlusSquare, faEllipsisH, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import {style, state, animate, transition, trigger} from '@angular/animations';

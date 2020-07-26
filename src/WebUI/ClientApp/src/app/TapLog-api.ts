@@ -572,6 +572,564 @@ export class DevicesClient implements IDevicesClient {
     }
 }
 
+export interface IPassesClient {
+    getAll(): Observable<PassDto[]>;
+    create(command: CreatePassCommand): Observable<number>;
+    get(id: number): Observable<PassDto>;
+    update(id: number, command: UpdatePassCommand): Observable<FileResponse>;
+    delete(id: number): Observable<FileResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PassesClient implements IPassesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    getAll(): Observable<PassDto[]> {
+        let url_ = this.baseUrl + "/api/Passes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PassDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PassDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PassDto[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PassDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PassDto[]>(<any>null);
+    }
+
+    create(command: CreatePassCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Passes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
+    get(id: number): Observable<PassDto> {
+        let url_ = this.baseUrl + "/api/Passes/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<PassDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PassDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<PassDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PassDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PassDto>(<any>null);
+    }
+
+    update(id: number, command: UpdatePassCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Passes/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Passes/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+}
+
+export interface IProductsClient {
+    getAll(): Observable<ProductDto[]>;
+    create(command: CreateProductCommand): Observable<number>;
+    get(id: number): Observable<ProductDto>;
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse>;
+    delete(id: number): Observable<FileResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ProductsClient implements IProductsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    getAll(): Observable<ProductDto[]> {
+        let url_ = this.baseUrl + "/api/Products";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<ProductDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ProductDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<ProductDto[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ProductDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ProductDto[]>(<any>null);
+    }
+
+    create(command: CreateProductCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Products";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
+    get(id: number): Observable<ProductDto> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<ProductDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ProductDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<ProductDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ProductDto>(<any>null);
+    }
+
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+}
+
 export interface IStagesClient {
     getAll(): Observable<StageDto[]>;
     create(command: CreateStageCommand): Observable<number>;
@@ -2711,6 +3269,10 @@ export class CardDto implements ICardDto {
     alias?: string | undefined;
     supplierId?: number;
     supplierName?: string | undefined;
+    productId?: number;
+    productName?: string | undefined;
+    passId?: number;
+    passName?: string | undefined;
     taps?: TapDto[] | undefined;
 
     constructor(data?: ICardDto) {
@@ -2729,6 +3291,10 @@ export class CardDto implements ICardDto {
             this.alias = _data["alias"];
             this.supplierId = _data["supplierId"];
             this.supplierName = _data["supplierName"];
+            this.productId = _data["productId"];
+            this.productName = _data["productName"];
+            this.passId = _data["passId"];
+            this.passName = _data["passName"];
             if (Array.isArray(_data["taps"])) {
                 this.taps = [] as any;
                 for (let item of _data["taps"])
@@ -2751,6 +3317,10 @@ export class CardDto implements ICardDto {
         data["alias"] = this.alias;
         data["supplierId"] = this.supplierId;
         data["supplierName"] = this.supplierName;
+        data["productId"] = this.productId;
+        data["productName"] = this.productName;
+        data["passId"] = this.passId;
+        data["passName"] = this.passName;
         if (Array.isArray(this.taps)) {
             data["taps"] = [];
             for (let item of this.taps)
@@ -2766,6 +3336,10 @@ export interface ICardDto {
     alias?: string | undefined;
     supplierId?: number;
     supplierName?: string | undefined;
+    productId?: number;
+    productName?: string | undefined;
+    passId?: number;
+    passName?: string | undefined;
     taps?: TapDto[] | undefined;
 }
 
@@ -2790,6 +3364,8 @@ export class TapDto implements ITapDto {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    pass?: string | undefined;
+    product?: string | undefined;
 
     constructor(data?: ITapDto) {
         if (data) {
@@ -2822,6 +3398,8 @@ export class TapDto implements ITapDto {
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
             this.action = _data["action"];
+            this.pass = _data["pass"];
+            this.product = _data["product"];
         }
     }
 
@@ -2854,6 +3432,8 @@ export class TapDto implements ITapDto {
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
         data["action"] = this.action;
+        data["pass"] = this.pass;
+        data["product"] = this.product;
         return data; 
     }
 }
@@ -2879,6 +3459,8 @@ export interface ITapDto {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    pass?: string | undefined;
+    product?: string | undefined;
 }
 
 export enum TapAction {
@@ -2895,6 +3477,8 @@ export class CreateCardCommand implements ICreateCardCommand {
     number?: string | undefined;
     alias?: string | undefined;
     supplierId?: number;
+    productId?: number | undefined;
+    passId?: number | undefined;
 
     constructor(data?: ICreateCardCommand) {
         if (data) {
@@ -2910,6 +3494,8 @@ export class CreateCardCommand implements ICreateCardCommand {
             this.number = _data["number"];
             this.alias = _data["alias"];
             this.supplierId = _data["supplierId"];
+            this.productId = _data["productId"];
+            this.passId = _data["passId"];
         }
     }
 
@@ -2925,6 +3511,8 @@ export class CreateCardCommand implements ICreateCardCommand {
         data["number"] = this.number;
         data["alias"] = this.alias;
         data["supplierId"] = this.supplierId;
+        data["productId"] = this.productId;
+        data["passId"] = this.passId;
         return data; 
     }
 }
@@ -2933,6 +3521,8 @@ export interface ICreateCardCommand {
     number?: string | undefined;
     alias?: string | undefined;
     supplierId?: number;
+    productId?: number | undefined;
+    passId?: number | undefined;
 }
 
 export class UpdateCardCommand implements IUpdateCardCommand {
@@ -2940,6 +3530,8 @@ export class UpdateCardCommand implements IUpdateCardCommand {
     number?: string | undefined;
     alias?: string | undefined;
     supplierId?: number;
+    passId?: number | undefined;
+    productId?: number | undefined;
 
     constructor(data?: IUpdateCardCommand) {
         if (data) {
@@ -2956,6 +3548,8 @@ export class UpdateCardCommand implements IUpdateCardCommand {
             this.number = _data["number"];
             this.alias = _data["alias"];
             this.supplierId = _data["supplierId"];
+            this.passId = _data["passId"];
+            this.productId = _data["productId"];
         }
     }
 
@@ -2972,6 +3566,8 @@ export class UpdateCardCommand implements IUpdateCardCommand {
         data["number"] = this.number;
         data["alias"] = this.alias;
         data["supplierId"] = this.supplierId;
+        data["passId"] = this.passId;
+        data["productId"] = this.productId;
         return data; 
     }
 }
@@ -2981,6 +3577,8 @@ export interface IUpdateCardCommand {
     number?: string | undefined;
     alias?: string | undefined;
     supplierId?: number;
+    passId?: number | undefined;
+    productId?: number | undefined;
 }
 
 export class DeviceDto implements IDeviceDto {
@@ -3321,6 +3919,262 @@ export interface IUpdateDeviceCommand {
     zone?: number;
     latitude?: string | undefined;
     longitude?: string | undefined;
+}
+
+export class PassDto implements IPassDto {
+    id?: number;
+    name?: string | undefined;
+    cards?: CardDto[] | undefined;
+
+    constructor(data?: IPassDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["cards"])) {
+                this.cards = [] as any;
+                for (let item of _data["cards"])
+                    this.cards!.push(CardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PassDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PassDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.cards)) {
+            data["cards"] = [];
+            for (let item of this.cards)
+                data["cards"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPassDto {
+    id?: number;
+    name?: string | undefined;
+    cards?: CardDto[] | undefined;
+}
+
+export class CreatePassCommand implements ICreatePassCommand {
+    name?: string | undefined;
+
+    constructor(data?: ICreatePassCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreatePassCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePassCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface ICreatePassCommand {
+    name?: string | undefined;
+}
+
+export class UpdatePassCommand implements IUpdatePassCommand {
+    id?: number;
+    name?: string | undefined;
+
+    constructor(data?: IUpdatePassCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePassCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePassCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IUpdatePassCommand {
+    id?: number;
+    name?: string | undefined;
+}
+
+export class ProductDto implements IProductDto {
+    id?: number;
+    name?: string | undefined;
+    cards?: CardDto[] | undefined;
+
+    constructor(data?: IProductDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["cards"])) {
+                this.cards = [] as any;
+                for (let item of _data["cards"])
+                    this.cards!.push(CardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ProductDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.cards)) {
+            data["cards"] = [];
+            for (let item of this.cards)
+                data["cards"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IProductDto {
+    id?: number;
+    name?: string | undefined;
+    cards?: CardDto[] | undefined;
+}
+
+export class CreateProductCommand implements ICreateProductCommand {
+    name?: string | undefined;
+
+    constructor(data?: ICreateProductCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreateProductCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateProductCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface ICreateProductCommand {
+    name?: string | undefined;
+}
+
+export class UpdateProductCommand implements IUpdateProductCommand {
+    id?: number;
+    name?: string | undefined;
+
+    constructor(data?: IUpdateProductCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IUpdateProductCommand {
+    id?: number;
+    name?: string | undefined;
 }
 
 export class StageDto implements IStageDto {
@@ -3758,6 +4612,8 @@ export interface IUpdateSupplierCommand {
 export class AddTapVM implements IAddTapVM {
     devices?: DeviceDto[] | undefined;
     cards?: CardDto[] | undefined;
+    passes?: PassDto[] | undefined;
+    products?: ProductDto[] | undefined;
 
     constructor(data?: IAddTapVM) {
         if (data) {
@@ -3779,6 +4635,16 @@ export class AddTapVM implements IAddTapVM {
                 this.cards = [] as any;
                 for (let item of _data["cards"])
                     this.cards!.push(CardDto.fromJS(item));
+            }
+            if (Array.isArray(_data["passes"])) {
+                this.passes = [] as any;
+                for (let item of _data["passes"])
+                    this.passes!.push(PassDto.fromJS(item));
+            }
+            if (Array.isArray(_data["products"])) {
+                this.products = [] as any;
+                for (let item of _data["products"])
+                    this.products!.push(ProductDto.fromJS(item));
             }
         }
     }
@@ -3802,6 +4668,16 @@ export class AddTapVM implements IAddTapVM {
             for (let item of this.cards)
                 data["cards"].push(item.toJSON());
         }
+        if (Array.isArray(this.passes)) {
+            data["passes"] = [];
+            for (let item of this.passes)
+                data["passes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.products)) {
+            data["products"] = [];
+            for (let item of this.products)
+                data["products"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -3809,6 +4685,8 @@ export class AddTapVM implements IAddTapVM {
 export interface IAddTapVM {
     devices?: DeviceDto[] | undefined;
     cards?: CardDto[] | undefined;
+    passes?: PassDto[] | undefined;
+    products?: ProductDto[] | undefined;
 }
 
 export class TapDataVM implements ITapDataVM {
@@ -3883,6 +4761,8 @@ export class TapDataRowDto implements ITapDataRowDto {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    product?: string | undefined;
+    pass?: string | undefined;
 
     constructor(data?: ITapDataRowDto) {
         if (data) {
@@ -3918,6 +4798,8 @@ export class TapDataRowDto implements ITapDataRowDto {
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
             this.action = _data["action"];
+            this.product = _data["product"];
+            this.pass = _data["pass"];
         }
     }
 
@@ -3953,6 +4835,8 @@ export class TapDataRowDto implements ITapDataRowDto {
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
         data["action"] = this.action;
+        data["product"] = this.product;
+        data["pass"] = this.pass;
         return data; 
     }
 }
@@ -3981,6 +4865,8 @@ export interface ITapDataRowDto {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    product?: string | undefined;
+    pass?: string | undefined;
 }
 
 export class CreateTapCommand implements ICreateTapCommand {
@@ -3997,6 +4883,8 @@ export class CreateTapCommand implements ICreateTapCommand {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    passId?: number | undefined;
+    productId?: number | undefined;
 
     constructor(data?: ICreateTapCommand) {
         if (data) {
@@ -4022,6 +4910,8 @@ export class CreateTapCommand implements ICreateTapCommand {
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
             this.action = _data["action"];
+            this.passId = _data["passId"];
+            this.productId = _data["productId"];
         }
     }
 
@@ -4047,6 +4937,8 @@ export class CreateTapCommand implements ICreateTapCommand {
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
         data["action"] = this.action;
+        data["passId"] = this.passId;
+        data["productId"] = this.productId;
         return data; 
     }
 }
@@ -4065,6 +4957,8 @@ export interface ICreateTapCommand {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    passId?: number | undefined;
+    productId?: number | undefined;
 }
 
 export enum Result {
@@ -4095,6 +4989,8 @@ export class UpdateTapCommand implements IUpdateTapCommand {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    productId?: number | undefined;
+    passId?: number | undefined;
 
     constructor(data?: IUpdateTapCommand) {
         if (data) {
@@ -4121,6 +5017,8 @@ export class UpdateTapCommand implements IUpdateTapCommand {
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
             this.action = _data["action"];
+            this.productId = _data["productId"];
+            this.passId = _data["passId"];
         }
     }
 
@@ -4147,6 +5045,8 @@ export class UpdateTapCommand implements IUpdateTapCommand {
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
         data["action"] = this.action;
+        data["productId"] = this.productId;
+        data["passId"] = this.passId;
         return data; 
     }
 }
@@ -4166,6 +5066,8 @@ export interface IUpdateTapCommand {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    productId?: number | undefined;
+    passId?: number | undefined;
 }
 
 export class CreateTestExecutionCommand implements ICreateTestExecutionCommand {
@@ -4419,6 +5321,8 @@ export class TapDto2 implements ITapDto2 {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    pass?: string | undefined;
+    product?: string | undefined;
 
     constructor(data?: ITapDto2) {
         if (data) {
@@ -4449,6 +5353,8 @@ export class TapDto2 implements ITapDto2 {
             this.balanceAfter = _data["balanceAfter"];
             this.notes = _data["notes"];
             this.action = _data["action"];
+            this.pass = _data["pass"];
+            this.product = _data["product"];
         }
     }
 
@@ -4479,6 +5385,8 @@ export class TapDto2 implements ITapDto2 {
         data["balanceAfter"] = this.balanceAfter;
         data["notes"] = this.notes;
         data["action"] = this.action;
+        data["pass"] = this.pass;
+        data["product"] = this.product;
         return data; 
     }
 }
@@ -4502,6 +5410,8 @@ export interface ITapDto2 {
     balanceAfter?: number | undefined;
     notes?: string | undefined;
     action?: TapAction;
+    pass?: string | undefined;
+    product?: string | undefined;
 }
 
 export class CreateTestCommand implements ICreateTestCommand {

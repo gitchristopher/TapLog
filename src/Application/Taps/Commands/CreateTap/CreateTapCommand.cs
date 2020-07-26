@@ -33,6 +33,8 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
         public TapAction Action { get; set; }
+        public int? PassId { get; set; }
+        public int? ProductId { get; set; }
     }
 
     public class CreateTapCommandHandler : IRequestHandler<CreateTapCommand, int>
@@ -68,6 +70,18 @@ namespace TapLog.Application.Taps.Commands.CreateTap
             {
                 throw new NotFoundException(nameof(Device), request.DeviceId);
             }
+            var pass = await _context.Passes.FindAsync(request.PassId);
+            //if (pass == null)
+            //{
+            //    throw new NotFoundException(nameof(Pass), request.PassId);
+            //}
+            var product = await _context.Products.FindAsync(request.ProductId);
+            //if (product == null)
+            //{
+            //    throw new NotFoundException(nameof(Product), request.ProductId);
+            //}
+
+
             var styles = DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal;
             var parseWorked = DateTime.TryParse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture, styles, out DateTime dateTime);
             if (!parseWorked)
@@ -80,9 +94,9 @@ namespace TapLog.Application.Taps.Commands.CreateTap
 
             var entity = new Tap
             {
-                TestExecutionId = request.TestExecutionId,
-                CardId = request.CardId,
-                DeviceId = request.DeviceId,
+                TestExecutionId = testExecution.Id,
+                CardId = card.Id,
+                DeviceId = device.Id,
                 Tester = user,
                 CaseNumber = request.CaseNumber,
                 Result = request.Result,
@@ -92,7 +106,9 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 BalanceBefore = request?.BalanceBefore,
                 BalanceAfter = request?.BalanceAfter,
                 Notes = request.Notes,
-                Action = request.Action
+                Action = request.Action,
+                Product = product?.Name,
+                Pass = pass?.Name,
             };
 
             _context.Taps.Add(entity);

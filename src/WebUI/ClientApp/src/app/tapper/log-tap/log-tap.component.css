@@ -14,8 +14,8 @@
     "device after" 
     "result notes" 
     "expectation notes" 
-    "time notes" 
-    "date notes" 
+    "time passProduct" 
+    "date passProduct" 
     "save save"
 }
 .tl-empty {
@@ -23,6 +23,9 @@
     /* background-color: rgba(0, 0, 0, 0.829); */
 }
 
+.tl-passProduct {
+    grid-area: passProduct;
+}
 .tl-cardRadio {
     grid-area: cardRadio;
     /* background-color: rgba(104, 151, 28, 0.829); */

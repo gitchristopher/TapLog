@@ -104,16 +104,23 @@ box-shadow:  5px 5px 4px #dbf4f6,
 .tap-list-grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 5em;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
   gap: 1px 1px;
   grid-template-areas: 
   "number result before edit" 
   "alias expectation fare delete" 
   "supplier notes after delete"
   "action tester misc ."
+  "product pass . ."
 }
 
 
+.tl-product {
+  grid-area: product;
+}
+.tl-pass {
+  grid-area: pass;
+}
 .tl-number {
   grid-area: number;
 }

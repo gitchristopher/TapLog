@@ -40,6 +40,8 @@ namespace TapLog.Application.Taps.Query.GetTapsData
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
         public TapAction Action { get; set; }
+        public string Product { get; set; }
+        public string Pass { get; set; }
 
         public void Mapping(Profile profile)
         {

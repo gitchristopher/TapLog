@@ -1,10 +1,16 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto, TapAction } from 'src/app/taplog-api';
+import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto, TapAction, ProductDto, PassDto, CardsClient, UpdateCardCommand } from 'src/app/taplog-api';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+
+interface ICardSelectItem {
+  display: string;
+  card: CardDto;
+}
 
 @Component({
   selector: 'app-log-tap',
@@ -17,8 +23,10 @@ export class LogTapComponent implements OnInit, OnChanges {
   addTapForm: FormGroup;
   fb: FormBuilder;
   deviceList: DeviceDto[];
-  cardList: CardDto[];
-  filteredOptions: Observable<CardDto[]>;
+  cardList: ICardSelectItem[];
+  passList: PassDto[];
+  productList: ProductDto[];
+  filteredOptions: Observable<ICardSelectItem[]>;
   submitted = false;
   // mytime: Date = new Date(); // Date.now() + 86400
   selectedCardType: number;
@@ -31,7 +39,7 @@ export class LogTapComponent implements OnInit, OnChanges {
     this.onSave.emit(e);
   }
 
-  constructor(private tapsClient: TapsClient, private authorizeService: AuthorizeService) {
+  constructor(private tapsClient: TapsClient, private cardsClient: CardsClient, private authorizeService: AuthorizeService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -63,18 +71,26 @@ export class LogTapComponent implements OnInit, OnChanges {
       balanceBefore: new FormControl(),
       balanceAfter: new FormControl(),
       notes: new FormControl(),
+      passes: new FormControl(),
+      products: new FormControl(),
     });
 
     this.tapsClient.getTapForm().subscribe( result => {
       this.deviceList = result.devices;
-      this.cardList = new Array<CardDto>();
+      this.cardList = new Array<ICardSelectItem>();
+      this.passList = result.passes;
+      this.productList = result.products;
 
       result.cards.forEach( card => {
+        const cardItem = {} as ICardSelectItem;
+        cardItem.card = card;
         if (card.alias == null) {
-          card.alias = 'Go Card';
+          cardItem.display = 'Go Card' + ' - ' + card.number;
+        } else {
+          cardItem.display = card.alias.concat(' - ', card.number);
+
         }
-        card.alias = card.alias.concat(' - ', card.number);
-        this.cardList.push(card);
+        this.cardList.push(cardItem);
       });
 
       // this.filteredOptions = this.addTapForm.get('card').valueChanges.pipe(
@@ -90,6 +106,9 @@ export class LogTapComponent implements OnInit, OnChanges {
 
   addTap(data: any): void {
     const tap = new CreateTapCommand(data);
+    console.log(data);
+    console.log(tap);
+    
     if (this.selectedExecution == null) {
       this.selectedExecution.taps = new Array<TapDto2>();
     }
@@ -98,6 +117,8 @@ export class LogTapComponent implements OnInit, OnChanges {
           const newTap = new TapDto2(data);
           newTap.id = result;
           newTap.timeOf = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);
+          newTap.pass = this.passList.find(x => x.id === tap.passId).name;
+          newTap.product = this.productList.find(x => x.id === tap.productId).name;
           this.selectedExecution.taps.push(newTap);
           this.submitted = true;
           this.updateTapForm();
@@ -131,9 +152,12 @@ export class LogTapComponent implements OnInit, OnChanges {
 
     if (this.selectedExecution?.taps?.length > 0) {
       const lastTap = this.selectedExecution.taps[this.selectedExecution.taps.length - 1];
-      const card = this.cardList.find(c => Number(c.id) === Number(lastTap.cardId));
-      this.addTapForm.get('card').setValue(card);
+      const cardItem = this.cardList.find(c => Number(c.card.id) === Number(lastTap.cardId));
+      this.addTapForm.get('card').setValue(cardItem);
+      this.addTapForm.get('passes').setValue(cardItem.card.passId);
+      this.addTapForm.get('products').setValue(cardItem.card.productId);
       this.addTapForm.get('notes').setValue(lastTap.notes);
+      this.selectedCardType = cardItem.card.supplierId;
 
       const time = lastTap.timeOf.toISOString();
       newDate = new Date(Date.parse(time));
@@ -160,17 +184,17 @@ export class LogTapComponent implements OnInit, OnChanges {
   onSubmit() {
     // HACK: Fix later
     if (this.selectedExecution) {
-      const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card.id));
+      const cardItem = this.cardList.find(c => c.card.id === Number(this.addTapForm.value.card.card.id));
       const device = this.deviceList.find(d => d.id === Number(this.addTapForm.value.device));
       const time = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date).toISOString();
       const data = {
         cardType: this.addTapForm.value.cardType,
         balanceAfter: Number(this.addTapForm.value.balanceAfter),
         balanceBefore: Number(this.addTapForm.value.balanceBefore),
-        cardAlias: card.alias,
-        cardId: Number(this.addTapForm.value.card.id),
-        cardNumber: card.number,
-        cardSupplierName: card.supplierName,
+        cardAlias: cardItem.card.alias,
+        cardId: cardItem.card.id,
+        cardNumber: cardItem.card.number,
+        cardSupplierName: cardItem.card.supplierName,
         caseNumber: '?',
         deviceCode: device.code,
         deviceId: Number(this.addTapForm.value.device),
@@ -184,7 +208,24 @@ export class LogTapComponent implements OnInit, OnChanges {
         wasResultExpected: Number(this.addTapForm.value.expectedResult),
         testExecutionId: this.selectedExecution.id,
         action: Number(this.addTapForm.value.action),
+        productId: this.addTapForm.value.products,
+        passId: this.addTapForm.value.passes,
       };
+      if (cardItem.card.passId !== data.passId || cardItem.card.productId !== data.productId) {
+        if (confirm('Would you like to update the card\'s pass and product?')) {
+          const newCard = cardItem.card;
+          newCard.passId = data.passId;
+          newCard.productId = data.productId;
+          this.cardsClient.update(newCard.id, new UpdateCardCommand(newCard)).subscribe(result => {
+            // Nothing to return on an update
+          }, error => {
+            console.error('error when updating card during creation of tap');
+            console.error(error);
+          });
+          this.cardList.find(c => Number(c.card.id) === Number(newCard.id)).card.productId = newCard.productId;
+          this.cardList.find(c => Number(c.card.id) === Number(newCard.id)).card.passId = newCard.passId;
+        }
+      }
       this.addTap(data);
     }
   }
@@ -195,33 +236,38 @@ export class LogTapComponent implements OnInit, OnChanges {
     return time;
   }
 
-  selectCardType(num: number) {
-    console.log('probably dont need this');
-    // this.selectedCardType = num;
-    // switch (num) {
-    //   case 0:
-    //     this.addTapForm.patchValue({
-    //       card: this.cardList.filter(ct => Number(ct.supplierId) !== Number(4)),
-    //     });
-    //     break;
-    //   case 1:
-    //     this.addTapForm.patchValue({
-    //       card: this.cardList.filter(ct => Number(ct.supplierId) === Number(4)),
-    //     })
-    //     break;
-    //   default:
-    //     console.error('Something when wrong in log-tap cardtype section');
-    //     break;
-    // }
+  // selectCardType(num: number) {
+  //   // console.log('Fix this crap, chaging cardlist to ICardSelect broke condtional passProd select render');
+  //   switch (num) {
+  //     case 0:
+  //       this.selectedCardType = 0;
+  //       break;
+  //     case 4:
+  //       this.selectedCardType = 1;
+  //       break;
+  //     default:
+  //       console.error('Something when wrong in log-tap cardtype section');
+  //       break;
+  //   }
+  // }
+
+  selectCard(e: ICardSelectItem) {
+    const card = CardDto.fromJS(e.card);
+    console.log(e);
+    console.log(card);
+    
+    this.selectedCardType = card.supplierId;
+    this.addTapForm.get('passes').setValue(card.passId);
+    this.addTapForm.get('products').setValue(card.productId);
   }
 
-  displayFn(card: CardDto): string {
-    return card && card.alias ? card.alias : '';
+  displayFn(card: ICardSelectItem): string {
+    return card && card.display ? card.display : '';
   }
 
-  private _filter(alias: string): CardDto[] {
+  private _filter(alias: string): ICardSelectItem[] {
     const filterValue = alias.toLowerCase();
 
-    return this.cardList.filter(card => card.alias.toLowerCase().indexOf(filterValue) >= 0);
+    return this.cardList.filter(cardItem => cardItem.display.toLowerCase().indexOf(filterValue) >= 0);
   }
 }

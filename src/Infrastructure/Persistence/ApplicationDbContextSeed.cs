@@ -57,7 +57,7 @@ namespace TapLog.Infrastructure.Persistence
                 context.Cards.Add(new Card { Alias = "MC ALICE", Number = "1234554321", Supplier = new Supplier { Name = "MC" } });
                 context.Cards.Add(new Card { Alias = "AM BOB", Number = "2233445566", Supplier = new Supplier { Name = "AM" } });
                 context.Cards.Add(new Card { Alias = "VC EVE", Number = "3216544321", Supplier = new Supplier { Name = "VC" } });
-                context.Cards.Add(new Card { Alias = "GC IRINA", Number = "1234321566", Supplier = new Supplier { Name = "GC" } });
+                context.Cards.Add(new Card { Alias = "GC IRINA", Number = "1234321566", Supplier = new Supplier { Name = "GC" }});
                 await context.SaveChangesAsync();
             }
             if (!context.Stages.Any())
@@ -68,6 +68,16 @@ namespace TapLog.Infrastructure.Persistence
                 context.Stages.Add(new Stage { Name = "D", IsCurrent = false });
                 await context.SaveChangesAsync();
             }
+            //if (!context.Products.Any())
+            //{
+            //    context.Products.Add(new Product { Name = "Adult" });
+            //    await context.SaveChangesAsync();
+            //}
+            //if (!context.Passes.Any())
+            //{
+            //    context.Passes.Add(new Pass { Name = "GE1 Day" });
+            //    await context.SaveChangesAsync();
+            //}
         }
     }
 }

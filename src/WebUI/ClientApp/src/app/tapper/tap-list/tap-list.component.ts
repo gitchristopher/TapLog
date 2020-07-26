@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
-import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand } from 'src/app/taplog-api';
+import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand, ProductDto, PassDto } from 'src/app/taplog-api';
 import {style, state, animate, transition, trigger} from '@angular/animations';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -35,6 +35,8 @@ export class TapListComponent implements OnInit, OnChanges {
   updateTapForm: FormGroup;
   fb: FormBuilder;
   deviceList: DeviceDto[];
+  productList: ProductDto[];
+  passList: PassDto[];
   cardList: CardDto[];
   filteredOptions: Observable<CardDto[]>;
 
@@ -76,6 +78,8 @@ export class TapListComponent implements OnInit, OnChanges {
       balanceBefore: new FormControl(),
       balanceAfter: new FormControl(),
       notes: new FormControl(),
+      product: new FormControl(),
+      pass: new FormControl(),
     });
   }
 
@@ -119,7 +123,9 @@ export class TapListComponent implements OnInit, OnChanges {
       fare: tap.fare,
       time: tap.timeOf,
       date: tempDate,
-      device: tap.deviceId
+      device: tap.deviceId,
+      product: this.productList.find(x => x.name === tap.product)?.id,
+      pass: this.passList.find(x => x.name === tap.pass)?.id,
     });
   }
 
@@ -134,6 +140,8 @@ export class TapListComponent implements OnInit, OnChanges {
         this.cardList.push(card);
       });
       this.deviceList = result.devices;
+      this.productList = result.products;
+      this.passList = result.passes;
 
       this.filteredOptions = this.updateTapForm.get('card').valueChanges.pipe(
         startWith(''),
@@ -173,6 +181,8 @@ export class TapListComponent implements OnInit, OnChanges {
           const device = this.deviceList.find(x => x.id === newTap.deviceId);
           newTap.deviceName = device.name;
           newTap.deviceCode = device.code;
+          newTap.product = this.productList.find(x => x.id === tap.productId)?.name;
+          newTap.pass = this.passList.find(x => x.id === tap.passId)?.name;
           const index = this.selectedExecution.taps.findIndex(x => x.id === Number(newTap.id));
           this.selectedExecution.taps.splice(index, 1, newTap);
 
@@ -208,6 +218,8 @@ export class TapListComponent implements OnInit, OnChanges {
       tester: 'Current User',
       timeOf: time,
       wasResultExpected: Number(this.updateTapForm.value.expectedResult),
+      productId: Number(this.updateTapForm.value.product),
+      passId: Number(this.updateTapForm.value.pass),
     };
     this.updateTap(data);
   }

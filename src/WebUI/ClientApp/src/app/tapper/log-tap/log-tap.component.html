@@ -4,9 +4,9 @@
 
 
 <div class="tl-cardRadio switch-padding-bottom">
-  <mat-radio-group aria-label="Select an option"><!-- formControlName="cardType" -->
-    <mat-radio-button value="0" disabled="true" (click)="selectCardType(0)" class="pr-3">EMV</mat-radio-button>
-    <mat-radio-button value="1" disabled="true" (click)="selectCardType(1)">Go Card</mat-radio-button>
+  <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedCardType"> <!-- formControlName="cardType" -->
+    <mat-radio-button disabled="true" value="0" class="pr-3">EMV</mat-radio-button>
+    <mat-radio-button disabled="true" value="4">Go Card</mat-radio-button>
   </mat-radio-group>
 </div>
 
@@ -23,9 +23,9 @@
         formControlName="card"
         [matAutocomplete]="auto"
         required>
-        <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">
+        <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn" (optionSelected)='selectCard($event.option.value)'>
           <mat-option *ngFor="let c of filteredOptions | async" [value]="c">
-            {{c.alias}}
+            {{c.display}}
           </mat-option>
         </mat-autocomplete>
 
@@ -132,10 +132,31 @@
     <div class="tl-notes">
       <mat-form-field class="example-full-width"  appearance="outline">
         <mat-label>Notes</mat-label>
-        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=9 matAutosizeMaxRows=10 formControlName="notes" ></textarea>
+        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=6 matAutosizeMaxRows=6 formControlName="notes" ></textarea>
         <button mat-button *ngIf="this.addTapForm.controls['notes'].value" matSuffix mat-icon-button aria-label="Clear" (click)="this.addTapForm.get('notes').setValue('')">
           <mat-icon>close</mat-icon>
         </button>
+      </mat-form-field>
+    </div>
+
+    <div class="tl-passProduct" *ngIf="this.selectedCardType == 4">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Product</mat-label>
+        <mat-select formControlName="products">
+          <mat-option [value]="null" >None</mat-option>
+          <mat-option *ngFor="let p of productList" [value]="p.id" style="width: 100%;">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Pass</mat-label>
+        <mat-select formControlName="passes">
+          <mat-option [value]="null" >None</mat-option>
+          <mat-option *ngFor="let p of passList" [value]="p.id" style="width: 100%;">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
 

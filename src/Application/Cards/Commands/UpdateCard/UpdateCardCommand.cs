@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +21,8 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
         public string Number { get; set; }
         public string Alias { get; set; }
         public int SupplierId { get; set; }
+        public int? PassId { get; set; }
+        public int? ProductId { get; set; }
     }
 
     public class UpdateCardCommandHandler : IRequestHandler<UpdateCardCommand>
@@ -43,10 +46,39 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
                 throw new NotFoundException(nameof(Card), request.Id);
             }
 
+            var supplierEntity = await _context.Suppliers.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.SupplierId);
+            if (supplierEntity == null)
+            {
+                throw new NotFoundException(nameof(Product), request.ProductId);
+            }
+
+            Pass passEntity = null;
+            if (request.PassId != null)
+            {
+                passEntity = await _context.Passes.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.PassId);
+                if (passEntity == null)
+                {
+                    throw new NotFoundException(nameof(Pass), request.PassId);
+                }
+            }
+
+            Product productEntity = null;
+            if (request.ProductId != null)
+            {
+                productEntity = await _context.Products.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.ProductId);
+                if (productEntity == null)
+                {
+                    throw new NotFoundException(nameof(Product), request.ProductId);
+                }
+            }
+
+
             // Update the entity
             entity.Number = request.Number;
             entity.Alias = request.Alias;
             entity.SupplierId = request.SupplierId;
+            entity.ProductId = request?.ProductId ?? null;
+            entity.PassId = request?.PassId ?? null;
 
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -16,6 +16,8 @@ namespace TapLog.Infrastructure.Persistence.Configurations
             builder.Property(t => t.DeviceId).IsRequired();
             builder.Property(t => t.Tester).IsRequired().HasMaxLength(64);
             builder.Property(t => t.CaseNumber).HasMaxLength(16);
+            builder.Property(t => t.Pass).HasMaxLength(32);
+            builder.Property(t => t.Product).HasMaxLength(32);
             builder.Property(t => t.Result).IsRequired();
             builder.Property(t => t.WasResultExpected).IsRequired();
             builder.Property(t => t.Action).IsRequired();

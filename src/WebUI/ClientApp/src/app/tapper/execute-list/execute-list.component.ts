@@ -78,6 +78,7 @@ export class ExecuteListComponent implements OnInit, OnChanges {
         },
         error => console.error(error)
       );
+      
     }
   }
 

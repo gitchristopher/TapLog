@@ -32,6 +32,8 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
         public decimal? BalanceAfter { get; set; }
         public string Notes { get; set; }
         public TapAction Action { get; set; }
+        public int? ProductId { get; set; }
+        public int? PassId { get; set; }
     }
 
     public class UpdateTapCommandHandler : IRequestHandler<UpdateTapCommand>
@@ -70,6 +72,9 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             {
                 throw new NotFoundException(nameof(Device), request.DeviceId);
             }
+            var pass = await _context.Passes.FindAsync(request.PassId);
+            var product = await _context.Products.FindAsync(request.ProductId);
+
 
             var styles = DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal;
             var parseWorked = DateTime.TryParse(request.TimeOf, System.Globalization.CultureInfo.InvariantCulture, styles, out DateTime dateTime);
@@ -93,6 +98,8 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.BalanceAfter = request?.BalanceAfter;
             entity.Notes = request.Notes;
             entity.Action = request.Action;
+            entity.Product = product?.Name;
+            entity.Pass = pass?.Name;
 
             await _context.SaveChangesAsync(cancellationToken);
 

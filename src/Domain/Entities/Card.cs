@@ -16,10 +16,13 @@ namespace TapLog.Domain.Entities
         public string Number { get; set; }
         public string Alias { get; set; }
         public int SupplierId { get; set; }
+        public int? ProductId { get; set; }
+        public int? PassId { get; set; }
 
         //Navigational properties
         public Supplier Supplier { get; set; }
         public IEnumerable<Tap> Taps { get; set; }
-
+        public Product Product { get; set; }
+        public Pass Pass { get; set; }
     }
 }

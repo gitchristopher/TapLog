@@ -35,20 +35,13 @@ namespace TapLog.Application.Cards.Query.GetCard
 
         public async Task<CardDto> Handle(GetCardQuery request, CancellationToken cancellationToken)
         {
-            //var responseDto = await _context.Cards.Include(c => c.Supplier).Include(c => c.Taps)
-            //    .Select(c => new CardDto
-            //    {
-            //        Id = c.Id,
-            //        Alias = c.Alias,
-            //        Number = c.Number,
-            //        SupplierId = c.SupplierId,
-            //        SupplierName = c.Supplier.Name,
-            //        Taps = c.Taps
-            //    }).FirstOrDefaultAsync(c => c.Id == request.Id);
-
-            //var responseDto = await _context.Cards.ProjectTo<CardDto>(_mapper.ConfigurationProvider).Include(c => c.SupplierName).Include(c => c.Taps).FirstOrDefaultAsync(c => c.Id == request.Id);
-            //var responseDto = await _context.Cards.ProjectTo<CardDto>(_mapper.ConfigurationProvider).Include(c => c.Taps).FirstOrDefaultAsync(c => c.Id == request.Id);
-            var response = await _context.Cards.Include(c => c.Supplier).Include(c => c.Taps).ThenInclude(c => c.Device).FirstOrDefaultAsync(c => c.Id == request.Id);
+            var response = await _context.Cards
+                                            .Include(c => c.Supplier)
+                                            .Include(c => c.Product)
+                                            .Include(c => c.Pass)
+                                            .Include(c => c.Taps)
+                                                .ThenInclude(c => c.Device)
+                                            .FirstOrDefaultAsync(c => c.Id == request.Id);
             var responseDto = _mapper.Map<CardDto>(response);
             return responseDto;
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,8 @@ namespace TapLog.Application.Cards.Commands.CreateCard
         public string Number { get; set; }
         public string Alias { get; set; }
         public int SupplierId { get; set; }
+        public int? ProductId { get; set; }
+        public int? PassId { get; set; }
     }
 
     public class CreateCardCommandHandler : IRequestHandler<CreateCardCommand, int>
@@ -33,12 +36,41 @@ namespace TapLog.Application.Cards.Commands.CreateCard
 
         public async Task<int> Handle(CreateCardCommand request, CancellationToken cancellationToken)
         {
+            var supplierEntity = await _context.Suppliers.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.SupplierId);
+            if (supplierEntity == null)
+            {
+                throw new NotFoundException(nameof(Product), request.ProductId);
+            }
+
+            Pass passEntity = null;
+            if (request.PassId != null)
+            {
+                passEntity = await _context.Passes.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.PassId);
+                if (passEntity == null)
+                {
+                    throw new NotFoundException(nameof(Pass), request.PassId);
+                }
+            }
+
+            Product productEntity = null;
+            if (request.ProductId != null)
+            {
+                productEntity = await _context.Products.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.ProductId);
+                if (productEntity == null)
+                {
+                    throw new NotFoundException(nameof(Product), request.ProductId);
+                }
+            }
+
+
             //Map request to entity
             var entity = new Card
             {
                 Number = request.Number,
                 Alias = request.Alias,
-                SupplierId = request.SupplierId
+                SupplierId = request.SupplierId,
+                PassId = request?.PassId ?? null,
+                ProductId = request?.ProductId ?? null
             };
 
             _context.Cards.Add(entity);

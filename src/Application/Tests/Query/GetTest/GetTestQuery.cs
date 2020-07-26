@@ -45,6 +45,16 @@ namespace TapLog.Application.Tests.Query.GetTest
                                              .ThenInclude(st => st.TestExecutions)
                                                  .ThenInclude(te => te.Taps)
                                                      .ThenInclude(t => t.Device)
+                                          //.Include(t => t.StageTests)
+                                          //   .ThenInclude(st => st.TestExecutions)
+                                          //       .ThenInclude(te => te.Taps)
+                                          //           .ThenInclude(t => t.Card)
+                                          //              .ThenInclude(t => t.Product)
+                                          //.Include(t => t.StageTests)
+                                          //   .ThenInclude(st => st.TestExecutions)
+                                          //       .ThenInclude(te => te.Taps)
+                                          //           .ThenInclude(t => t.Card)
+                                          //              .ThenInclude(t => t.Pass)
                                           .FirstOrDefaultAsync(d => d.Id == request.Id);
             var responseDto2 = _mapper.Map<Test, TestDto>(response);
 

@@ -30,21 +30,13 @@ namespace TapLog.Application.Cards.Query.GetCards
 
         public async Task<List<CardDto>> Handle(GetCardsQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _context.Cards.Include(c => c.Supplier).Include(c => c.Taps).ThenInclude(c => c.Device).ToListAsync();
+            var entities = await _context.Cards
+                                         .Include(c => c.Supplier)
+                                         .Include(c => c.Product)
+                                         .Include(c => c.Pass)
+                                         .Include(c => c.Taps)
+                                             .ThenInclude(c => c.Device).ToListAsync();
             var responseDto = _mapper.Map<List<Card>, List<CardDto>>(entities);
-
-            //var response = new TapsDto
-            //                {
-            //    //PriorityLevels = Enum.GetValues(typeof(PriorityLevel))
-            //    //    .Cast<PriorityLevel>()
-            //    //    .Select(p => new PriorityLevelDto { Value = (int)p, Name = p.ToString() })
-            //    //    .ToList(),
-
-            //    //Lists = await _context.TodoLists
-            //    //    .ProjectTo<TodoListDto>(_mapper.ConfigurationProvider)
-            //    //    .OrderBy(t => t.Title)
-            //    //    .ToListAsync(cancellationToken)
-            //};
 
             return responseDto;
         }

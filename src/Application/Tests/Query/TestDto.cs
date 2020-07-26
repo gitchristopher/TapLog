@@ -51,7 +51,8 @@ namespace TapLog.Application.Tests.Query
             public decimal? BalanceAfter { get; set; }
             public string Notes { get; set; }
             public TapAction Action { get; set; }
-
+            public string Pass { get; set; }
+            public string Product { get; set; }
             public void Mapping(Profile profile)
             {
                 profile.CreateMap<Tap, TapDto>()

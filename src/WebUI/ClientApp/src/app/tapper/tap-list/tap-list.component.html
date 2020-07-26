@@ -213,6 +213,40 @@
               </div>
             </div>
 
+            <div class="tl-product">
+              <div *ngIf="isEditing != tap.id;else productFormItem"><span class="hiddenInfo" [ngStyle]="{'color': (tap.product==null) ? '#bdbdbd' : '#000000'}">Product: </span>
+                {{tap.product}}
+              </div>
+              <ng-template #productFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Product</mat-label>
+                  <mat-select formControlName="product">
+                    <mat-option [value]="null" >None</mat-option>
+                    <mat-option *ngFor="let p of productList" [value]="p.id" style="width: 100%;">
+                      {{p.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
+            <div class="tl-pass">
+              <div *ngIf="isEditing != tap.id;else passFormItem" [ngStyle]="{'color': (tap.product==null) ? '#bdbdbd' : '#000000'}"><span class="hiddenInfo">Pass: </span>
+                {{tap.pass}}
+              </div>
+              <ng-template #passFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Pass</mat-label>
+                  <mat-select formControlName="pass">
+                    <mat-option [value]="null" >None</mat-option>
+                    <mat-option *ngFor="let p of passList" [value]="p.id" style="width: 100%;">
+                      {{p.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
             <div class="tl-edit">
               <ng-container [ngSwitch]="isEditing">
                 <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton" type="button" (click)="editTap(tap.id)">
