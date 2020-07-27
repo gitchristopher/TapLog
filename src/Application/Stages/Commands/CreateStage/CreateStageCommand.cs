@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -38,6 +39,15 @@ namespace TapLog.Application.Stages.Commands.CreateStage
                 Name = request.Name,
                 IsCurrent = request.IsCurrent
             };
+
+            if (request.IsCurrent)
+            {
+                var current = await _context.Stages.FirstOrDefaultAsync(x => x.IsCurrent == true);
+                if (current != null)
+                {
+                    current.IsCurrent = false;
+                }
+            }
 
             _context.Stages.Add(entity);
 

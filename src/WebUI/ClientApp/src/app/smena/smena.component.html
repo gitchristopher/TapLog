@@ -1,4 +1,4 @@
-<mat-sidenav-container style="background-color: yellow;">
+<mat-sidenav-container>
   
   <mat-sidenav #sidenav mode="side" opened [fixedTopGap]="52" [fixedInViewport]="true">
     <mat-selection-list #entity [multiple]="false">
@@ -14,6 +14,7 @@
     <p>
       Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
     </p>
+    <app-admin-etap></app-admin-etap>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

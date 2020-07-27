@@ -20,3 +20,6 @@ body {
   border-left: 5px solid #a94442;
 }
 
+.cdk-global-overlay-wrapper, .cdk-overlay-container {
+  z-index: 99999 !important;
+}

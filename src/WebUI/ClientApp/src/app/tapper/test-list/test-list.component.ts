@@ -101,13 +101,13 @@ export class TestListComponent implements OnInit, OnChanges {
     this.testsClient.create(CreateTestCommand.fromJS(test)).subscribe(
         result => {
           if (result < 0) {
-            this.addTestEditor.error = 'Stage doesnot exist or Test already exists for this stage.';
+            this.addTestEditor.error = 'Stage does not exist or Test already exists for this stage.';
           } else {
             const newTest = new TestDto({id: result, jiraTestNumber: test.jiraTestNumber});
-              this.testList.push(newTest);
-              this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
-              this.addTestModalRef.hide();
-              this.addTestEditor = {};
+            this.testList.push(newTest);
+            this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
+            this.addTestModalRef.hide();
+            this.addTestEditor = {};
           }
         },
         error => {
@@ -128,8 +128,8 @@ export class TestListComponent implements OnInit, OnChanges {
       const index = this.testList.findIndex(x => x.id === id);
       this.testList.splice(index, 1);
       this.select(null);
-
-      this.testsClient.delete(id).subscribe(response => {
+      const stageId = this.selectedStage.id;
+      this.testsClient.delete(id, stageId).subscribe(response => {
         // TODO: What to do with NoContent response?
       }, error => {
         console.error('Error deleting tap id: ' + id + ' ' + error);
@@ -147,18 +147,12 @@ export class TestListComponent implements OnInit, OnChanges {
     this.testsClient.update(testId, new UpdateTestCommand({id: testId, jiraTestNumber: newTitle})).subscribe( result => {
       this.selectedTest = null;
       this.testList.find(t => t.id === testId).jiraTestNumber = newTitle;
-      // this.select(testId);
       // TODO: what to do with NoContent response
       this.updateTestModalRef.hide();
       this.updateTestEditor = {};
     }, error => {
       console.error('Error updating test id: ' + testId + ' ' + error);
-      const errors = JSON.parse(error.response);
-      if (errors && errors.Title) {
-        this.addTestEditor.error = errors.Title[0];
-      }
-
-      setTimeout(() => document.getElementById('title').focus(), 250);
+      this.updateTestEditor.error = 'An error occured, the Test Name may already exist';
     });
   }
 }

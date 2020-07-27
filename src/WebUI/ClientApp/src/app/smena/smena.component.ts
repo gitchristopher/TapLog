@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { IStageDto, StageDto } from '../taplog-api';
 
 interface IMenuItem {
   title: string;
   icon: string;
 }
+
+
 
 @Component({
   selector: 'app-smena',
@@ -24,9 +27,16 @@ export class SmenaComponent implements OnInit {
     {title: 'Tests', icon: 'assignment'}
   ];
 
+  columnList: string[] = ['id', 'name', 'isCurrent'];
+  wanted: string[] = ['name', 'isCurrent'];
   constructor() { }
 
   ngOnInit() {
+    type StagePropsArray = Array<keyof IStageDto>;
+    const stageProps: StagePropsArray = Object.keys(new StageDto()) as StagePropsArray;
+
+
+
   }
 
 }

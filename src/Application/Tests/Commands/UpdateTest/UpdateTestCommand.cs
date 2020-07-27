@@ -48,10 +48,13 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
             var existingTest = await _context.Tests.FirstOrDefaultAsync(x => x.JiraTestNumber == jiraNumber);
             if (existingTest == null)
             {
-                return Unit.Value; // TODO fix returns
+                entity.JiraTestNumber = jiraNumber;
             }
-            // Update the entity
-            entity.JiraTestNumber = jiraNumber;
+            else
+            {
+                // TODO Fix the return statements 
+                throw new NotFoundException(nameof(Test), request.Id);
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -63,7 +66,7 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
             // Replace invalid characters with empty strings.
             try
             {
-                return Regex.Replace(strIn, @"[^\w\.@-]", "",
+                return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
                                      RegexOptions.None, TimeSpan.FromSeconds(1.5));
             }
             // If we timeout when replacing invalid characters,

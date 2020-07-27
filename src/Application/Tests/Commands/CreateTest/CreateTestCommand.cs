@@ -11,6 +11,8 @@ using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System;
 
 namespace TapLog.Application.Tests.Commands.CreateTest
 {
@@ -37,46 +39,54 @@ namespace TapLog.Application.Tests.Commands.CreateTest
             var stage = await _context.Stages.FindAsync(request.StageId);
             if (stage == null)
             {
-                return -1;
+                throw new NotFoundException(nameof(Stage), request.StageId);
             }
 
             var newEntity = new StageTest
             {
-                StageId = request.StageId
+                Stage = stage
             };
 
-            var jiraTestNumber = request.JiraTestNumber.Trim();
-            
-            var existingTest = await _context.StageTests.Where(x => x.Test.JiraTestNumber == jiraTestNumber).FirstOrDefaultAsync();
-            
+            var jiraNumber = CleanInput(request.JiraTestNumber).Trim();
+
+            //var existingTest = await _context.StageTests.Include(st => st.Test).Include(st => st.Stage).Where(x => x.Test.JiraTestNumber == jiraNumber).FirstOrDefaultAsync();
+            var existingTest = await _context.Tests.Include(t => t.StageTests).Where(x => x.JiraTestNumber == jiraNumber).FirstOrDefaultAsync();
             if (existingTest != null)
             {
-                if (existingTest.StageId == request.StageId)
+                if (existingTest.StageTests.Where(x => x.StageId == request.StageId).FirstOrDefault() != null)
                 {
                     // Test already exists for the requested stage
                     return -1;
                 }
 
                 // Add the existing test to the requested stage
-                newEntity.TestId = existingTest.TestId;
-
-                _context.StageTests.Add(newEntity);
+                newEntity.Test = existingTest;
             }
             else
             {
                 // Test doesnt exist so add it to the DB
-                var entity = new Test
-                {
-                    JiraTestNumber = jiraTestNumber
-                };
-                _context.Tests.Add(entity);
-                newEntity.TestId = entity.Id;
-                _context.StageTests.Add(newEntity);
+                newEntity.Test = new Test { JiraTestNumber = jiraNumber };
             }
 
+            _context.StageTests.Add(newEntity);
             await _context.SaveChangesAsync(cancellationToken);
 
             return newEntity.TestId;
+        }
+        private static string CleanInput(string strIn)
+        {
+            // Replace invalid characters with empty strings.
+            try
+            {
+                return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
+                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            }
+            // If we timeout when replacing invalid characters,
+            // we should return Empty.
+            catch (RegexMatchTimeoutException)
+            {
+                return String.Empty;
+            }
         }
     }
 

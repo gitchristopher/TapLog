@@ -31,6 +31,8 @@ import { TapListComponent } from './tapper/tap-list/tap-list.component';
 import { StolComponent } from './stol/stol.component';
 import { ZaprosComponent } from './stol/zapros/zapros.component';
 import { SmenaComponent } from './smena/smena.component';
+import { UchetComponent } from './smena/uchet/uchet.component';
+import { AdminEtapComponent } from './smena/admin-etap/admin-etap.component';
 
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
@@ -68,6 +70,7 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { MatTableExporterModule } from 'mat-table-exporter';
 
@@ -110,7 +113,9 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       SpisokTestovComponent,
       StolComponent,
       ZaprosComponent,
-      SmenaComponent
+      SmenaComponent,
+      UchetComponent,
+      AdminEtapComponent
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -154,6 +159,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
     MatBadgeModule,
     MatMenuModule,
     MatSidenavModule,
+    MatDialogModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

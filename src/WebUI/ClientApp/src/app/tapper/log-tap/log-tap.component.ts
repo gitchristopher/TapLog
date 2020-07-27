@@ -117,8 +117,8 @@ export class LogTapComponent implements OnInit, OnChanges {
           const newTap = new TapDto2(data);
           newTap.id = result;
           newTap.timeOf = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);
-          newTap.pass = this.passList.find(x => x.id === tap.passId).name;
-          newTap.product = this.productList.find(x => x.id === tap.productId).name;
+          newTap.pass = this.passList.find(x => x.id === tap.passId)?.name;
+          newTap.product = this.productList.find(x => x.id === tap.productId)?.name;
           this.selectedExecution.taps.push(newTap);
           this.submitted = true;
           this.updateTapForm();

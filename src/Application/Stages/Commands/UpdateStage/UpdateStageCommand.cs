@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,6 +41,15 @@ namespace TapLog.Application.Stages.Commands.UpdateStage
             if (entity == null)
             {
                 throw new NotFoundException(nameof(Stage), request.Id);
+            }
+
+            if (request.IsCurrent && entity.IsCurrent != true)
+            {
+                var current = await _context.Stages.FirstOrDefaultAsync(x => x.IsCurrent == true);
+                if (current != null)
+                {
+                    current.IsCurrent = false;
+                }
             }
 
             // Update the entity
