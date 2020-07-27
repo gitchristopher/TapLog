@@ -33,6 +33,10 @@ import { ZaprosComponent } from './stol/zapros/zapros.component';
 import { SmenaComponent } from './smena/smena.component';
 import { UchetComponent } from './smena/uchet/uchet.component';
 import { AdminEtapComponent } from './smena/admin-etap/admin-etap.component';
+import { AdminSkhemaComponent } from './smena/admin-skhema/admin-skhema.component';
+import { AdminBumagaComponent } from './smena/admin-bumaga/admin-bumaga.component';
+import { AdminTovarComponent } from './smena/admin-tovar/admin-tovar.component';
+import { AdminUstroystvoComponent } from './smena/admin-ustroystvo/admin-ustroystvo.component';
 
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
@@ -115,7 +119,11 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       ZaprosComponent,
       SmenaComponent,
       UchetComponent,
-      AdminEtapComponent
+      AdminEtapComponent,
+      AdminSkhemaComponent,
+      AdminBumagaComponent,
+      AdminTovarComponent,
+      AdminUstroystvoComponent
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

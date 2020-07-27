@@ -1,0 +1,16 @@
+.mat-column-edit,
+.mat-column-delete,
+.mat-column-zone,
+.mat-column-id {
+  width: 75px;
+}
+
+.mat-column-latitude,
+.mat-column-longitude,
+.mat-column-code{
+  width: 150px;
+}
+
+.mat-column-name  {
+  width: 300px;
+}

@@ -1,0 +1,113 @@
+<p>
+  admin-skhema works!
+</p>
+<div class="d-inline-flex flex-column">
+  <div class="pb-3 d-flex justify-content-between">
+    <button mat-raised-button (click)="refresh()">Refresh</button>
+    <button mat-raised-button color="primary" (click)="openCreateModal(createModalTemplate)">Create New Supplier</button>
+  </div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-mini-fab color="accent" type="button" (click)="openUpdateModal(element, updateModalTemplate)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-mini-fab color="warn" type="button" (click)="deleteEntity(element.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="columnList"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnList;"></tr>
+  </table>
+</div>
+
+
+
+
+<ng-template #updateModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="updateCancelled()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <form [formGroup]="ufg" class="d-flex flex-column p-5">
+    <mat-form-field appearance="outline">
+      <mat-label>Supplier Id</mat-label>
+      <input matInput [formControl]="ufg.controls['id']">
+      <mat-error *ngIf="this.ufg.controls['id'].hasError('required')">Please enter a value.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Supplier Name</mat-label>
+      <input matInput [formControl]="ufg.controls['name']">
+      <mat-error *ngIf="this.ufg.controls['name'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 32 character.</mat-error>
+    </mat-form-field>
+
+    <div *ngIf="debug">
+      <pre>{{ selectedEntity | json }}</pre>
+      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <div class="text-right">
+      <button class="btn btn-default" (click)="updateCancelled()">Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="updateEntity()" [disabled]="(this.selectedEntity === null || !this.ufg.valid)">Update</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #createModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="createCancelled()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <form [formGroup]="cfg"  class="d-flex flex-column p-5">
+
+    <mat-form-field appearance="outline" class="pb-5">
+      <mat-label>Supplier Name</mat-label>
+      <input matInput required [formControl]="cfg.controls['name']">
+      <mat-error *ngIf="this.cfg.controls['name'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 32 character.</mat-error>
+    </mat-form-field>
+
+    <div *ngIf="debug">
+      <pre>{{ newEntity | json }}</pre>
+      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <div class="text-right">
+      <button class="btn btn-default" (click)="createCancelled()">Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="createEntity()" [disabled]="(!this.cfg.valid)">Create</button>
+    </div>
+  </div>
+</ng-template>

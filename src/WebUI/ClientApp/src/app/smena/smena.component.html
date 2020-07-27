@@ -11,10 +11,23 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
+    <app-admin-etap></app-admin-etap>
     <p>
       Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
     </p>
-    <app-admin-etap></app-admin-etap>
+    <app-admin-skhema></app-admin-skhema>
+    <p>
+      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
+    </p>
+    <app-admin-bumaga></app-admin-bumaga>
+    <p>
+      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
+    </p>
+    <app-admin-tovar></app-admin-tovar>
+    <p>
+      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
+    </p>
+    <app-admin-ustroystvo></app-admin-ustroystvo>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

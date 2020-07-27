@@ -1,0 +1,14 @@
+.mat-column-edit,
+.mat-column-delete,
+.mat-column-id {
+  width: 75px;
+}
+
+.mat-column-isCurrent{
+  width: 100px;
+}
+
+
+.mat-column-name  {
+  width: 250px;
+}
