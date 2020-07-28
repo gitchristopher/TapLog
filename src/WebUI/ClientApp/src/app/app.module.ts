@@ -37,6 +37,7 @@ import { AdminSkhemaComponent } from './smena/admin-skhema/admin-skhema.componen
 import { AdminBumagaComponent } from './smena/admin-bumaga/admin-bumaga.component';
 import { AdminTovarComponent } from './smena/admin-tovar/admin-tovar.component';
 import { AdminUstroystvoComponent } from './smena/admin-ustroystvo/admin-ustroystvo.component';
+import { AdminOtkrytkaComponent } from './smena/admin-otkrytka/admin-otkrytka.component';
 
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
 import { ExpectedEnumPipe } from '../_pipes/ExpectedEnumPipe';
@@ -123,7 +124,8 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       AdminSkhemaComponent,
       AdminBumagaComponent,
       AdminTovarComponent,
-      AdminUstroystvoComponent
+      AdminUstroystvoComponent,
+      AdminOtkrytkaComponent
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

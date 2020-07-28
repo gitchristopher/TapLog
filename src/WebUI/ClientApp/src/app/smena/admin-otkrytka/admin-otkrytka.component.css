@@ -1,0 +1,14 @@
+.mat-column-edit,
+.mat-column-delete,
+.mat-column-taps,
+.mat-column-id {
+  width: 75px;
+}
+
+.mat-column-passName,
+.mat-column-productName,
+.mat-column-supplierName,
+.mat-column-alias,
+.mat-column-number {
+  width: 250px;
+}
