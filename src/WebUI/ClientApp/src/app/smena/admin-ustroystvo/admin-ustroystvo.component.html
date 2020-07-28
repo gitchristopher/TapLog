@@ -41,7 +41,7 @@
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let element">
-        <button mat-mini-fab color="accent" type="button" (click)="openUpdateModal(element, updateModalTemplate)">
+        <button mat-icon-button color="accent" type="button" (click)="openUpdateModal(element, updateModalTemplate)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
@@ -49,7 +49,7 @@
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let element">
-        <button mat-mini-fab color="warn" type="button" (click)="deleteEntity(element.id)">
+        <button mat-icon-button color="warn" type="button" (click)="deleteEntity(element.id)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
@@ -81,37 +81,37 @@
     <mat-form-field appearance="outline">
       <mat-label>Device Code</mat-label>
       <input matInput [formControl]="ufg.controls['code']">
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 32 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['code'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['code'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['code'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Name</mat-label>
       <input matInput [formControl]="ufg.controls['name']">
       <mat-error *ngIf="this.ufg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 64 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxlength')">Name must be at most 64 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Zone</mat-label>
       <input matInput [formControl]="ufg.controls['zone']" type="number">
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 2 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['zone'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['zone'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['zone'].hasError('maxlength')">Name must be at most 2 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Latitude</mat-label>
       <input matInput [formControl]="ufg.controls['latitude']">
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 16 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['latitude'].hasError('maxlength')">Name must be at most 16 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Longitude</mat-label>
       <input matInput [formControl]="ufg.controls['longitude']">
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxLength')">Name must be at most 16 character.</mat-error>
+      <mat-error *ngIf="this.ufg.controls['longitude'].hasError('maxlength')">Name must be at most 16 character.</mat-error>
     </mat-form-field>
 
     <div *ngIf="debug">
@@ -141,37 +141,37 @@
     <mat-form-field appearance="outline">
       <mat-label>Device Code</mat-label>
       <input matInput [formControl]="cfg.controls['code']">
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 32 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['code'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['code'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['code'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Name</mat-label>
       <input matInput [formControl]="cfg.controls['name']">
       <mat-error *ngIf="this.cfg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 64 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxlength')">Name must be at most 64 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Zone</mat-label>
       <input matInput [formControl]="cfg.controls['zone']" type="number">
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('minLength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 2 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['zone'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['zone'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['zone'].hasError('maxlength')">Name must be at most 2 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Latitude</mat-label>
       <input matInput [formControl]="cfg.controls['latitude']">
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 16 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['latitude'].hasError('maxlength')">Name must be at most 16 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Device Longitude</mat-label>
       <input matInput [formControl]="cfg.controls['longitude']">
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxLength')">Name must be at most 16 character.</mat-error>
+      <mat-error *ngIf="this.cfg.controls['longitude'].hasError('maxlength')">Name must be at most 16 character.</mat-error>
     </mat-form-field>
 
     <div *ngIf="debug">

@@ -13,14 +13,14 @@
   <mat-sidenav-content class="sidenav-content">
     <p> Option selected: {{entity.selectedOptions.selected[0]?.value.title}} </p>
     <div [ngSwitch]="this.selected">
-      <div *ngSwitchCase="this.sections[0]">Cards</div> <!-- Cards       -->
+      <div *ngSwitchCase="this.sections[0]"><app-admin-otkrytka></app-admin-otkrytka></div>       <!-- Cards       -->
       <div *ngSwitchCase="this.sections[1]"><app-admin-ustroystvo></app-admin-ustroystvo></div>   <!-- Devices     -->
       <div *ngSwitchCase="this.sections[2]"><app-admin-bumaga></app-admin-bumaga></div>           <!-- Passes      -->
       <div *ngSwitchCase="this.sections[3]"><app-admin-tovar></app-admin-tovar></div>             <!-- Products    -->
       <div *ngSwitchCase="this.sections[4]"><app-admin-etap></app-admin-etap></div>               <!-- Stages      -->
       <div *ngSwitchCase="this.sections[5]"><app-admin-skhema></app-admin-skhema></div>           <!-- Suppliers   -->
-      <div *ngSwitchCase="this.sections[6]">Taps</div> <!-- Taps        -->
-      <div *ngSwitchCase="this.sections[7]">Executions</div> <!-- Executions  -->
+      <div *ngSwitchCase="this.sections[6]">Taps can be updated or deleted from the logger page, they can be viewed on the query page.</div> <!-- Taps        -->
+      <div *ngSwitchCase="this.sections[7]">Executions can be viewed, updated, or deleted from the logger page.</div> <!-- Executions  -->
       <div *ngSwitchCase="this.sections[8]">Tests</div> <!-- Tests       -->
       <div *ngSwitchDefault>Admin</div>
     </div>
