@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { StageDto, StagesClient, IUpdateStageCommand, UpdateStageCommand, CreateStageCommand, DeviceDto, DevicesClient, UpdateDeviceCommand, CreateDeviceCommand, DeviceD, DeviceDtotoDeviceDt, DevicesClien, UpdateDeviceCommand, CreateDeviceCommandto } from 'src/app/taplog-api';
+import { StageDto, StagesClient, IUpdateStageCommand, UpdateStageCommand, CreateStageCommand, DeviceDto, DevicesClient, UpdateDeviceCommand, CreateDeviceCommand, DeviceD, DeviceDtotoDeviceDt, DevicesClien, UpdateDeviceCommand, ICreateDeviceCommand, IUpdateDeviceCommand } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
@@ -64,16 +64,10 @@ export class AdminUstroystvoComponent implements OnInit {
   }
 
   updateEntity() {
-    this.selectedEntity.code = this.ufg.value.code;
-    this.selectedEntity.name = this.ufg.value.name;
-    this.selectedEntity.zone = Number(this.ufg.value.zone);
-    this.selectedEntity.latitude = this.ufg.value.latitude ?? '';
-    this.selectedEntity.longitude = this.ufg.value.longitude ?? '';
-    const updatedEntity = UpdateDeviceCommand.fromJS(this.selectedEntity);
+    const updateEntityCommand = this.createUpdatedEntityFromForm();
 
-    this.devicesClient.update(updatedEntity.id, updatedEntity).subscribe(
+    this.devicesClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
-          // this.refresh();
           const index = this.dataSource.findIndex(x => x.id === this.selectedEntity.id);
           this.dataSource.splice(index, 1, this.selectedEntity);
           this.table.renderRows();
@@ -90,24 +84,31 @@ export class AdminUstroystvoComponent implements OnInit {
         }
     );
   }
-  createEntity() {
-    this.newEntity.code = this.cfg.value.code;
-    this.newEntity.name = this.cfg.value.name;
-    this.newEntity.zone = Number(this.cfg.value.zone);
-    this.newEntity.latitude = this.cfg.value.latitude ?? '';
-    this.newEntity.longitude = this.cfg.value.longitude ?? '';
-    const entity = CreateDeviceCommand.fromJS(this.newEntity);
+
+  private createUpdatedEntityFromForm() {
+    this.selectedEntity.code = this.ufg.value.code;
+    this.selectedEntity.name = this.ufg.value.name;
+    this.selectedEntity.zone = Number(this.ufg.value.zone);
+    this.selectedEntity.latitude = this.ufg.value.latitude ?? '';
+    this.selectedEntity.longitude = this.ufg.value.longitude ?? '';
+    const updatedEntity = UpdateDeviceCommand.fromJS(this.selectedEntity);
+    return updatedEntity;
+  }
+
+  saveEntity() {
+    const entity = this.createNewEntityFromForm();
 
     this.devicesClient.create(entity).subscribe(
         result => {
           if (result > 0) {
-            const index = this.dataSource.findIndex(x => x.id === this.selectedEntity.id);
             this.newEntity.id = result;
             this.dataSource.push(DeviceDto.fromJS(this.newEntity));
             this.table.renderRows();
+            this.modalEditor.errors = null;
+            this.createModalRef.hide();
+          } else {
+            this.modalEditor.errors.push('An error occured while saving the new device.');
           }
-          this.modalEditor.errors = null;
-          this.createModalRef.hide();
         },
         error => {
             const errors = JSON.parse(error.response);
@@ -120,26 +121,39 @@ export class AdminUstroystvoComponent implements OnInit {
     );
   }
 
+  private createNewEntityFromForm() {
+    this.newEntity = new DeviceDto();
+    this.newEntity.code = this.cfg.value.code;
+    this.newEntity.name = this.cfg.value.name;
+    this.newEntity.zone = Number(this.cfg.value.zone);
+    this.newEntity.latitude = this.cfg.value.latitude ?? '';
+    this.newEntity.longitude = this.cfg.value.longitude ?? '';
+    const entity = CreateDeviceCommand.fromJS(this.newEntity);
+    return entity;
+  }
+
   openUpdateModal(entity: DeviceDto, template: TemplateRef<any>) {
-    this.selectedEntity = DeviceDto.fromJS(this.dataSource.find(x => x.id === entity.id));
-    this.modalEditor.title = 'Update Device: ' + this.selectedEntity.name;
-    this.ufg.get('code').setValue(this.selectedEntity.code);
-    this.ufg.get('name').setValue(this.selectedEntity.name);
-    this.ufg.get('zone').setValue(this.selectedEntity.zone);
-    this.ufg.get('latitude').setValue(this.selectedEntity.latitude);
-    this.ufg.get('longitude').setValue(this.selectedEntity.longitude);
-    this.ufg.get('id').setValue(this.selectedEntity.id);
-    this.ufg.get('id').disable();
+    this.setUpdateModalFieldValues(entity);
     this.updateModalRef = this.modalService.show(template);
   }
+
+  private setUpdateModalFieldValues(entity: DeviceDto) {
+    const updatedEntity = DeviceDto.fromJS(this.dataSource.find(x => x.id === entity.id));
+
+    this.ufg.get('code').setValue(updatedEntity.code);
+    this.ufg.get('name').setValue(updatedEntity.name);
+    this.ufg.get('zone').setValue(updatedEntity.zone);
+    this.ufg.get('latitude').setValue(updatedEntity.latitude);
+    this.ufg.get('longitude').setValue(updatedEntity.longitude);
+    this.ufg.get('id').setValue(updatedEntity.id);
+
+    this.ufg.get('id').disable();
+    this.modalEditor.title = 'Update Device: ' + updatedEntity.name;
+    this.selectedEntity = updatedEntity;
+  }
+
   openCreateModal(template: TemplateRef<any>) {
-    this.newEntity = new DeviceDto();
     this.modalEditor.title = 'Create New Device';
-    this.cfg.get('code').setValue('');
-    this.cfg.get('name').setValue('');
-    this.cfg.get('zone').setValue('');
-    this.cfg.get('latitude').setValue('');
-    this.cfg.get('longitude').setValue('');
     this.createModalRef = this.modalService.show(template);
   }
 

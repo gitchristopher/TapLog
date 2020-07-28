@@ -1,7 +1,7 @@
 <mat-sidenav-container>
   
   <mat-sidenav #sidenav mode="side" opened [fixedTopGap]="52" [fixedInViewport]="true">
-    <mat-selection-list #entity [multiple]="false">
+    <mat-selection-list #entity [multiple]="false" (selectionChange)="selectMenuItem($event)">
       <mat-list-option *ngFor="let section of sections; last as last" [value]="section">
         <mat-icon mat-list-icon>{{section.icon}}</mat-icon>
         <h4 mat-line>{{section.title}}</h4>
@@ -11,23 +11,19 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <app-admin-etap></app-admin-etap>
-    <p>
-      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
-    </p>
-    <app-admin-skhema></app-admin-skhema>
-    <p>
-      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
-    </p>
-    <app-admin-bumaga></app-admin-bumaga>
-    <p>
-      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
-    </p>
-    <app-admin-tovar></app-admin-tovar>
-    <p>
-      Option selected: {{entity.selectedOptions.selected[0]?.value.title}}
-    </p>
-    <app-admin-ustroystvo></app-admin-ustroystvo>
+    <p> Option selected: {{entity.selectedOptions.selected[0]?.value.title}} </p>
+    <div [ngSwitch]="this.selected">
+      <div *ngSwitchCase="this.sections[0]">Cards</div> <!-- Cards       -->
+      <div *ngSwitchCase="this.sections[1]"><app-admin-ustroystvo></app-admin-ustroystvo></div>   <!-- Devices     -->
+      <div *ngSwitchCase="this.sections[2]"><app-admin-bumaga></app-admin-bumaga></div>           <!-- Passes      -->
+      <div *ngSwitchCase="this.sections[3]"><app-admin-tovar></app-admin-tovar></div>             <!-- Products    -->
+      <div *ngSwitchCase="this.sections[4]"><app-admin-etap></app-admin-etap></div>               <!-- Stages      -->
+      <div *ngSwitchCase="this.sections[5]"><app-admin-skhema></app-admin-skhema></div>           <!-- Suppliers   -->
+      <div *ngSwitchCase="this.sections[6]">Taps</div> <!-- Taps        -->
+      <div *ngSwitchCase="this.sections[7]">Executions</div> <!-- Executions  -->
+      <div *ngSwitchCase="this.sections[8]">Tests</div> <!-- Tests       -->
+      <div *ngSwitchDefault>Admin</div>
+    </div>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

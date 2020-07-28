@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IStageDto, StageDto } from '../taplog-api';
+import { MatSelectionListChange } from '@angular/material/list';
 
 interface IMenuItem {
   title: string;
@@ -14,6 +15,7 @@ interface IMenuItem {
   styleUrls: ['./smena.component.css']
 })
 export class SmenaComponent implements OnInit {
+  selected: string = null;
 
   sections: IMenuItem[] = [
     {title: 'Cards', icon: 'payment'},
@@ -32,11 +34,11 @@ export class SmenaComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    type StagePropsArray = Array<keyof IStageDto>;
-    const stageProps: StagePropsArray = Object.keys(new StageDto()) as StagePropsArray;
-
-
-
+    // type StagePropsArray = Array<keyof IStageDto>;
+    // const stageProps: StagePropsArray = Object.keys(new StageDto()) as StagePropsArray;
   }
 
+  selectMenuItem(e: MatSelectionListChange) {
+    this.selected = e.option.value;
+  }
 }
