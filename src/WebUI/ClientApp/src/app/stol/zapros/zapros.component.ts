@@ -27,8 +27,8 @@ export class ZaprosComponent implements OnInit {
     this.queryForm = new FormGroup({
       stageList: new FormControl(),
       testList: new FormControl(),
-      startDate: new FormControl(),
-      endDate: new FormControl(),
+      startDate: new FormControl({value: null, disabled: true}),
+      endDate: new FormControl({value: null, disabled: true}),
     });
 
     this.getLists();
@@ -55,14 +55,18 @@ export class ZaprosComponent implements OnInit {
 
   submit() {
     let startDate = '';
+    this.queryForm.get('startDate').enable();
     if (this.queryForm.value.startDate != null) {
       startDate = new Date(this.queryForm.value.startDate).toISOString();
     }
+    this.queryForm.get('startDate').disable();
 
+    this.queryForm.get('endDate').enable();
     let endDate = '';
     if (this.queryForm.value.endDate != null) {
       endDate = new Date(this.queryForm.value.endDate).toISOString();
     }
+    this.queryForm.get('endDate').disable();
 
     let test = null;
     if (this.queryForm.value.testList != null) {

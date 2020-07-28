@@ -11,7 +11,7 @@ export const CREATE_TEST_REQUEST = createAction('[Zapolnit] Create Test Request'
 export const CREATE_TEST_FAIL = createAction('[Zapolnit] Create Test Fail', props<{error: any}>());
 // export const CREATE_TEST_SUCCESS = createAction('[Zapolnit] Create Test Success', props<{testId: number}>());
 
-export const DELETE_TEST_REQUEST = createAction('[Zapolnit] Delete Test Request', props<{testId: number}>()); // TODO: Find better way to dela with deleting items and nocontent return
+export const DELETE_TEST_REQUEST = createAction('[Zapolnit] Delete Test Request', props<{testId: number, stageId: number}>()); // TODO: Find better way to dela with deleting items and nocontent return
 export const DELETE_TEST_FAIL = createAction('[Zapolnit] Delete Test Fail', props<{error: any}>());
 export const DELETE_TEST_SUCCESS = createAction('[Zapolnit] Delete Test Success', props<{testId: number}>());
 

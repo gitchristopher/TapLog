@@ -89,7 +89,7 @@ export class SpisokTestovComponent implements OnInit {
   deleteTest(id: number) {
     if (confirm('All taps will be lost! Are you sure to delete the test? ' + id)) {
       if (this.testsState.list.find(x => x.id === id)) {
-        this.store.dispatch(DELETE_TEST_REQUEST({testId: id}));
+        this.store.dispatch(DELETE_TEST_REQUEST({testId: id, stageId: this.selectedStageId}));
         this.store.dispatch(DESELECT_TEST());
       }
     }
