@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { StageDto, StagesClient, IUpdateStageCommand, UpdateStageCommand, CreateStageCommand, PassDto, PassesClient, UpdatePassCommand, CreatePassCommand, PassDto } from 'src/app/taplog-api';
+import { PassDto, PassesClient, UpdatePassCommand, CreatePassCommand } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';

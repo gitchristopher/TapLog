@@ -1,9 +1,10 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { CardDto, UpdateCardCommand, CreateCardCommand, CardsClient, SupplierDto, ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient, TapDto } from 'src/app/taplog-api';
+import { CardDto, UpdateCardCommand, CreateCardCommand, CardsClient, SupplierDto,
+  ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-otkrytka',
@@ -11,50 +12,40 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
   styleUrls: ['./admin-otkrytka.component.css']
 })
 export class AdminOtkrytkaComponent implements OnInit {
+  debug = true;
+
   dataSource: CardDto[] = [];
   columnList: string[] = ['id', 'number', 'alias', 'supplierName', 'productName', 'passName', 'taps', 'edit', 'delete'];
+  @ViewChild(MatTable) table: MatTable<any>;
 
-  updateModalRef: BsModalRef;
-  selectedEntity = new CardDto();
-  createModalRef: BsModalRef;
-  newEntity = new CardDto();
-  modalEditor: IModal = {title: 'Editor', errors: null };
   supplierList: SupplierDto[] = [];
   productList: ProductDto[] = [];
   passList: PassDto[] = [];
-  ufg: FormGroup;
-  cfg: FormGroup;
-  debug = true;
-  @ViewChild(MatTable) table: MatTable<any>;
+
+  updateForm: FormGroup;
+  createForm: FormGroup;
+  modalRef: BsModalRef;
+  modalEditor: IModal = {title: 'Editor', errors: null };
 
   constructor(private cardsClient: CardsClient, private passesClient: PassesClient,
     private productsClient: ProductsClient, private suppliersClient: SuppliersClient, private modalService: BsModalService) { }
 
   ngOnInit() {
-    this.ufg = new FormGroup({
+    this.updateForm = new FormGroup({
       number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       alias: new FormControl('', [Validators.maxLength(32)]),
-      supplierId: new FormControl('', [Validators.required]),
-      productId: new FormControl(''),
-      passId: new FormControl(''),
+      supplierId: new FormControl(null, [Validators.required]),
+      productId: new FormControl(),
+      passId: new FormControl(),
       id: new FormControl('', [Validators.required]),
     });
-    this.cfg = new FormGroup({
+    this.createForm = new FormGroup({
       number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       alias: new FormControl('', [Validators.maxLength(32)]),
-      supplierId: new FormControl('', [Validators.required]),
-      productId: new FormControl(''),
-      passId: new FormControl(''),
+      supplierId: new FormControl(null, [Validators.required]),
+      productId: new FormControl(),
+      passId: new FormControl(),
     });
-  }
-
-  refresh() {
-    this.cardsClient.getAll().subscribe(
-      result => {
-        this.dataSource = result;
-      },
-      error => console.error(error)
-    );
     this.passesClient.getAll().subscribe(
       result => {
         this.passList = result;
@@ -75,59 +66,66 @@ export class AdminOtkrytkaComponent implements OnInit {
     );
   }
 
-  updateCancelled() {
-    this.updateModalRef.hide();
+  refresh() {
+    this.cardsClient.getAll().subscribe(
+      result => {
+        this.dataSource = result;
+      },
+      error => console.error(error)
+    );
+  }
+
+  closeModal(form: FormGroup) {
+    form.reset();
+    this.modalRef.hide();
     this.modalEditor.errors = null;
   }
-  createCancelled() {
-    this.createModalRef.hide();
-    this.modalEditor.errors = null;
+
+  openUpdateModal(entity: CardDto, template: TemplateRef<any>) {
+    this.updateForm.patchValue(entity);
+    this.updateForm.get('id').disable();
+    this.modalEditor.title = 'Update Card: ' + entity.number;
+    this.modalRef = this.modalService.show(template);
   }
 
   updateEntity() {
-    const updateEntityCommand = this.createUpdatedEntityFromForm();
+    const updateEntityCommand = UpdateCardCommand.fromJS(this.updateForm.getRawValue());
 
     this.cardsClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
-          const index = this.dataSource.findIndex(x => x.id === this.selectedEntity.id);
-          this.dataSource.splice(index, 1, this.selectedEntity);
+          const index = this.dataSource.findIndex(x => x.id === updateEntityCommand.id);
+          const updatedEntity = this.createEntityFromForm(this.updateForm);
+          this.dataSource.splice(index, 1, updatedEntity);
           this.table.renderRows();
-          this.modalEditor.errors = null;
-          this.updateModalRef.hide();
+          this.closeModal(this.updateForm);
         },
         error => {
             const errors = JSON.parse(error.response);
             console.error('Error while updating the stage.');
-            if (errors && errors.Title) {
-                this.modalEditor.errors.push(errors.Title[0]);
+            console.error(errors);
+            if (errors && errors.title) {
+                this.modalEditor.errors = [errors];
             }
-            setTimeout(() => document.getElementById('title').focus(), 250);
         }
     );
   }
 
-  private createUpdatedEntityFromForm() {
-    this.selectedEntity.number = this.ufg.value.number;
-    this.selectedEntity.alias = this.ufg.value.alias;
-    this.selectedEntity.supplierId = Number(this.ufg.value.supplierId);
-    this.selectedEntity.productId = String(this.ufg.value.productId).length < 1 ? null : Number(this.ufg.value.productId);
-    this.selectedEntity.passId = String(this.ufg.value.passId).length < 1 ? null : Number(this.ufg.value.passId);
-    const updatedEntity = UpdateCardCommand.fromJS(this.selectedEntity);
-    return updatedEntity;
+  openCreateModal(template: TemplateRef<any>) {
+    this.modalEditor.title = 'Create New Card';
+    this.modalRef = this.modalService.show(template);
   }
 
   saveEntity() {
-    const entity = this.createNewEntityFromForm();
+    const newEntityCommand = CreateCardCommand.fromJS(this.createForm.getRawValue());
 
-    this.cardsClient.create(entity).subscribe(
+    this.cardsClient.create(newEntityCommand).subscribe(
         result => {
           if (result > 0) {
-            this.newEntity.id = result;
-            this.newEntity.taps = [];
-            this.dataSource.push(CardDto.fromJS(this.newEntity));
+            const entity = this.createEntityFromForm(this.createForm);
+            entity.id = result;
+            this.dataSource.push(entity);
             this.table.renderRows();
-            this.modalEditor.errors = null;
-            this.createModalRef.hide();
+            this.closeModal(this.createForm);
           } else {
             this.modalEditor.errors.push('An error occured while saving the new Card.');
           }
@@ -142,40 +140,13 @@ export class AdminOtkrytkaComponent implements OnInit {
     );
   }
 
-  private createNewEntityFromForm() {
-    this.newEntity = new CardDto();
-    this.newEntity.number = this.cfg.value.number;
-    this.newEntity.alias = this.cfg.value.alias;
-    this.newEntity.supplierId = Number(this.cfg.value.supplierId);
-    this.newEntity.productId = String(this.cfg.value.productId).length < 1 ? null : Number(this.cfg.value.productId);
-    this.newEntity.passId = String(this.cfg.value.passId).length < 1 ? null : Number(this.cfg.value.passId);
-    const entity = CreateCardCommand.fromJS(this.newEntity);
+  private createEntityFromForm(form: FormGroup): CardDto {
+    const entity = CardDto.fromJS(form.getRawValue());
+    entity.passName = this.passList.find(x => x.id === entity.passId)?.name;
+    entity.productName = this.productList.find(x => x.id === entity.productId)?.name;
+    entity.supplierName = this.supplierList.find(x => x.id === entity.supplierId).name;
+    entity.taps = [];
     return entity;
-  }
-
-  openUpdateModal(entity: CardDto, template: TemplateRef<any>) {
-    this.setUpdateModalFieldValues(entity);
-    this.updateModalRef = this.modalService.show(template);
-  }
-
-  private setUpdateModalFieldValues(entity: CardDto) {
-    const updatedEntity = CardDto.fromJS(this.dataSource.find(x => x.id === entity.id));
-
-    this.ufg.get('number').setValue(updatedEntity.number);
-    this.ufg.get('alias').setValue(updatedEntity.alias);
-    this.ufg.get('supplierId').setValue(updatedEntity.supplierId);
-    this.ufg.get('productId').setValue(updatedEntity.productId);
-    this.ufg.get('passId').setValue(updatedEntity.passId);
-    this.ufg.get('id').setValue(updatedEntity.id);
-
-    this.ufg.get('id').disable();
-    this.modalEditor.title = 'Update Card: ' + updatedEntity.number;
-    this.selectedEntity = updatedEntity;
-  }
-
-  openCreateModal(template: TemplateRef<any>) {
-    this.modalEditor.title = 'Create New Card';
-    this.createModalRef = this.modalService.show(template);
   }
 
   deleteEntity(id: number) {

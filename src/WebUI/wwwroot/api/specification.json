@@ -2194,7 +2194,8 @@
           },
           "productId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "productName": {
             "type": "string",
@@ -2202,7 +2203,8 @@
           },
           "passId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "passName": {
             "type": "string",

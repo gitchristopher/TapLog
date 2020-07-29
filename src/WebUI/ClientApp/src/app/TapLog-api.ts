@@ -3273,9 +3273,9 @@ export class CardDto implements ICardDto {
     alias?: string | undefined;
     supplierId?: number;
     supplierName?: string | undefined;
-    productId?: number;
+    productId?: number | undefined;
     productName?: string | undefined;
-    passId?: number;
+    passId?: number | undefined;
     passName?: string | undefined;
     taps?: TapDto[] | undefined;
 
@@ -3340,9 +3340,9 @@ export interface ICardDto {
     alias?: string | undefined;
     supplierId?: number;
     supplierName?: string | undefined;
-    productId?: number;
+    productId?: number | undefined;
     productName?: string | undefined;
-    passId?: number;
+    passId?: number | undefined;
     passName?: string | undefined;
     taps?: TapDto[] | undefined;
 }

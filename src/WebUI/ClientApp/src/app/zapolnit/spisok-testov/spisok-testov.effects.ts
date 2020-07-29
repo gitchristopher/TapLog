@@ -47,7 +47,7 @@ export class TestovEffects {
         this.actions$.pipe(
             ofType(testov.DELETE_TEST_REQUEST),
             mergeMap((action) => {
-                return this.testClient.delete(action.testId).pipe(
+                return this.testClient.delete(action.testId, action.stageId).pipe(
                     map(noContent => testov.DELETE_TEST_SUCCESS({testId: action.testId})), // TODO: Find way to update state with no return
                     catchError(error => of(testov.DELETE_TEST_FAIL({ error }))));
             })
