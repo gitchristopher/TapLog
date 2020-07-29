@@ -31,7 +31,6 @@ import { TapListComponent } from './tapper/tap-list/tap-list.component';
 import { StolComponent } from './stol/stol.component';
 import { ZaprosComponent } from './stol/zapros/zapros.component';
 import { SmenaComponent } from './smena/smena.component';
-import { UchetComponent } from './smena/uchet/uchet.component';
 import { AdminEtapComponent } from './smena/admin-etap/admin-etap.component';
 import { AdminSkhemaComponent } from './smena/admin-skhema/admin-skhema.component';
 import { AdminBumagaComponent } from './smena/admin-bumaga/admin-bumaga.component';
@@ -119,7 +118,6 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       StolComponent,
       ZaprosComponent,
       SmenaComponent,
-      UchetComponent,
       AdminEtapComponent,
       AdminSkhemaComponent,
       AdminBumagaComponent,

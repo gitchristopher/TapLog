@@ -3,7 +3,7 @@ import { DeviceDto, DevicesClient,UpdateDeviceCommand, CreateDeviceCommand } fro
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-ustroystvo',
@@ -11,35 +11,32 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
   styleUrls: ['./admin-ustroystvo.component.css']
 })
 export class AdminUstroystvoComponent implements OnInit {
+  debug = false;
+
   dataSource: DeviceDto[] = [];
   columnList: string[] = ['id', 'code', 'name', 'zone', 'latitude', 'longitude', 'edit', 'delete'];
-
-  updateModalRef: BsModalRef;
-  selectedEntity = new DeviceDto();
-  createModalRef: BsModalRef;
-  newEntity = new DeviceDto();
-  modalEditor: IModal = {title: 'Editor', errors: null };
-
-  ufg: FormGroup;
-  cfg: FormGroup;
-  debug = false;
   @ViewChild(MatTable) table: MatTable<any>;
+
+  updateForm: FormGroup;
+  createForm: FormGroup;
+  modalRef: BsModalRef;
+  modalEditor: IModal = {title: 'Editor', errors: null };
 
   constructor(private devicesClient: DevicesClient, private modalService: BsModalService) { }
 
   ngOnInit() {
-    this.ufg = new FormGroup({
+    this.updateForm = new FormGroup({
       code: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(64)]),
-      zone: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(2)]),
+      zone: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(2)]),
       latitude: new FormControl('', [Validators.maxLength(16)]),
       longitude: new FormControl('', [Validators.maxLength(16)]),
       id: new FormControl('', [Validators.required]),
     });
-    this.cfg = new FormGroup({
+    this.createForm = new FormGroup({
       code: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(64)]),
-      zone: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(2)]),
+      zone: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(2)]),
       latitude: new FormControl('', [Validators.maxLength(16)]),
       longitude: new FormControl('', [Validators.maxLength(16)]),
     });
@@ -48,113 +45,78 @@ export class AdminUstroystvoComponent implements OnInit {
   refresh() {
     this.devicesClient.getAll().subscribe(
       result => {
-        this.dataSource = result; console.log(result);
+        this.dataSource = result;
       },
       error => console.error(error)
     );
   }
 
-  updateCancelled() {
-    this.updateModalRef.hide();
-    this.modalEditor.errors = null;
-  }
-  createCancelled() {
-    this.createModalRef.hide();
-    this.modalEditor.errors = null;
+  openUpdateModal(entity: DeviceDto, template: TemplateRef<any>) {
+    this.updateForm.patchValue(entity);
+    this.updateForm.get('id').disable();
+    this.modalEditor.title = 'Update Device: ' + entity.code;
+    this.modalRef = this.modalService.show(template);
   }
 
   updateEntity() {
-    const updateEntityCommand = this.createUpdatedEntityFromForm();
+    const updateEntityCommand = UpdateDeviceCommand.fromJS(this.updateForm.getRawValue());
 
     this.devicesClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
-          const index = this.dataSource.findIndex(x => x.id === this.selectedEntity.id);
-          this.dataSource.splice(index, 1, this.selectedEntity);
+          const index = this.dataSource.findIndex(x => x.id === updateEntityCommand.id);
+          const updatedEntity = this.createEntityFromForm(this.updateForm);
+          this.dataSource.splice(index, 1, updatedEntity);
           this.table.renderRows();
-          this.modalEditor.errors = null;
-          this.updateModalRef.hide();
+          this.closeModal(this.updateForm);
         },
         error => {
-            const errors = JSON.parse(error.response);
-            console.error('Error while updating the stage.');
-            if (errors && errors.Title) {
-                this.modalEditor.errors.push(errors.Title[0]);
-            }
-            setTimeout(() => document.getElementById('title').focus(), 250);
+          this.addErrorsToModal(error);
         }
     );
-  }
-
-  private createUpdatedEntityFromForm() {
-    this.selectedEntity.code = this.ufg.value.code;
-    this.selectedEntity.name = this.ufg.value.name;
-    this.selectedEntity.zone = Number(this.ufg.value.zone);
-    this.selectedEntity.latitude = this.ufg.value.latitude ?? '';
-    this.selectedEntity.longitude = this.ufg.value.longitude ?? '';
-    const updatedEntity = UpdateDeviceCommand.fromJS(this.selectedEntity);
-    return updatedEntity;
-  }
-
-  saveEntity() {
-    const entity = this.createNewEntityFromForm();
-
-    this.devicesClient.create(entity).subscribe(
-        result => {
-          if (result > 0) {
-            this.newEntity.id = result;
-            this.dataSource.push(DeviceDto.fromJS(this.newEntity));
-            this.table.renderRows();
-            this.modalEditor.errors = null;
-            this.createModalRef.hide();
-          } else {
-            this.modalEditor.errors.push('An error occured while saving the new device.');
-          }
-        },
-        error => {
-            const errors = JSON.parse(error.response);
-            console.error('Error while creating a Device.');
-            if (errors && errors.Title) {
-                this.modalEditor.errors.push(errors.Title[0]);
-            }
-            setTimeout(() => document.getElementById('title').focus(), 250);
-        }
-    );
-  }
-
-  private createNewEntityFromForm() {
-    this.newEntity = new DeviceDto();
-    this.newEntity.code = this.cfg.value.code;
-    this.newEntity.name = this.cfg.value.name;
-    this.newEntity.zone = Number(this.cfg.value.zone);
-    this.newEntity.latitude = this.cfg.value.latitude ?? '';
-    this.newEntity.longitude = this.cfg.value.longitude ?? '';
-    const entity = CreateDeviceCommand.fromJS(this.newEntity);
-    return entity;
-  }
-
-  openUpdateModal(entity: DeviceDto, template: TemplateRef<any>) {
-    this.setUpdateModalFieldValues(entity);
-    this.updateModalRef = this.modalService.show(template);
-  }
-
-  private setUpdateModalFieldValues(entity: DeviceDto) {
-    const updatedEntity = DeviceDto.fromJS(this.dataSource.find(x => x.id === entity.id));
-
-    this.ufg.get('code').setValue(updatedEntity.code);
-    this.ufg.get('name').setValue(updatedEntity.name);
-    this.ufg.get('zone').setValue(updatedEntity.zone);
-    this.ufg.get('latitude').setValue(updatedEntity.latitude);
-    this.ufg.get('longitude').setValue(updatedEntity.longitude);
-    this.ufg.get('id').setValue(updatedEntity.id);
-
-    this.ufg.get('id').disable();
-    this.modalEditor.title = 'Update Device: ' + updatedEntity.name;
-    this.selectedEntity = updatedEntity;
   }
 
   openCreateModal(template: TemplateRef<any>) {
     this.modalEditor.title = 'Create New Device';
-    this.createModalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template);
+  }
+
+  saveEntity() {
+    const newEntityCommand = CreateDeviceCommand.fromJS(this.createForm.getRawValue());
+
+    this.devicesClient.create(newEntityCommand).subscribe(
+        result => {
+          if (result > 0) {
+            const entity = this.createEntityFromForm(this.createForm);
+            entity.id = result;
+            this.dataSource.push(entity);
+            this.table.renderRows();
+            this.closeModal(this.createForm);
+          } else {
+            this.modalEditor.errors.push('An error occured while saving the new Device.');
+          }
+        },
+        error => {
+          this.addErrorsToModal(error);
+        }
+    );
+  }
+
+  private createEntityFromForm(form: FormGroup): DeviceDto {
+    const entity = DeviceDto.fromJS(form.getRawValue());
+    return entity;
+  }
+
+  private addErrorsToModal(error: any) {
+    const errors = JSON.parse(error.response);
+    if (errors && errors.title) {
+      this.modalEditor.errors = [errors];
+    }
+  }
+
+  closeModal(form: FormGroup) {
+    form.reset();
+    this.modalRef.hide();
+    this.modalEditor.errors = null;
   }
 
   deleteEntity(id: number) {
