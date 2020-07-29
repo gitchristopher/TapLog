@@ -11,7 +11,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <p> Option selected: {{entity.selectedOptions.selected[0]?.value.title}} </p>
+    <!-- <p> Option selected: {{entity.selectedOptions.selected[0]?.value.title}} </p> -->
     <div [ngSwitch]="this.selected">
       <div *ngSwitchCase="this.sections[0]"><app-admin-otkrytka></app-admin-otkrytka></div>       <!-- Cards       -->
       <div *ngSwitchCase="this.sections[1]"><app-admin-ustroystvo></app-admin-ustroystvo></div>   <!-- Devices     -->

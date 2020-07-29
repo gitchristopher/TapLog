@@ -1,43 +1,37 @@
-<p>
-  admin-etap works!
-</p>
 <div class="d-inline-flex flex-column">
   <div class="pb-3 d-flex justify-content-between">
     <button mat-raised-button (click)="refresh()">Refresh</button>
     <button mat-raised-button color="primary" (click)="openCreateModal(createModalTemplate)">Create New Stage</button>
-    <!-- <button mat-mini-fab color="primary" class="ml-5" (click)="create()">
-      <mat-icon>add</mat-icon>
-    </button> -->
   </div>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> ID </th>
-      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      <td mat-cell *matCellDef="let stage"> {{stage.id}} </td>
     </ng-container>
   
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      <td mat-cell *matCellDef="let stage"> {{stage.name}} </td>
     </ng-container>
   
     <ng-container matColumnDef="isCurrent">
       <th mat-header-cell *matHeaderCellDef> Current </th>
-      <td mat-cell *matCellDef="let element"> {{element.isCurrent}} </td>
+      <td mat-cell *matCellDef="let stage"> {{stage.isCurrent}} </td>
     </ng-container>
   
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="accent" type="button" (click)="openUpdateModal(element, updateModalTemplate)">
+      <td mat-cell *matCellDef="let stage">
+        <button mat-icon-button color="accent" type="button" (click)="openUpdateModal(stage, updateModalTemplate)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
     </ng-container>
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="warn" type="button" (click)="deleteEntity(element.id)">
+      <td mat-cell *matCellDef="let stage">
+        <button mat-icon-button color="warn" type="button" (click)="deleteEntity(stage.id)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
@@ -54,45 +48,44 @@
 <ng-template #updateModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="updateCancelled()">
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.updateForm)">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <form [formGroup]="ufg" class="d-flex flex-column p-5">
+  <form [formGroup]="updateForm" class="d-flex flex-column p-5">
     <mat-form-field appearance="outline">
       <mat-label>Stage Id</mat-label>
-      <input matInput [formControl]="ufg.controls['id']">
-      <mat-error *ngIf="this.ufg.controls['id'].hasError('required')">Please enter a value.</mat-error>
+      <input matInput [formControl]="updateForm.controls['id']">
+      <mat-error *ngIf="this.updateForm.controls['id'].hasError('required')">Please enter a value.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Stage Name</mat-label>
-      <input matInput [formControl]="ufg.controls['name']">
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.ufg.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
+      <input matInput [formControl]="updateForm.controls['name']">
+      <mat-error *ngIf="this.updateForm.controls['name'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.updateForm.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.updateForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Current</mat-label>
-      <mat-select [formControl]="ufg.controls['isCurrent']">
+      <mat-select [formControl]="updateForm.controls['isCurrent']">
         <mat-option [value]="true">True</mat-option>
         <mat-option [value]="false">False</mat-option>
       </mat-select>
-      <mat-error *ngIf="this.ufg.controls['isCurrent'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.updateForm.controls['isCurrent'].hasError('required')">Please enter a value.</mat-error>
     </mat-form-field>
 
     <div *ngIf="debug">
-      <pre>{{ selectedEntity | json }}</pre>
       <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
     </div>
   </form>
 
   <div class="modal-footer">
     <div class="text-right">
-      <button class="btn btn-default" (click)="updateCancelled()">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="updateEntity()" [disabled]="(this.selectedEntity === null || !this.ufg.valid)">Update</button>
+      <button class="btn btn-default" (click)="closeModal(this.updateForm)">Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="updateEntity()" [disabled]="(!this.updateForm.valid)">Update</button>
     </div>
   </div>
 </ng-template>
@@ -100,40 +93,39 @@
 <ng-template #createModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="createCancelled()">
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.createForm)">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <form [formGroup]="cfg"  class="d-flex flex-column p-5">
+  <form [formGroup]="createForm"  class="d-flex flex-column p-5">
 
     <mat-form-field appearance="outline" class="pb-5">
       <mat-label>Stage Name</mat-label>
-      <input matInput required [formControl]="cfg.controls['name']">
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.cfg.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
+      <input matInput required [formControl]="createForm.controls['name']">
+      <mat-error *ngIf="this.createForm.controls['name'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="this.createForm.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="this.createForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Current</mat-label>
-      <mat-select required [formControl]="cfg.controls['isCurrent']">
+      <mat-select required [formControl]="createForm.controls['isCurrent']">
         <mat-option [value]="true">True</mat-option>
         <mat-option [value]="false">False</mat-option>
-        <mat-error *ngIf="this.cfg.controls['isCurrent'].hasError('required')">Please enter a value.</mat-error>
+        <mat-error *ngIf="this.createForm.controls['isCurrent'].hasError('required')">Please enter a value.</mat-error>
       </mat-select>
     </mat-form-field>
 
     <div *ngIf="debug">
-      <pre>{{ newEntity | json }}</pre>
       <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
     </div>
   </form>
 
   <div class="modal-footer">
     <div class="text-right">
-      <button class="btn btn-default" (click)="createCancelled()">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="createEntity()" [disabled]="(!this.cfg.valid)">Create</button>
+      <button class="btn btn-default" (click)="closeModal(this.createForm)">Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="saveEntity()" [disabled]="(!this.createForm.valid)">Create</button>
     </div>
   </div>
 </ng-template>

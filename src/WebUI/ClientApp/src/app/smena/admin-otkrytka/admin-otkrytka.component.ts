@@ -101,8 +101,6 @@ export class AdminOtkrytkaComponent implements OnInit {
         },
         error => {
             const errors = JSON.parse(error.response);
-            console.error('Error while updating the stage.');
-            console.error(errors);
             if (errors && errors.title) {
                 this.modalEditor.errors = [errors];
             }
