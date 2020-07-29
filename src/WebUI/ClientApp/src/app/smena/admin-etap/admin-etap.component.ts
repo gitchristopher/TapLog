@@ -45,12 +45,6 @@ export class AdminEtapComponent implements OnInit {
     );
   }
 
-  closeModal(form: FormGroup) {
-    form.reset();
-    this.modalRef.hide();
-    this.modalEditor.errors = null;
-  }
-
   openUpdateModal(entity: StageDto, template: TemplateRef<any>) {
     this.updateForm.patchValue(entity);
     this.updateForm.get('id').disable();
@@ -67,10 +61,7 @@ export class AdminEtapComponent implements OnInit {
           this.closeModal(this.updateForm);
         },
         error => {
-            const errors = JSON.parse(error.response);
-            if (errors && errors.title) {
-                this.modalEditor.errors = [errors];
-            }
+          this.addErrorsToModal(error);
         }
     );
   }
@@ -92,15 +83,11 @@ export class AdminEtapComponent implements OnInit {
             this.table.renderRows();
             this.closeModal(this.createForm);
           } else {
-            this.modalEditor.errors.push('An error occured while saving the new Card.');
+            this.modalEditor.errors.push('An error occured while saving the new Stage.');
           }
         },
         error => {
-            const errors = JSON.parse(error.response);
-            console.error('Error while creating a Card.');
-            if (errors && errors.Title) {
-                this.modalEditor.errors.push(errors.Title[0]);
-            }
+          this.addErrorsToModal(error);
         }
     );
   }
@@ -109,6 +96,19 @@ export class AdminEtapComponent implements OnInit {
     const entity = StageDto.fromJS(form.getRawValue());
     entity.stageTests = [];
     return entity;
+  }
+
+  private addErrorsToModal(error: any) {
+    const errors = JSON.parse(error.response);
+    if (errors && errors.title) {
+      this.modalEditor.errors = [errors];
+    }
+  }
+
+  closeModal(form: FormGroup) {
+    form.reset();
+    this.modalRef.hide();
+    this.modalEditor.errors = null;
   }
 
   deleteEntity(id: number) {
