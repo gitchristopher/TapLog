@@ -77,7 +77,7 @@ export class TodoComponent {
                 let errors = JSON.parse(error.response);
 
                 if (errors && errors.Title) {
-                    this.newListEditor.error = errors.Title[0];
+                    this.newListEditor.error = errors.title;
                 }
 
                 setTimeout(() => document.getElementById("title").focus(), 250);

@@ -1,10 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CardDto, UpdateCardCommand, CreateCardCommand, CardsClient, SupplierDto,
-  ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient } from 'src/app/taplog-api';
+  ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient, AdminClient } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-admin-otkrytka',
@@ -27,8 +28,8 @@ export class AdminOtkrytkaComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', errors: null };
 
-  constructor(private cardsClient: CardsClient, private passesClient: PassesClient,
-    private productsClient: ProductsClient, private suppliersClient: SuppliersClient, private modalService: BsModalService) { }
+  constructor(private cardsClient: CardsClient, private adminClient: AdminClient,
+    private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.updateForm = new FormGroup({
@@ -46,24 +47,22 @@ export class AdminOtkrytkaComponent implements OnInit {
       productId: new FormControl(),
       passId: new FormControl(),
     });
-    this.passesClient.getAll().subscribe(
+
+    this.adminClient.getCardVM().subscribe(
       result => {
-        this.passList = result;
+        this.supplierList = result.suppliers;
+        this.productList = result.products;
+        this.passList = result.passes;
+        console.log(result);
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
-    this.productsClient.getAll().subscribe(
-      result => {
-        this.productList = result;
-      },
-      error => console.error(error)
-    );
-    this.suppliersClient.getAll().subscribe(
-      result => {
-        this.supplierList = result;
-      },
-      error => console.error(error)
-    );
+  }
+
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
   }
 
   refresh() {
@@ -71,7 +70,7 @@ export class AdminOtkrytkaComponent implements OnInit {
       result => {
         this.dataSource = result;
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
   }
 
@@ -92,9 +91,10 @@ export class AdminOtkrytkaComponent implements OnInit {
           this.dataSource.splice(index, 1, updatedEntity);
           this.table.renderRows();
           this.closeModal(this.updateForm);
+          this.openSnackBar(`Updated successfully: ${updatedEntity.alias} ${updatedEntity.number}`, null);
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -115,12 +115,13 @@ export class AdminOtkrytkaComponent implements OnInit {
             this.dataSource.push(entity);
             this.table.renderRows();
             this.closeModal(this.createForm);
+            this.openSnackBar(`Added successfully: ${entity.alias} ${entity.number}`, null);
           } else {
-            this.modalEditor.errors.push('An error occured while saving the new Card.');
+            this.openSnackBar('An error occured while saving the new Card.', null);
           }
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -156,8 +157,9 @@ export class AdminOtkrytkaComponent implements OnInit {
       //     const index = this.dataSource.findIndex(x => x.id === id);
       //     this.dataSource.splice(index, 1);
       //     this.table.renderRows();
+      //     this.openSnackBar('Deleted successfully', null);
       //   },
-      //   error => console.error(error)
+      //   error => {this.openSnackBar(error.title, null);}
       // );
     }
   }

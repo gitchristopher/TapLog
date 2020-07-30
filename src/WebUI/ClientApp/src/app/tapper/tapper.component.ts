@@ -1,6 +1,6 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { StagesClient, CreateTestCommand, ICreateTestCommand, TestDto,
-         StageDto, ITestExecutionDto2, TestsClient, TapDto2, TestExecutionDto2 } from '../taplog-api';
+import { Component, OnInit } from '@angular/core';
+import { StagesClient, TestDto, StageDto, TestsClient, TapDto2, TestExecutionDto2 } from '../taplog-api';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-tapper',
@@ -16,7 +16,7 @@ export class TapperComponent implements OnInit {
   tapsList: TapDto2[];
   selectedExecution: TestExecutionDto2;
 
-  constructor(private stagesClient: StagesClient, private testsClient: TestsClient) {
+  constructor(private stagesClient: StagesClient, private testsClient: TestsClient, private snackBar: MatSnackBar) {
     stagesClient.getAll().subscribe(
       result => {
           if (result.length) {
@@ -27,7 +27,9 @@ export class TapperComponent implements OnInit {
             }
           }
       },
-      error => console.error(error)
+      error => {
+        this.snackBar.open(error.title, null, {duration: 3000});
+      }
     );
   }
 
@@ -44,7 +46,9 @@ export class TapperComponent implements OnInit {
       result => {
           this.testList = result;
       },
-      error => console.error(error)
+      error => {
+        this.snackBar.open(error.title, null, {duration: 3000});
+      }
     );
   }
 

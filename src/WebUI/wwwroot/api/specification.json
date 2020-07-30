@@ -6,6 +6,31 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Admin/cards": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "operationId": "Admin_GetCardVM",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCardVM"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Cards": {
       "get": {
         "tags": [
@@ -2168,6 +2193,87 @@
   },
   "components": {
     "schemas": {
+      "AdminCardVM": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "passes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/PassListItemDto"
+            }
+          },
+          "products": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProductListItemDto"
+            }
+          },
+          "suppliers": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/SupplierListItemDto"
+            }
+          }
+        }
+      },
+      "PassListItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProductListItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SupplierListItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "CardDto": {
         "type": "object",
         "additionalProperties": false,

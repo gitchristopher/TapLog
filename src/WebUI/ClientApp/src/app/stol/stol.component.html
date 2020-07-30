@@ -160,6 +160,6 @@
     <!-- <mat-paginator [length]="resultsLength" [pageSize]="[10]" showFirstLastButtons></mat-paginator> -->
   </div>
   <div class="d-flex p-5 align-items-center justify-content-center">
-    <button mat-raised-button color="accent" (click)="exporter.exportTable('csv')" disabled="{{this.resultsLength < 1}}">Export to CSV</button>
+    <button mat-raised-button color="accent" matBadge="{{this.resultsLength}}" [matBadgeHidden]="!this.resultsLength" (click)="exporter.exportTable('csv')" disabled="{{this.resultsLength < 1}}">Export to CSV</button>
   </div>
 <!-- </div> -->

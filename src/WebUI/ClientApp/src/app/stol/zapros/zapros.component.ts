@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import {FormGroup, FormControl} from '@angular/forms';
 import { TestsClient, TestDto, TapsClient, StageDto, StagesClient } from 'src/app/taplog-api';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface TapQuery {
   stageId: number;
@@ -21,7 +22,8 @@ export class ZaprosComponent implements OnInit {
 
   @Output() submitForm: EventEmitter<TapQuery> = new EventEmitter<TapQuery>();
 
-  constructor(private testsClient: TestsClient, private tapsClient: TapsClient, private stageClient: StagesClient) { }
+  constructor(private testsClient: TestsClient, private tapsClient: TapsClient,
+    private stageClient: StagesClient, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.queryForm = new FormGroup({
@@ -34,12 +36,18 @@ export class ZaprosComponent implements OnInit {
     this.getLists();
   }
 
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
+  }
+
   getLists(): void {
     this.testsClient.getAll().subscribe(
       result => {
           this.testList = result.sort((a, b) => a.jiraTestNumber.localeCompare(b.jiraTestNumber));
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
     this.stageClient.getAll().subscribe(
       result => {
@@ -49,7 +57,7 @@ export class ZaprosComponent implements OnInit {
             this.queryForm.get('stageList').setValue(currentStage.id);
           }
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
   }
 

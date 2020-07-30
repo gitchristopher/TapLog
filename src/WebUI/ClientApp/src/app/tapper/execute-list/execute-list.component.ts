@@ -3,6 +3,7 @@ import { StageDto, TestDto, ITestExecutionDto2, TestsClient,
           TestExecutionDto2, CreateTestExecutionCommand, TestExecutionsClient, TestExecutionDto, TapDto2 } from 'src/app/taplog-api';
 import { faPlus, faEllipsisH, faPlusSquare, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import {style, state, animate, transition, trigger} from '@angular/animations';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-execute-list',
@@ -34,7 +35,7 @@ export class ExecuteListComponent implements OnInit, OnChanges {
     this.onSelect.emit(this.selectedExecution);
   }
 
-  constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient) { }
+  constructor(private testsClient: TestsClient, private executionsClient: TestExecutionsClient, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.getExecutions(this.selectedTest);
@@ -76,9 +77,10 @@ export class ExecuteListComponent implements OnInit, OnChanges {
               });
             });
         },
-        error => console.error(error)
+        error => {
+          this.snackBar.open(error.title, null, {duration: 3000});
+        }
       );
-      
     }
   }
 
@@ -92,7 +94,7 @@ export class ExecuteListComponent implements OnInit, OnChanges {
       this.select(newExecution);
     },
     error => {
-      console.error('errors while creating execution' + error);
+      this.snackBar.open(error.title, null, {duration: 3000});
     });
   }
 
@@ -105,8 +107,9 @@ export class ExecuteListComponent implements OnInit, OnChanges {
 
       this.executionsClient.delete(id).subscribe(response => {
         // TODO: What to do with NoContent response?
+        this.snackBar.open('Deleted successfully', null, {duration: 3000});
       }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
+        this.snackBar.open(error.title, null, {duration: 3000});
       });
     }
   }

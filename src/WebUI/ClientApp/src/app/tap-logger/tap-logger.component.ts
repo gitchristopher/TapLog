@@ -158,7 +158,7 @@ export class TapLoggerComponent implements OnInit {
             console.log('error while uploading test');
 
             if (errors && errors.Title) {
-                this.newTestEditor.error = errors.Title[0];
+                this.newTestEditor.error = errors.title;
             }
 
             setTimeout(() => document.getElementById('title').focus(), 250);

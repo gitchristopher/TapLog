@@ -2,8 +2,9 @@ import { Component, OnInit, TemplateRef, Input, Output, EventEmitter, OnChanges,
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { TestsClient, CreateTestCommand, ICreateTestCommand,
           TestDto, StageDto, ITestExecutionDto2, UpdateTestCommand } from '../../taplog-api';
-import { faPlus, faPlusSquare, faEllipsisH, faSmile, faDizzy, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
-import {style, state, animate, transition, trigger} from '@angular/animations';
+import { faPlus, faPlusSquare, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
+import {style, animate, transition, trigger} from '@angular/animations';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-test-list',
@@ -45,7 +46,7 @@ export class TestListComponent implements OnInit, OnChanges {
   }
 
 
-  constructor(private modalService: BsModalService, private testsClient: TestsClient) { }
+  constructor(private modalService: BsModalService, private testsClient: TestsClient, private snackBar: MatSnackBar) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     for (const propName in changes) {
@@ -111,14 +112,7 @@ export class TestListComponent implements OnInit, OnChanges {
           }
         },
         error => {
-            const errors = JSON.parse(error.response);
-            console.error('error while uploading test');
-
-            if (errors && errors.Title) {
-                this.addTestEditor.error = errors.Title[0];
-            }
-
-            setTimeout(() => document.getElementById('title').focus(), 250);
+          this.snackBar.open(error.title, null, {duration: 3000});
         }
     );
   }
@@ -131,8 +125,9 @@ export class TestListComponent implements OnInit, OnChanges {
       const stageId = this.selectedStage.id;
       this.testsClient.delete(id, stageId).subscribe(response => {
         // TODO: What to do with NoContent response?
+        this.snackBar.open('Deleted successfully', null, {duration: 3000});
       }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
+        this.snackBar.open(error.title, null, {duration: 3000});
       });
     }
   }
@@ -150,9 +145,9 @@ export class TestListComponent implements OnInit, OnChanges {
       // TODO: what to do with NoContent response
       this.updateTestModalRef.hide();
       this.updateTestEditor = {};
+      this.snackBar.open(`Updated successfully: ${newTitle}`, null, {duration: 3000});
     }, error => {
-      console.error('Error updating test id: ' + testId + ' ' + error);
-      this.updateTestEditor.error = 'An error occured, the Test Name may already exist';
+      this.snackBar.open(error.title, null, {duration: 3000});
     });
   }
 }

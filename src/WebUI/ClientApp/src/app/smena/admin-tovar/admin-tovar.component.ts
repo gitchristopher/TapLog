@@ -3,7 +3,9 @@ import { ProductDto, ProductsClient, UpdateProductCommand, CreateProductCommand 
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-admin-tovar',
@@ -22,7 +24,7 @@ export class AdminTovarComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', errors: null };
 
-  constructor(private productsClient: ProductsClient, private modalService: BsModalService) { }
+  constructor(private productsClient: ProductsClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.updateForm = new FormGroup({
@@ -34,12 +36,18 @@ export class AdminTovarComponent implements OnInit {
     });
   }
 
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
+  }
+
   refresh() {
     this.productsClient.getAll().subscribe(
       result => {
         this.dataSource = result;
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
   }
 
@@ -60,9 +68,10 @@ export class AdminTovarComponent implements OnInit {
           this.dataSource.splice(index, 1, updatedEntity);
           this.table.renderRows();
           this.closeModal(this.updateForm);
+          this.openSnackBar(`Updated successfully: ${updatedEntity.name}`, null);
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -83,12 +92,13 @@ export class AdminTovarComponent implements OnInit {
             this.dataSource.push(entity);
             this.table.renderRows();
             this.closeModal(this.createForm);
+            this.openSnackBar(`Added successfully: ${entity.name}`, null);
           } else {
-            this.modalEditor.errors.push('An error occured while saving the new Product.');
+            this.openSnackBar('An error occured while saving the new Product.', null);
           }
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -121,8 +131,9 @@ export class AdminTovarComponent implements OnInit {
       //     const index = this.dataSource.findIndex(x => x.id === id);
       //     this.dataSource.splice(index, 1);
       //     this.table.renderRows();
+      //     this.openSnackBar('Deleted successfully', null);
       //   },
-      //   error => console.error(error)
+      //   error => {this.openSnackBar(error.title, null);}
       // );
     }
   }

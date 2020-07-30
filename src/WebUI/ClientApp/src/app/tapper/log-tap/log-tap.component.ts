@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, AddTapVM, CreateTapCommand, TapDto2, TapDto, TapAction, ProductDto, PassDto, CardsClient, UpdateCardCommand } from 'src/app/taplog-api';
+import { TestExecutionDto2, DeviceDto, CardDto, TapsClient, CreateTapCommand, 
+  TapDto2, ProductDto, PassDto, CardsClient, UpdateCardCommand } from 'src/app/taplog-api';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface ICardSelectItem {
   display: string;
@@ -39,7 +40,8 @@ export class LogTapComponent implements OnInit, OnChanges {
     this.onSave.emit(e);
   }
 
-  constructor(private tapsClient: TapsClient, private cardsClient: CardsClient, private authorizeService: AuthorizeService) {
+  constructor(private tapsClient: TapsClient, private cardsClient: CardsClient,
+    private authorizeService: AuthorizeService, private snackBar: MatSnackBar) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -99,19 +101,18 @@ export class LogTapComponent implements OnInit, OnChanges {
       //   map(alias => alias ? this._filter(alias) : this.cardList.slice())
       // );
     }, error => {
-      console.error('error loading tap form VM ' + error);
+      this.snackBar.open(error.title, null, {duration: 3000});
     });
     this.addTapForm.disable();
   }
 
   addTap(data: any): void {
     const tap = new CreateTapCommand(data);
-    console.log(data);
-    console.log(tap);
-    
+
     if (this.selectedExecution == null) {
       this.selectedExecution.taps = new Array<TapDto2>();
     }
+
     this.tapsClient.create(tap).subscribe(
         result => {
           const newTap = new TapDto2(data);
@@ -125,8 +126,7 @@ export class LogTapComponent implements OnInit, OnChanges {
           this.savedTap(this.selectedExecution);
         },
         error => {
-            console.error('error when uploading tap');
-            console.error(error);
+          this.snackBar.open(error.title, null, {duration: 3000});
         }
     );
   }
@@ -219,8 +219,7 @@ export class LogTapComponent implements OnInit, OnChanges {
           this.cardsClient.update(newCard.id, new UpdateCardCommand(newCard)).subscribe(result => {
             // Nothing to return on an update
           }, error => {
-            console.error('error when updating card during creation of tap');
-            console.error(error);
+            this.snackBar.open(error.title, null, {duration: 3000});
           });
           this.cardList.find(c => Number(c.card.id) === Number(newCard.id)).card.productId = newCard.productId;
           this.cardList.find(c => Number(c.card.id) === Number(newCard.id)).card.passId = newCard.passId;

@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
-import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand, ProductDto, PassDto } from 'src/app/taplog-api';
+import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, UpdateTapCommand, ProductDto, PassDto } from 'src/app/taplog-api';
 import {style, state, animate, transition, trigger} from '@angular/animations';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class TapListComponent implements OnInit, OnChanges {
   cardList: CardDto[];
   filteredOptions: Observable<CardDto[]>;
 
-  constructor(private tapsClient: TapsClient) {
+  constructor(private tapsClient: TapsClient, private snackBar: MatSnackBar) {
     this.isChecked = false;
     this.isEditing = null;
   }
@@ -89,8 +90,9 @@ export class TapListComponent implements OnInit, OnChanges {
       this.selectedExecution.taps.splice(index, 1);
       this.tapsClient.delete(id).subscribe(response => {
         // TODO: What to do with NoContent response?
+        this.snackBar.open('Deleted successfully', null, {duration: 3000});
       }, error => {
-        console.error('Error deleting tap id: ' + id + ' ' + error);
+        this.snackBar.open(error.title, null, {duration: 3000});
       });
     }
   }
@@ -151,7 +153,7 @@ export class TapListComponent implements OnInit, OnChanges {
 
       this.loadDataIntoForm();
     }, error => {
-      console.error('error loading tap form VM ' + error);
+      this.snackBar.open(error.title, null, {duration: 3000});
     });
   }
 
@@ -185,14 +187,14 @@ export class TapListComponent implements OnInit, OnChanges {
           newTap.pass = this.passList.find(x => x.id === tap.passId)?.name;
           const index = this.selectedExecution.taps.findIndex(x => x.id === Number(newTap.id));
           this.selectedExecution.taps.splice(index, 1, newTap);
+          this.snackBar.open(`Updated successfully: ${newTap.cardAlias} ${newTap.cardNumber}`, null, {duration: 3000});
 
           // this.submitted = true;
           // this.updateTapForm();
           // this.savedTap(this.selectedExecution);
         },
         error => {
-            console.error('error when updating tap');
-            console.error(error);
+          this.snackBar.open(error.title, null, {duration: 3000});
         }
     );
     this.isEditing = null;

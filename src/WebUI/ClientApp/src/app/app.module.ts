@@ -75,6 +75,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MatTableExporterModule } from 'mat-table-exporter';
 
@@ -168,6 +169,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
     MatMenuModule,
     MatSidenavModule,
     MatDialogModule,
+    MatSnackBarModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

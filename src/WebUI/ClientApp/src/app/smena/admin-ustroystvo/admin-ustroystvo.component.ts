@@ -4,6 +4,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-admin-ustroystvo',
@@ -22,7 +23,7 @@ export class AdminUstroystvoComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', errors: null };
 
-  constructor(private devicesClient: DevicesClient, private modalService: BsModalService) { }
+  constructor(private devicesClient: DevicesClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.updateForm = new FormGroup({
@@ -42,12 +43,18 @@ export class AdminUstroystvoComponent implements OnInit {
     });
   }
 
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
+  }
+
   refresh() {
     this.devicesClient.getAll().subscribe(
       result => {
         this.dataSource = result;
       },
-      error => console.error(error)
+      error => this.openSnackBar(error.title, null)
     );
   }
 
@@ -68,9 +75,10 @@ export class AdminUstroystvoComponent implements OnInit {
           this.dataSource.splice(index, 1, updatedEntity);
           this.table.renderRows();
           this.closeModal(this.updateForm);
+          this.openSnackBar(`Updated successfully: ${updatedEntity.code} ${updatedEntity.name}`, null);
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -91,12 +99,13 @@ export class AdminUstroystvoComponent implements OnInit {
             this.dataSource.push(entity);
             this.table.renderRows();
             this.closeModal(this.createForm);
+            this.openSnackBar(`Added successfully: ${entity.code} ${entity.name}`, null);
           } else {
-            this.modalEditor.errors.push('An error occured while saving the new Device.');
+            this.openSnackBar('An error occured while saving the new Device.', null);
           }
         },
         error => {
-          this.addErrorsToModal(error);
+          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -128,8 +137,9 @@ export class AdminUstroystvoComponent implements OnInit {
       //     const index = this.dataSource.findIndex(x => x.id === id);
       //     this.dataSource.splice(index, 1);
       //     this.table.renderRows();
+      //     this.openSnackBar('Deleted successfully', null);
       //   },
-      //   error => console.error(error)
+      //   error => {this.openSnackBar(error.title, null);}
       // );
     }
   }
