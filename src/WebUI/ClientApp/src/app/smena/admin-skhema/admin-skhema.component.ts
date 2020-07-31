@@ -5,6 +5,7 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 @Component({
   selector: 'app-admin-skhema',
@@ -18,26 +19,16 @@ export class AdminSkhemaComponent implements OnInit {
   columnList: string[] = ['id', 'name', 'edit', 'delete'];
   @ViewChild(MatTable) table: MatTable<any>;
 
-  updateForm: FormGroup;
-  createForm: FormGroup;
+  entityForm: FormGroup;
   modalRef: BsModalRef;
-  modalEditor: IModal = {title: 'Editor', errors: null };
+  modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: null };
 
   constructor(private suppliersClient: SuppliersClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.updateForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
+    this.entityForm = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
       id: new FormControl('', [Validators.required]),
-    });
-    this.createForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
-    });
-  }
-
-  openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 3000,
     });
   }
 
@@ -50,47 +41,43 @@ export class AdminSkhemaComponent implements OnInit {
     );
   }
 
-  openUpdateModal(entity: SupplierDto, template: TemplateRef<any>) {
-    this.updateForm.patchValue(entity);
-    this.updateForm.get('id').disable();
-    this.modalEditor.title = 'Update Supplier: ' + entity.name;
+  openModal(entity: SupplierDto, template: TemplateRef<any>) {
+    if (entity === null) {
+      this.modalEditor.title = 'Create New Supplier';
+      this.modalEditor.button = 'Save';
+    } else {
+      this.modalEditor.title = 'Update Supplier: ' + entity.name;
+      this.modalEditor.button = 'Update';
+      this.entityForm.patchValue(entity);
+    }
+    this.entityForm.get('id').disable();
     this.modalRef = this.modalService.show(template);
   }
 
-  updateEntity() {
-    const updateEntityCommand = UpdateSupplierCommand.fromJS(this.updateForm.getRawValue());
-
-    this.suppliersClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
-      result => {
-        const index = this.dataSource.findIndex(x => x.id === updateEntityCommand.id);
-        const updatedEntity = this.createEntityFromForm(this.updateForm);
-        this.dataSource.splice(index, 1, updatedEntity);
-        this.table.renderRows();
-        this.closeModal(this.updateForm);
-        this.openSnackBar(`Updated successfully: ${updatedEntity.name}`, null);
-      },
-      error => {
-        this.openSnackBar(error.title, null);
-      }
-    );
+  closeModal() {
+    this.entityForm.reset();
+    this.modalRef.hide();
+    this.modalEditor.errors = null;
   }
 
-  openCreateModal(template: TemplateRef<any>) {
-    this.modalEditor.title = 'Create New Supplier';
-    this.modalRef = this.modalService.show(template);
+  submit() {
+    const form = this.entityForm.getRawValue();
+    if (!form['id']) {
+      this.createEntity();
+    } else {
+      this.updateEntity();
+    }
   }
 
-  saveEntity() {
-    const newEntityCommand = CreateSupplierCommand.fromJS(this.createForm.getRawValue());
+  createEntity() {
+    const newEntityCommand = CreateSupplierCommand.fromJS(this.entityForm.getRawValue());
 
     this.suppliersClient.create(newEntityCommand).subscribe(
         result => {
           if (result > 0) {
-            const entity = this.createEntityFromForm(this.createForm);
-            entity.id = result;
-            this.dataSource.push(entity);
-            this.table.renderRows();
-            this.closeModal(this.createForm);
+            const entity = this.makeEntityFromForm(result, this.entityForm);
+            this.updateTable(entity);
+            this.closeModal();
             this.openSnackBar(`Added successfully: ${entity.name}`, null);
           } else {
             this.openSnackBar('An error occured while saving the new Supplier.', null);
@@ -102,24 +89,41 @@ export class AdminSkhemaComponent implements OnInit {
     );
   }
 
-  private createEntityFromForm(form: FormGroup): SupplierDto {
+  updateEntity() {
+    const updateEntityCommand = UpdateSupplierCommand.fromJS(this.entityForm.getRawValue());
+
+    this.suppliersClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
+        result => {
+          const entity = this.makeEntityFromForm(null, this.entityForm);
+          this.updateTable(entity);
+          this.closeModal();
+          this.openSnackBar(`Updated successfully: ${entity.name}`, null);
+        },
+        error => {
+          this.openSnackBar(error.title, null);
+        }
+    );
+  }
+
+  private makeEntityFromForm(id: number, form: FormGroup): SupplierDto {
     const entity = SupplierDto.fromJS(form.getRawValue());
     entity.cards = [];
+    if (id !== null) {
+      entity.id = id;
+    }
     return entity;
   }
 
-  private addErrorsToModal(error: any) {
-    const errors = JSON.parse(error.response);
-    if (errors && errors.title) {
-      this.modalEditor.errors = [errors];
+  private updateTable(entity: SupplierDto) {
+    const index = this.dataSource.findIndex(x => x.id === entity.id);
+    if (index < 0) {
+      this.dataSource.push(entity);
+    } else {
+      this.dataSource.splice(index, 1, entity);
     }
+    this.table.renderRows();
   }
 
-  closeModal(form: FormGroup) {
-    form.reset();
-    this.modalRef.hide();
-    this.modalEditor.errors = null;
-  }
 
   deleteEntity(id: number) {
     if (confirm('All supplier data will be lost (Supplier, cards, taps)! Are you sure to delete supplier?' + id)) {
@@ -136,5 +140,11 @@ export class AdminSkhemaComponent implements OnInit {
         }
       );
     }
+  }
+
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
   }
 }

@@ -6,6 +6,7 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 @Component({
   selector: 'app-admin-otkrytka',
@@ -23,29 +24,21 @@ export class AdminOtkrytkaComponent implements OnInit {
   productList: ProductDto[] = [];
   passList: PassDto[] = [];
 
-  updateForm: FormGroup;
-  createForm: FormGroup;
+  entityForm: FormGroup;
   modalRef: BsModalRef;
-  modalEditor: IModal = {title: 'Editor', errors: null };
+  modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: null };
 
   constructor(private cardsClient: CardsClient, private adminClient: AdminClient,
     private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.updateForm = new FormGroup({
-      number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
-      alias: new FormControl('', [Validators.maxLength(32)]),
+    this.entityForm = new FormGroup({
+      number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
+      alias: new FormControl('', [Validators.maxLength(32), NoBadCharacters]),
       supplierId: new FormControl(null, [Validators.required]),
       productId: new FormControl(),
       passId: new FormControl(),
       id: new FormControl('', [Validators.required]),
-    });
-    this.createForm = new FormGroup({
-      number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
-      alias: new FormControl('', [Validators.maxLength(32)]),
-      supplierId: new FormControl(null, [Validators.required]),
-      productId: new FormControl(),
-      passId: new FormControl(),
     });
 
     this.adminClient.getCardVM().subscribe(
@@ -53,16 +46,9 @@ export class AdminOtkrytkaComponent implements OnInit {
         this.supplierList = result.suppliers;
         this.productList = result.products;
         this.passList = result.passes;
-        console.log(result);
       },
       error => this.openSnackBar(error.title, null)
     );
-  }
-
-  openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 3000,
-    });
   }
 
   refresh() {
@@ -74,48 +60,44 @@ export class AdminOtkrytkaComponent implements OnInit {
     );
   }
 
-  openUpdateModal(entity: CardDto, template: TemplateRef<any>) {
-    this.updateForm.patchValue(entity);
-    this.updateForm.get('id').disable();
-    this.modalEditor.title = 'Update Card: ' + entity.number;
+  openModal(entity: CardDto, template: TemplateRef<any>) {
+    if (entity === null) {
+      this.modalEditor.title = 'Create New Card';
+      this.modalEditor.button = 'Save';
+    } else {
+      this.modalEditor.title = 'Update Pass: ' + entity.number;
+      this.modalEditor.button = 'Update';
+      this.entityForm.patchValue(entity);
+    }
+    this.entityForm.get('id').disable();
     this.modalRef = this.modalService.show(template);
   }
 
-  updateEntity() {
-    const updateEntityCommand = UpdateCardCommand.fromJS(this.updateForm.getRawValue());
-
-    this.cardsClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
-        result => {
-          const index = this.dataSource.findIndex(x => x.id === updateEntityCommand.id);
-          const updatedEntity = this.createEntityFromForm(this.updateForm);
-          this.dataSource.splice(index, 1, updatedEntity);
-          this.table.renderRows();
-          this.closeModal(this.updateForm);
-          this.openSnackBar(`Updated successfully: ${updatedEntity.alias} ${updatedEntity.number}`, null);
-        },
-        error => {
-          this.openSnackBar(error.title, null);
-        }
-    );
+  closeModal() {
+    this.entityForm.reset();
+    this.modalRef.hide();
+    this.modalEditor.errors = null;
   }
 
-  openCreateModal(template: TemplateRef<any>) {
-    this.modalEditor.title = 'Create New Card';
-    this.modalRef = this.modalService.show(template);
+  submit() {
+    const form = this.entityForm.getRawValue();
+    if (!form['id']) {
+      this.createEntity();
+    } else {
+      this.updateEntity();
+    }
   }
 
-  saveEntity() {
-    const newEntityCommand = CreateCardCommand.fromJS(this.createForm.getRawValue());
+  createEntity() {
+    const newEntityCommand = CreateCardCommand.fromJS(this.entityForm.getRawValue());
 
     this.cardsClient.create(newEntityCommand).subscribe(
         result => {
           if (result > 0) {
-            const entity = this.createEntityFromForm(this.createForm);
-            entity.id = result;
-            this.dataSource.push(entity);
-            this.table.renderRows();
-            this.closeModal(this.createForm);
-            this.openSnackBar(`Added successfully: ${entity.alias} ${entity.number}`, null);
+            const entity = this.makeEntityFromForm(result, this.entityForm);
+            this.updateTable(entity);
+            this.closeModal();
+            this.openSnackBar(`Added successfully: ${entity.name}`, null);
           } else {
             this.openSnackBar('An error occured while saving the new Card.', null);
           }
@@ -126,26 +108,42 @@ export class AdminOtkrytkaComponent implements OnInit {
     );
   }
 
-  private createEntityFromForm(form: FormGroup): CardDto {
+  updateEntity() {
+    const updateEntityCommand = UpdateCardCommand.fromJS(this.entityForm.getRawValue());
+
+    this.cardsClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
+        result => {
+          const entity = this.makeEntityFromForm(null, this.entityForm);
+          this.updateTable(entity);
+          this.closeModal();
+          this.openSnackBar(`Updated successfully: ${entity.name}`, null);
+        },
+        error => {
+          this.openSnackBar(error.title, null);
+        }
+    );
+  }
+
+  private makeEntityFromForm(id: number, form: FormGroup): CardDto {
     const entity = CardDto.fromJS(form.getRawValue());
     entity.passName = this.passList.find(x => x.id === entity.passId)?.name;
     entity.productName = this.productList.find(x => x.id === entity.productId)?.name;
     entity.supplierName = this.supplierList.find(x => x.id === entity.supplierId).name;
     entity.taps = [];
+    if (id !== null) {
+      entity.id = id;
+    }
     return entity;
   }
 
-  private addErrorsToModal(error: any) {
-    const errors = JSON.parse(error.response);
-    if (errors && errors.title) {
-      this.modalEditor.errors = [errors];
+  private updateTable(entity: CardDto) {
+    const index = this.dataSource.findIndex(x => x.id === entity.id);
+    if (index < 0) {
+      this.dataSource.push(entity);
+    } else {
+      this.dataSource.splice(index, 1, entity);
     }
-  }
-
-  closeModal(form: FormGroup) {
-    form.reset();
-    this.modalRef.hide();
-    this.modalEditor.errors = null;
+    this.table.renderRows();
   }
 
   deleteEntity(id: number) {
@@ -162,5 +160,11 @@ export class AdminOtkrytkaComponent implements OnInit {
       //   error => {this.openSnackBar(error.title, null);}
       // );
     }
+  }
+
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 3000,
+    });
   }
 }

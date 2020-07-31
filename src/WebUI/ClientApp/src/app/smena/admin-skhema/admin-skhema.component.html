@@ -1,7 +1,7 @@
 <div class="d-inline-flex flex-column">
   <div class="pb-3 d-flex justify-content-between">
     <button mat-raised-button (click)="refresh()">Refresh</button>
-    <button mat-raised-button color="primary" (click)="openCreateModal(createModalTemplate)">Create New Supplier</button>
+    <button mat-raised-button color="primary" (click)="openModal(null, entityModalTemplate)">Create New Supplier</button>
   </div>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   
@@ -18,7 +18,7 @@
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let supplier">
-        <button mat-icon-button color="accent" type="button" (click)="openUpdateModal(supplier, updateModalTemplate)">
+        <button mat-icon-button color="accent" type="button" (click)="openModal(supplier, entityModalTemplate)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
@@ -40,69 +40,42 @@
 
 
 
-<ng-template #updateModalTemplate>
+<ng-template #entityModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.updateForm)">
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <form [formGroup]="updateForm" class="d-flex flex-column p-5">
-    <mat-form-field appearance="outline">
+
+  <form [formGroup]="entityForm" (ngSubmit)="submit()">
+    <div class="d-flex flex-column p-5">
+      <mat-form-field appearance="outline" *ngIf="entityForm.get('id').value !== null">
       <mat-label>Supplier Id</mat-label>
-      <input matInput [formControl]="updateForm.controls['id']">
-      <mat-error *ngIf="this.updateForm.controls['id'].hasError('required')">Please enter a value.</mat-error>
+      <input matInput [formControl]="entityForm.controls['id']">
+      <mat-error *ngIf="entityForm.controls['id'].hasError('required')">Please enter a value.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Supplier Name</mat-label>
-      <input matInput [formControl]="updateForm.controls['name']">
-      <mat-error *ngIf="this.updateForm.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.updateForm.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.updateForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
+      <input matInput [formControl]="entityForm.controls['name']">
+      <mat-error *ngIf="entityForm.controls['name'].hasError('badformat')">Please enter a value in the correct format.</mat-error>
+      <mat-error *ngIf="entityForm.controls['name'].hasError('required')">Please enter a value.</mat-error>
+      <mat-error *ngIf="entityForm.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+      <mat-error *ngIf="entityForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
     </mat-form-field>
 
     <div *ngIf="debug">
-      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
-    </div>
-  </form>
-
-  <div class="modal-footer">
-    <div class="text-right">
-      <button class="btn btn-default" (click)="closeModal(this.updateForm)">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="updateEntity()" [disabled]="(!this.updateForm.valid)">Update</button>
+      <pre *ngIf="modalEditor.errors != null">{{ modalEditor.errors | json }}</pre>
     </div>
   </div>
-</ng-template>
 
-<ng-template #createModalTemplate>
-  <div class="modal-header clearfix">
-    <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.createForm)">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-
-  <form [formGroup]="createForm"  class="d-flex flex-column p-5">
-
-    <mat-form-field appearance="outline" class="pb-5">
-      <mat-label>Supplier Name</mat-label>
-      <input matInput required [formControl]="createForm.controls['name']">
-      <mat-error *ngIf="this.createForm.controls['name'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.createForm.controls['name'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.createForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
-    </mat-form-field>
-
-    <div *ngIf="debug">
-      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
+    <div class="modal-footer">
+      <div class="text-right">
+        <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" type="submit" [disabled]="entityForm.invalid">{{modalEditor.button}}</button>
+      </div>
     </div>
-  </form>
-
-  <div class="modal-footer">
-    <div class="text-right">
-      <button class="btn btn-default" (click)="closeModal(this.createForm)">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="saveEntity()" [disabled]="(!this.createForm.valid)">Create</button>
-    </div>
-  </div>
+</form>
 </ng-template>

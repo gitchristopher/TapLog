@@ -1,49 +1,49 @@
 <div class="d-inline-flex flex-column">
   <div class="pb-3 d-flex justify-content-between">
     <button mat-raised-button (click)="refresh()">Refresh</button>
-    <button mat-raised-button color="primary" (click)="openCreateModal(createModalTemplate)">Create New Card</button>
+    <button mat-raised-button color="primary" (click)="openModal(null, entityModalTemplate)">Create New Card</button>
   </div>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  
+
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> ID </th>
       <td mat-cell *matCellDef="let card"> {{card.id}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="number">
       <th mat-header-cell *matHeaderCellDef> Number </th>
       <td mat-cell *matCellDef="let card"> {{card.number}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="alias">
       <th mat-header-cell *matHeaderCellDef> Alias </th>
       <td mat-cell *matCellDef="let card"> {{card.alias}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="supplierName">
       <th mat-header-cell *matHeaderCellDef> Supplier </th>
       <td mat-cell *matCellDef="let card"> {{card.supplierName}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="productName">
       <th mat-header-cell *matHeaderCellDef> Product </th>
       <td mat-cell *matCellDef="let card"> {{card.productName}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="passName">
       <th mat-header-cell *matHeaderCellDef> Pass </th>
       <td mat-cell *matCellDef="let card"> {{card.passName}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="taps">
       <th mat-header-cell *matHeaderCellDef> Tap Count </th>
       <td mat-cell *matCellDef="let card"> {{card.taps.length}} </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let card">
-        <button mat-icon-button color="accent" type="button" (click)="openUpdateModal(card, updateModalTemplate)">
+        <button mat-icon-button color="accent" type="button" (click)="openModal(card, entityModalTemplate)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
@@ -56,7 +56,7 @@
         </button>
       </td>
     </ng-container>
-  
+
     <tr mat-header-row *matHeaderRowDef="columnList"></tr>
     <tr mat-row *matRowDef="let row; columns: columnList;"></tr>
   </table>
@@ -65,143 +65,78 @@
 
 
 
-<ng-template #updateModalTemplate>
+<ng-template #entityModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.updateForm)">
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <form [formGroup]="updateForm" class="d-flex flex-column p-5">
-    <mat-form-field appearance="outline">
-      <mat-label>Card Id</mat-label>
-      <input matInput [formControl]="updateForm.controls['id']">
-      <mat-error *ngIf="this.updateForm.controls['id'].hasError('required')">Please enter a value.</mat-error>
-    </mat-form-field>
+  <form [formGroup]="entityForm" (ngSubmit)="submit()">
+    <div class="d-flex flex-column p-5">
+      <mat-form-field appearance="outline" *ngIf="entityForm.get('id').value !== null">
+        <mat-label>Card Id</mat-label>
+        <input matInput [formControl]="entityForm.controls['id']">
+        <mat-error *ngIf="entityForm.controls['id'].hasError('required')">Please enter a value.</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Card Number</mat-label>
-      <input matInput [formControl]="updateForm.controls['number']">
-      <mat-error *ngIf="this.updateForm.controls['number'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.updateForm.controls['number'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.updateForm.controls['number'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Number</mat-label>
+        <input matInput [formControl]="entityForm.controls['number']">
+        <mat-error *ngIf="entityForm.controls['number'].hasError('badformat')">Please enter a value in the correct format.</mat-error>
+        <mat-error *ngIf="entityForm.controls['number'].hasError('required')">Please enter a value.</mat-error>
+        <mat-error *ngIf="entityForm.controls['number'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+        <mat-error *ngIf="entityForm.controls['number'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Card Alias</mat-label>
-      <input matInput [formControl]="updateForm.controls['alias']">
-      <mat-error *ngIf="this.updateForm.controls['alias'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Alias</mat-label>
+        <input matInput [formControl]="entityForm.controls['alias']">
+        <mat-error *ngIf="entityForm.controls['alias'].hasError('badformat')">Please enter a value in the correct format.</mat-error>
+        <mat-error *ngIf="entityForm.controls['alias'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Card Supplier</mat-label>
-      <mat-select [formControl]="updateForm.controls['supplierId']">
-        <mat-option *ngFor="let s of supplierList" [value]="s.id">
-          {{s.name}}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="this.updateForm.controls['supplierId'].hasError('required')">Please Choose an option.</mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Supplier</mat-label>
+        <mat-select [formControl]="entityForm.controls['supplierId']">
+          <mat-option *ngFor="let s of supplierList" [value]="s.id">
+            {{s.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="entityForm.controls['supplierId'].hasError('required')">Please Choose an option.</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Card Product</mat-label>
-      <mat-select [formControl]="updateForm.controls['productId']">
-        <mat-option [value]="null"></mat-option>
-        <mat-option *ngFor="let p of productList" [value]="p.id">
-          {{p.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Product</mat-label>
+        <mat-select [formControl]="entityForm.controls['productId']">
+          <mat-option [value]="null"></mat-option>
+          <mat-option *ngFor="let p of productList" [value]="p.id">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Card Pass</mat-label>
-      <mat-select [formControl]="updateForm.controls['passId']">
-        <mat-option [value]="null"></mat-option>
-        <mat-option *ngFor="let p of passList" [value]="p.id">
-          {{p.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Pass</mat-label>
+        <mat-select [formControl]="entityForm.controls['passId']">
+          <mat-option [value]="null"></mat-option>
+          <mat-option *ngFor="let p of passList" [value]="p.id">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <div *ngIf="debug">
-      <!-- <pre>{{ selectedEntity | json }}</pre> -->
-      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
+      <div *ngIf="debug">
+        <pre *ngIf="modalEditor.errors != null">{{ modalEditor.errors | json }}</pre>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="text-right">
+        <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" type="submit" [disabled]="entityForm.invalid">{{modalEditor.button}}</button>
+      </div>
     </div>
   </form>
-
-  <div class="modal-footer">
-    <div class="text-right">
-      <button class="btn btn-default" (click)="closeModal(this.updateForm)">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="updateEntity()" [disabled]="(!this.updateForm.valid)">Update</button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #createModalTemplate>
-  <div class="modal-header clearfix">
-    <h4 class="modal-title float-left">{{this.modalEditor.title}}</h4>
-    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal(this.createForm)">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-
-  <form [formGroup]="createForm"  class="d-flex flex-column p-5">
-
-    <mat-form-field appearance="outline">
-      <mat-label>Card Number</mat-label>
-      <input matInput [formControl]="createForm.controls['number']">
-      <mat-error *ngIf="this.createForm.controls['number'].hasError('required')">Please enter a value.</mat-error>
-      <mat-error *ngIf="this.createForm.controls['number'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-      <mat-error *ngIf="this.createForm.controls['number'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Card Alias</mat-label>
-      <input matInput [formControl]="createForm.controls['alias']">
-      <mat-error *ngIf="this.createForm.controls['alias'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Card Supplier</mat-label>
-      <mat-select [formControl]="createForm.controls['supplierId']">
-        <mat-option *ngFor="let s of supplierList" [value]="s.id">
-          {{s.name}}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="this.updateForm.controls['supplierId'].hasError('required')">Please Choose an option.</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Card Product</mat-label>
-      <mat-select [formControl]="createForm.controls['productId']">
-        <mat-option [value]="null"></mat-option>
-        <mat-option *ngFor="let p of productList" [value]="p.id">
-          {{p.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Card Pass</mat-label>
-      <mat-select [formControl]="createForm.controls['passId']">
-        <mat-option [value]="null"></mat-option>
-        <mat-option *ngFor="let p of passList" [value]="p.id">
-          {{p.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <div *ngIf="debug">
-      <!-- <pre>{{ newEntity | json }}</pre> -->
-      <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
-    </div>
-  </form>
-
-  <div class="modal-footer">
-    <div class="text-right">
-      <button class="btn btn-default" (click)="closeModal(this.createForm)">Cancel</button>
-      <button class="btn btn-primary" type="button" (click)="saveEntity()" [disabled]="(!this.createForm.valid)">Create</button>
-    </div>
-  </div>
 </ng-template>
