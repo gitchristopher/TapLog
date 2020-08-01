@@ -97,7 +97,7 @@ export class AdminOtkrytkaComponent implements OnInit {
             const entity = this.makeEntityFromForm(result, this.entityForm);
             this.updateTable(entity);
             this.closeModal();
-            this.openSnackBar(`Added successfully: ${entity.name}`, null);
+            this.openSnackBar(`Added successfully: ${entity.number}`, null);
           } else {
             this.openSnackBar('An error occured while saving the new Card.', null);
           }
@@ -116,7 +116,7 @@ export class AdminOtkrytkaComponent implements OnInit {
           const entity = this.makeEntityFromForm(null, this.entityForm);
           this.updateTable(entity);
           this.closeModal();
-          this.openSnackBar(`Updated successfully: ${entity.name}`, null);
+          this.openSnackBar(`Updated successfully: ${entity.number}`, null);
         },
         error => {
           this.openSnackBar(error.title, null);

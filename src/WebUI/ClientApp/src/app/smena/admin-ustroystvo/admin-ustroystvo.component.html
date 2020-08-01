@@ -96,10 +96,10 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Device Zone</mat-label>
-        <input matInput [formControl]="entityForm.controls['zone']" type="number">
+        <input matInput [formControl]="entityForm.controls['zone']" type="number" min="0" max="99">
         <mat-error *ngIf="entityForm.controls['zone'].hasError('required')">Please enter a value.</mat-error>
-        <mat-error *ngIf="entityForm.controls['zone'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
-        <mat-error *ngIf="entityForm.controls['zone'].hasError('maxlength')">Name must be at most 2 character.</mat-error>
+        <!-- <mat-error *ngIf="entityForm.controls['zone'].hasError('minlength')">Name must be atleast 1 character.</mat-error>
+        <mat-error *ngIf="entityForm.controls['zone'].hasError('maxlength')">Name must be at most 2 character.</mat-error> -->
       </mat-form-field>
 
       <mat-form-field appearance="outline">

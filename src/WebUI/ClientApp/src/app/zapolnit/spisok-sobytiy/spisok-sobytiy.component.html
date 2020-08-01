@@ -142,7 +142,7 @@
                 <ng-template #notesFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline">
                     <mat-label>Notes</mat-label>
-                    <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=1 matAutosizeMaxRows=1  formControlName="notes" ></textarea>
+                    <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=1 matAutosizeMaxRows=1 formControlName="notes" ></textarea>
                   </mat-form-field>
                 </ng-template>
             </div>
@@ -153,7 +153,7 @@
                 <ng-template #beforeFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline">
                     <mat-label>Balance before</mat-label>
-                    <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore">
+                    <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore" min="0">
                   </mat-form-field>
                 </ng-template>
             </div>
@@ -164,7 +164,7 @@
                 <ng-template #fareFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline" >
                     <mat-label>Fare</mat-label>
-                    <input matInput type="number" placeholder="e.g 2.7" formControlName="fare">
+                    <input matInput type="number" placeholder="e.g 2.7" formControlName="fare" min="0">
                   </mat-form-field>
                 </ng-template>
             </div>
@@ -175,7 +175,7 @@
                 <ng-template #afterFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline" >
                     <mat-label>Balance after</mat-label>
-                    <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter">
+                    <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter" min="0">
                   </mat-form-field>
                 </ng-template>
             </div>
