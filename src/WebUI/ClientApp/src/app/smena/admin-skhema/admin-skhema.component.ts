@@ -1,5 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { SupplierDto, SuppliersClient, UpdateSupplierCommand, CreateSupplierCommand } from 'src/app/taplog-api';
+import { SupplierDto, SuppliersClient, UpdateSupplierCommand, CreateSupplierCommand,
+  SupplierToDeleteDto, AdminClient } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
@@ -13,8 +14,8 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-skhema.component.css']
 })
 export class AdminSkhemaComponent implements OnInit {
-  debug = false;
-
+  debug = true;
+  entityToDeleteStats: SupplierToDeleteDto;
   dataSource: SupplierDto[] = [];
   columnList: string[] = ['id', 'name', 'edit', 'delete'];
   @ViewChild(MatTable) table: MatTable<any>;
@@ -23,7 +24,8 @@ export class AdminSkhemaComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: null };
 
-  constructor(private suppliersClient: SuppliersClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
+  constructor(private suppliersClient: SuppliersClient, private adminClient: AdminClient,
+    private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.entityForm = new FormGroup({
@@ -124,21 +126,42 @@ export class AdminSkhemaComponent implements OnInit {
     this.table.renderRows();
   }
 
+  openDeleteModal(entity: SupplierDto, template: TemplateRef<any> ) {
+    this.modalEditor.title = 'Delete Supplier: ' + entity.name;
+    this.modalEditor.button = 'Delete';
 
-  deleteEntity(id: number) {
-    if (confirm('All supplier data will be lost (Supplier, cards, taps)! Are you sure to delete supplier?' + id)) {
-      this.suppliersClient.delete(id).subscribe(
-        result => {
-          // do something with no return
-          const index = this.dataSource.findIndex(x => x.id === id);
-          this.dataSource.splice(index, 1);
-          this.table.renderRows();
-          this.openSnackBar('Deleted successfully', null);
-        },
-        error => {
-          this.openSnackBar(error.title, null);
-        }
-      );
+    this.adminClient.getSupplierDelete(entity.id).subscribe(
+      result => {
+        this.entityToDeleteStats = result;
+        this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
+        this.modalRef = this.modalService.show(template);
+      },
+      error => this.openSnackBar(error.title, null)
+    );
+  }
+
+  deleteEntity() {
+    const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
+    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+
+    if (entityToDelete.name.toLowerCase() === userInput) {
+      if (confirm('Are you really really sure?')) {
+        this.suppliersClient.delete(entityToDelete.id).subscribe(
+          result => {
+            // do something with no return
+            const index = this.dataSource.findIndex(x => x.id === entityToDelete.id);
+            this.dataSource.splice(index, 1);
+            this.table.renderRows();
+            this.closeModal();
+            this.openSnackBar('Deleted successfully', null);
+          },
+          error => {
+            this.openSnackBar(error.title, null);
+          }
+        );
+      }
+    } else {
+      this.entityForm.get('name').setErrors({ mismatch: true });
     }
   }
 

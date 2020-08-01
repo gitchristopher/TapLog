@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Admin\Products\" />
+    <Folder Include="Admin\Passes\" />
+    <Folder Include="Admin\Devices\" />
     <Folder Include="Common\Mappings\" />
   </ItemGroup>
 

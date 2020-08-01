@@ -16,6 +16,10 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAdminClient {
     getCardVM(): Observable<AdminCardVM>;
+    getDeleteCard(id: number): Observable<CardToDeleteDto>;
+    getDeleteDevice(id: number): Observable<DeviceToDeleteDto>;
+    getStageDelete(id: number): Observable<StageToDeleteDto>;
+    getSupplierDelete(id: number): Observable<SupplierToDeleteDto>;
 }
 
 @Injectable({
@@ -77,6 +81,210 @@ export class AdminClient implements IAdminClient {
             }));
         }
         return _observableOf<AdminCardVM>(<any>null);
+    }
+
+    getDeleteCard(id: number): Observable<CardToDeleteDto> {
+        let url_ = this.baseUrl + "/api/Admin/card/delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDeleteCard(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDeleteCard(<any>response_);
+                } catch (e) {
+                    return <Observable<CardToDeleteDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CardToDeleteDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetDeleteCard(response: HttpResponseBase): Observable<CardToDeleteDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CardToDeleteDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CardToDeleteDto>(<any>null);
+    }
+
+    getDeleteDevice(id: number): Observable<DeviceToDeleteDto> {
+        let url_ = this.baseUrl + "/api/Admin/device/delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDeleteDevice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDeleteDevice(<any>response_);
+                } catch (e) {
+                    return <Observable<DeviceToDeleteDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<DeviceToDeleteDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetDeleteDevice(response: HttpResponseBase): Observable<DeviceToDeleteDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DeviceToDeleteDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<DeviceToDeleteDto>(<any>null);
+    }
+
+    getStageDelete(id: number): Observable<StageToDeleteDto> {
+        let url_ = this.baseUrl + "/api/Admin/stage/delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStageDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStageDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<StageToDeleteDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StageToDeleteDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStageDelete(response: HttpResponseBase): Observable<StageToDeleteDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StageToDeleteDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StageToDeleteDto>(<any>null);
+    }
+
+    getSupplierDelete(id: number): Observable<SupplierToDeleteDto> {
+        let url_ = this.baseUrl + "/api/Admin/supplier/delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSupplierDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSupplierDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<SupplierToDeleteDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SupplierToDeleteDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetSupplierDelete(response: HttpResponseBase): Observable<SupplierToDeleteDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SupplierToDeleteDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SupplierToDeleteDto>(<any>null);
     }
 }
 
@@ -3531,6 +3739,214 @@ export interface ISupplierListItemDto {
     id?: number;
     name?: string | undefined;
     cardCount?: number;
+}
+
+export class CardToDeleteDto implements ICardToDeleteDto {
+    id?: number;
+    number?: string | undefined;
+    alias?: string | undefined;
+    supplierName?: string | undefined;
+    tapCount?: number;
+
+    constructor(data?: ICardToDeleteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.number = _data["number"];
+            this.alias = _data["alias"];
+            this.supplierName = _data["supplierName"];
+            this.tapCount = _data["tapCount"];
+        }
+    }
+
+    static fromJS(data: any): CardToDeleteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CardToDeleteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["number"] = this.number;
+        data["alias"] = this.alias;
+        data["supplierName"] = this.supplierName;
+        data["tapCount"] = this.tapCount;
+        return data; 
+    }
+}
+
+export interface ICardToDeleteDto {
+    id?: number;
+    number?: string | undefined;
+    alias?: string | undefined;
+    supplierName?: string | undefined;
+    tapCount?: number;
+}
+
+export class DeviceToDeleteDto implements IDeviceToDeleteDto {
+    id?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    tapCount?: number;
+
+    constructor(data?: IDeviceToDeleteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.tapCount = _data["tapCount"];
+        }
+    }
+
+    static fromJS(data: any): DeviceToDeleteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DeviceToDeleteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["tapCount"] = this.tapCount;
+        return data; 
+    }
+}
+
+export interface IDeviceToDeleteDto {
+    id?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    tapCount?: number;
+}
+
+export class StageToDeleteDto implements IStageToDeleteDto {
+    id?: number;
+    name?: string | undefined;
+    isCurrent?: boolean;
+    stageTestCount?: number;
+    orphanTestCount?: number;
+    executionCount?: number;
+    tapCount?: number;
+
+    constructor(data?: IStageToDeleteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.isCurrent = _data["isCurrent"];
+            this.stageTestCount = _data["stageTestCount"];
+            this.orphanTestCount = _data["orphanTestCount"];
+            this.executionCount = _data["executionCount"];
+            this.tapCount = _data["tapCount"];
+        }
+    }
+
+    static fromJS(data: any): StageToDeleteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new StageToDeleteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["isCurrent"] = this.isCurrent;
+        data["stageTestCount"] = this.stageTestCount;
+        data["orphanTestCount"] = this.orphanTestCount;
+        data["executionCount"] = this.executionCount;
+        data["tapCount"] = this.tapCount;
+        return data; 
+    }
+}
+
+export interface IStageToDeleteDto {
+    id?: number;
+    name?: string | undefined;
+    isCurrent?: boolean;
+    stageTestCount?: number;
+    orphanTestCount?: number;
+    executionCount?: number;
+    tapCount?: number;
+}
+
+export class SupplierToDeleteDto implements ISupplierToDeleteDto {
+    id?: number;
+    name?: string | undefined;
+    cardCount?: number;
+    tapCount?: number;
+
+    constructor(data?: ISupplierToDeleteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.cardCount = _data["cardCount"];
+            this.tapCount = _data["tapCount"];
+        }
+    }
+
+    static fromJS(data: any): SupplierToDeleteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SupplierToDeleteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["cardCount"] = this.cardCount;
+        data["tapCount"] = this.tapCount;
+        return data; 
+    }
+}
+
+export interface ISupplierToDeleteDto {
+    id?: number;
+    name?: string | undefined;
+    cardCount?: number;
+    tapCount?: number;
 }
 
 export class CardDto implements ICardDto {

@@ -252,9 +252,6 @@ export class LogTapComponent implements OnInit, OnChanges {
 
   selectCard(e: ICardSelectItem) {
     const card = CardDto.fromJS(e.card);
-    console.log(e);
-    console.log(card);
-    
     this.selectedCardType = card.supplierId;
     this.addTapForm.get('passes').setValue(card.passId);
     this.addTapForm.get('products').setValue(card.productId);

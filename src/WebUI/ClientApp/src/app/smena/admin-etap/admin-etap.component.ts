@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { StageDto, StagesClient, UpdateStageCommand, CreateStageCommand } from 'src/app/taplog-api';
+import { StageDto, StagesClient, UpdateStageCommand, CreateStageCommand, StageToDeleteDto, AdminClient } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
@@ -13,8 +13,8 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-etap.component.css']
 })
 export class AdminEtapComponent implements OnInit {
-  debug = false;
-
+  debug = true;
+  entityToDeleteStats: StageToDeleteDto;
   dataSource: StageDto[] = [];
   columnList: string[] = ['id', 'name', 'isCurrent', 'edit', 'delete'];
   @ViewChild(MatTable) table: MatTable<any>;
@@ -23,7 +23,8 @@ export class AdminEtapComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: null };
 
-  constructor(private stagesClient: StagesClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
+  constructor(private stagesClient: StagesClient, private adminClient: AdminClient,
+    private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.entityForm = new FormGroup({
@@ -125,20 +126,43 @@ export class AdminEtapComponent implements OnInit {
     this.table.renderRows();
   }
 
-  deleteEntity(id: number) {
-    if (confirm('All data connected to this stage will be lost! Are you sure to delete stage?' + id)) {
-      this.stagesClient.delete(id).subscribe(
-        result => {
-          // do something with no return
-          const index = this.dataSource.findIndex(x => x.id === id);
-          this.dataSource.splice(index, 1);
-          this.table.renderRows();
-          this.openSnackBar('Deleted successfully', null);
-        },
-        error => {
-          this.openSnackBar(error.title, null);
-        }
-      );
+  openDeleteModal(entity: StageDto, template: TemplateRef<any> ) {
+    this.modalEditor.title = 'Delete Stage: ' + entity.name;
+    this.modalEditor.button = 'Delete';
+
+    this.adminClient.getStageDelete(entity.id).subscribe(
+      result => {
+        this.entityToDeleteStats = result;
+        this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
+        this.entityForm.get('isCurrent').setValue(this.entityToDeleteStats.isCurrent);
+        this.modalRef = this.modalService.show(template);
+      },
+      error => this.openSnackBar(error.title, null)
+    );
+  }
+
+  deleteEntity() {
+    const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
+    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+
+    if (entityToDelete.name.toLowerCase() === userInput) {
+      if (confirm('Are you really really sure?')) {
+        this.stagesClient.delete(entityToDelete.id).subscribe(
+          result => {
+            // do something with no return
+            const index = this.dataSource.findIndex(x => x.id === entityToDelete.id);
+            this.dataSource.splice(index, 1);
+            this.table.renderRows();
+            this.closeModal();
+            this.openSnackBar('Deleted successfully', null);
+          },
+          error => {
+            this.openSnackBar(error.title, null);
+          }
+        );
+      }
+    } else {
+      this.entityForm.get('name').setErrors({ mismatch: true });
     }
   }
 

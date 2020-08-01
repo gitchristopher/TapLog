@@ -34,7 +34,6 @@ namespace TapLog.Application.Stages.Commands.DeleteStage
 
         public async Task<Unit> Handle(DeleteStageCommand request, CancellationToken cancellationToken)
         {
-            // Retrieve the entity
             var entity = await _context.Stages.FindAsync(request.Id);
 
             if (entity == null)
@@ -43,15 +42,7 @@ namespace TapLog.Application.Stages.Commands.DeleteStage
             }
 
             var orphanTests = await _context.StageTests.Include(x => x.Test).Where(x => x.Test.StageTests.Count() == 1).Where(x => x.StageId == request.Id).Select(x => x.Test).ToListAsync();
-            //var entities = await _context.StageTests.Where(x => x.StageId == request.Id).Include(x => x.Test).ToListAsync();
-            //foreach (var st in entities)
-            //{
-            //    if (st.Test.StageTests.Count() == 1)
-            //    {
 
-            //    }
-            //}
-            // Delete the entity
             _context.Stages.Remove(entity);
             _context.Tests.RemoveRange(orphanTests);
 

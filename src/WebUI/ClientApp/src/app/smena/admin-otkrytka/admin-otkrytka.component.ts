@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CardDto, UpdateCardCommand, CreateCardCommand, CardsClient, SupplierDto,
-  ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient, AdminClient } from 'src/app/taplog-api';
+  ProductDto, PassDto, PassesClient, ProductsClient, SuppliersClient, AdminClient, CardToDeleteDto } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
@@ -15,7 +15,7 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 })
 export class AdminOtkrytkaComponent implements OnInit {
   debug = true;
-
+  entityToDeleteStats: CardToDeleteDto;
   dataSource: CardDto[] = [];
   columnList: string[] = ['id', 'number', 'alias', 'supplierName', 'productName', 'passName', 'taps', 'edit', 'delete'];
   @ViewChild(MatTable) table: MatTable<any>;
@@ -146,19 +146,42 @@ export class AdminOtkrytkaComponent implements OnInit {
     this.table.renderRows();
   }
 
-  deleteEntity(id: number) {
-    if (confirm('All Card data will be lost (Card, cards, taps)! Are you sure to delete Card?' + id)) {
-      console.log('Change efcore to set id to null in cards');
-      // this.cardsClient.delete(id).subscribe(
-      //   result => {
-      //     // do something with no return
-      //     const index = this.dataSource.findIndex(x => x.id === id);
-      //     this.dataSource.splice(index, 1);
-      //     this.table.renderRows();
-      //     this.openSnackBar('Deleted successfully', null);
-      //   },
-      //   error => {this.openSnackBar(error.title, null);}
-      // );
+  openDeleteModal(entity: CardDto, template: TemplateRef<any> ) {
+    this.modalEditor.title = 'Delete Card: ' + entity.number;
+    this.modalEditor.button = 'Delete';
+
+    this.adminClient.getDeleteCard(entity.id).subscribe(
+      result => {
+        this.entityToDeleteStats = result;
+        this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
+        this.modalRef = this.modalService.show(template);
+      },
+      error => this.openSnackBar(error.title, null)
+    );
+  }
+
+  deleteEntity() {
+    const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
+    const userInput = String(this.entityForm.getRawValue()['number']).toLowerCase().trim();
+
+    if (entityToDelete.number.toLowerCase() === userInput) {
+      if (confirm('Are you really really sure?')) {
+        this.cardsClient.delete(entityToDelete.id).subscribe(
+          result => {
+            // do something with no return
+            const index = this.dataSource.findIndex(x => x.id === entityToDelete.id);
+            this.dataSource.splice(index, 1);
+            this.table.renderRows();
+            this.closeModal();
+            this.openSnackBar('Deleted successfully', null);
+          },
+          error => {
+            this.openSnackBar(error.title, null);
+          }
+        );
+      }
+    } else {
+      this.entityForm.get('number').setErrors({ mismatch: true });
     }
   }
 

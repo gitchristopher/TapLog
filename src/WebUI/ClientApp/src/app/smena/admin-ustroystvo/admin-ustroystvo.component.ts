@@ -29,7 +29,7 @@ export class AdminUstroystvoComponent implements OnInit {
     this.entityForm = new FormGroup({
       code: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
       name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(64), NoBadCharacters]),
-      zone: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(2)]),
+      zone: new FormControl(null, [Validators.required]),
       latitude: new FormControl('', [Validators.maxLength(16), NoBadCharacters]),
       longitude: new FormControl('', [Validators.maxLength(16), NoBadCharacters]),
       id: new FormControl('', [Validators.required]),
@@ -128,18 +128,19 @@ export class AdminUstroystvoComponent implements OnInit {
   }
 
   deleteEntity(id: number) {
-    if (confirm('All Pass data will be lost (Pass, cards, taps)! Are you sure to delete Pass?' + id)) {
-      console.log('Change efcore to set id to null in cards');
-      // this.devicesClient.delete(id).subscribe(
-      //   result => {
-      //     // do something with no return
-      //     const index = this.dataSource.findIndex(x => x.id === id);
-      //     this.dataSource.splice(index, 1);
-      //     this.table.renderRows();
-      //     this.openSnackBar('Deleted successfully', null);
-      //   },
-      //   error => {this.openSnackBar(error.title, null);}
-      // );
+    if (confirm('All Device data will be lost (including the related taps)! Are you sure to delete Device? ' + id)) {
+      this.devicesClient.delete(id).subscribe(
+        result => {
+          // do something with no return
+          const index = this.dataSource.findIndex(x => x.id === id);
+          this.dataSource.splice(index, 1);
+          this.table.renderRows();
+          this.openSnackBar('Deleted successfully', null);
+        },
+        error => {
+          this.openSnackBar(error.title, null);
+        }
+      );
     }
   }
 

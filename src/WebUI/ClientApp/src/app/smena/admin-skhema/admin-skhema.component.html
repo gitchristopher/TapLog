@@ -26,7 +26,7 @@
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let supplier">
-        <button mat-icon-button color="warn" type="button" (click)="deleteEntity(supplier.id)">
+        <button mat-icon-button color="warn" type="button" (click)="openDeleteModal(supplier, deleteModalTemplate)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
@@ -78,4 +78,45 @@
       </div>
     </div>
 </form>
+</ng-template>
+
+
+<ng-template #deleteModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">{{modalEditor.title}}</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <form>
+    <div class="d-flex flex-column p-5">
+      <p>Are you sure you want to delete the Supplier?</p>
+      <p>This action can not be undone.</p>
+      <p>To be deleted:</p>
+      <ul>
+        <li>Cards: {{entityToDeleteStats.cardCount}}</li>
+        <li>Taps: {{entityToDeleteStats.tapCount}}</li>
+      </ul>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [formControl]="entityForm.controls['name']">
+        <mat-hint>Enter the name of the supplier to delete.</mat-hint>
+        <mat-error *ngIf="entityForm.controls['name'].hasError('required')">Name is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="entityForm.controls['name'].hasError('mismatch')">Name does not <strong>match</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div *ngIf="debug">
+      <pre *ngIf="this.entityToDeleteStats != null">{{ this.entityToDeleteStats | json }}</pre>
+    </div>
+    <div class="modal-footer">
+      <div class="text-right">
+        <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-warning" type="button" (click)="deleteEntity()">{{modalEditor.button}}</button>
+      </div>
+    </div>
+  </form>
 </ng-template>
