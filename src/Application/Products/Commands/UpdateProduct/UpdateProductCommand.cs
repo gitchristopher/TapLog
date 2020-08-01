@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +42,12 @@ namespace TapLog.Application.Products.Commands.UpdateProduct
             if (entity == null)
             {
                 throw new NotFoundException(nameof(Product), request.Id);
+            }
+
+            var tapsToUpdate = await _context.Taps.Where(x => x.Product == entity.Name).ToListAsync();
+            foreach (var tap in tapsToUpdate)
+            {
+                tap.Product = request.Name;
             }
 
             // Update the entity
