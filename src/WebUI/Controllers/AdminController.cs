@@ -28,13 +28,13 @@ namespace TapLog.WebUI.Controllers
         }
 
         [HttpGet("card/delete/{id}")]
-        public async Task<ActionResult<CardToDeleteDto>> GetDeleteCard([FromRoute] int id)
+        public async Task<ActionResult<CardToDeleteDto>> GetCardDelete([FromRoute] int id)
         {
             return await Mediator.Send(new GetCardToDeleteQuery { Id = id});
         }
 
         [HttpGet("device/delete/{id}")]
-        public async Task<ActionResult<DeviceToDeleteDto>> GetDeleteDevice([FromRoute] int id)
+        public async Task<ActionResult<DeviceToDeleteDto>> GetDeviceDelete([FromRoute] int id)
         {
             return await Mediator.Send(new GetDeviceToDeleteQuery { Id = id });
         }

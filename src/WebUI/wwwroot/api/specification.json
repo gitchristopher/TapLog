@@ -36,7 +36,7 @@
         "tags": [
           "Admin"
         ],
-        "operationId": "Admin_GetDeleteCard",
+        "operationId": "Admin_GetCardDelete",
         "parameters": [
           {
             "name": "id",
@@ -73,7 +73,7 @@
         "tags": [
           "Admin"
         ],
-        "operationId": "Admin_GetDeleteDevice",
+        "operationId": "Admin_GetDeviceDelete",
         "parameters": [
           {
             "name": "id",

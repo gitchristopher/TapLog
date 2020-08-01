@@ -150,7 +150,7 @@ export class AdminOtkrytkaComponent implements OnInit {
     this.modalEditor.title = 'Delete Card: ' + entity.number;
     this.modalEditor.button = 'Delete';
 
-    this.adminClient.getDeleteCard(entity.id).subscribe(
+    this.adminClient.getCardDelete(entity.id).subscribe(
       result => {
         this.entityToDeleteStats = result;
         this.entityForm.get('id').setValue(this.entityToDeleteStats.id);

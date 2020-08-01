@@ -16,8 +16,8 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAdminClient {
     getCardVM(): Observable<AdminCardVM>;
-    getDeleteCard(id: number): Observable<CardToDeleteDto>;
-    getDeleteDevice(id: number): Observable<DeviceToDeleteDto>;
+    getCardDelete(id: number): Observable<CardToDeleteDto>;
+    getDeviceDelete(id: number): Observable<DeviceToDeleteDto>;
     getStageDelete(id: number): Observable<StageToDeleteDto>;
     getSupplierDelete(id: number): Observable<SupplierToDeleteDto>;
 }
@@ -83,7 +83,7 @@ export class AdminClient implements IAdminClient {
         return _observableOf<AdminCardVM>(<any>null);
     }
 
-    getDeleteCard(id: number): Observable<CardToDeleteDto> {
+    getCardDelete(id: number): Observable<CardToDeleteDto> {
         let url_ = this.baseUrl + "/api/Admin/card/delete/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -99,11 +99,11 @@ export class AdminClient implements IAdminClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDeleteCard(response_);
+            return this.processGetCardDelete(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetDeleteCard(<any>response_);
+                    return this.processGetCardDelete(<any>response_);
                 } catch (e) {
                     return <Observable<CardToDeleteDto>><any>_observableThrow(e);
                 }
@@ -112,7 +112,7 @@ export class AdminClient implements IAdminClient {
         }));
     }
 
-    protected processGetDeleteCard(response: HttpResponseBase): Observable<CardToDeleteDto> {
+    protected processGetCardDelete(response: HttpResponseBase): Observable<CardToDeleteDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -134,7 +134,7 @@ export class AdminClient implements IAdminClient {
         return _observableOf<CardToDeleteDto>(<any>null);
     }
 
-    getDeleteDevice(id: number): Observable<DeviceToDeleteDto> {
+    getDeviceDelete(id: number): Observable<DeviceToDeleteDto> {
         let url_ = this.baseUrl + "/api/Admin/device/delete/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -150,11 +150,11 @@ export class AdminClient implements IAdminClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDeleteDevice(response_);
+            return this.processGetDeviceDelete(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetDeleteDevice(<any>response_);
+                    return this.processGetDeviceDelete(<any>response_);
                 } catch (e) {
                     return <Observable<DeviceToDeleteDto>><any>_observableThrow(e);
                 }
@@ -163,7 +163,7 @@ export class AdminClient implements IAdminClient {
         }));
     }
 
-    protected processGetDeleteDevice(response: HttpResponseBase): Observable<DeviceToDeleteDto> {
+    protected processGetDeviceDelete(response: HttpResponseBase): Observable<DeviceToDeleteDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

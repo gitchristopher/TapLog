@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DeviceDto, DevicesClient,UpdateDeviceCommand, CreateDeviceCommand } from 'src/app/taplog-api';
+import { DeviceDto, DevicesClient,UpdateDeviceCommand, CreateDeviceCommand, DeviceToDeleteDto, AdminClient } from 'src/app/taplog-api';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
@@ -13,8 +13,8 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-ustroystvo.component.css']
 })
 export class AdminUstroystvoComponent implements OnInit {
-  debug = false;
-
+  debug = true;
+  entityToDeleteStats: DeviceToDeleteDto;
   dataSource: DeviceDto[] = [];
   columnList: string[] = ['id', 'code', 'name', 'zone', 'latitude', 'longitude', 'edit', 'delete'];
   @ViewChild(MatTable) table: MatTable<any>;
@@ -23,7 +23,8 @@ export class AdminUstroystvoComponent implements OnInit {
   modalRef: BsModalRef;
   modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: null };
 
-  constructor(private devicesClient: DevicesClient, private modalService: BsModalService, private snackBar: MatSnackBar) { }
+  constructor(private devicesClient: DevicesClient, private adminClient: AdminClient,
+    private modalService: BsModalService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.entityForm = new FormGroup({
@@ -127,22 +128,45 @@ export class AdminUstroystvoComponent implements OnInit {
     this.table.renderRows();
   }
 
-  deleteEntity(id: number) {
-    if (confirm('All Device data will be lost (including the related taps)! Are you sure to delete Device? ' + id)) {
-      this.devicesClient.delete(id).subscribe(
-        result => {
-          // do something with no return
-          const index = this.dataSource.findIndex(x => x.id === id);
-          this.dataSource.splice(index, 1);
-          this.table.renderRows();
-          this.openSnackBar('Deleted successfully', null);
-        },
-        error => {
-          this.openSnackBar(error.title, null);
-        }
-      );
+  openDeleteModal(entity: DeviceDto, template: TemplateRef<any> ) {
+    this.modalEditor.title = 'Delete Device: ' + entity.code + ' - ' + entity.name;
+    this.modalEditor.button = 'Delete';
+
+    this.adminClient.getDeviceDelete(entity.id).subscribe(
+      result => {
+        this.entityToDeleteStats = result;
+        this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
+        this.modalRef = this.modalService.show(template);
+      },
+      error => this.openSnackBar(error.title, null)
+    );
+  }
+
+  deleteEntity() {
+    const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
+    const userInput = String(this.entityForm.getRawValue()['code']).toLowerCase().trim();
+
+    if (entityToDelete.code.toLowerCase() === userInput) {
+      if (confirm('Are you really really sure?')) {
+        this.devicesClient.delete(entityToDelete.id).subscribe(
+          result => {
+            // do something with no return
+            const index = this.dataSource.findIndex(x => x.id === entityToDelete.id);
+            this.dataSource.splice(index, 1);
+            this.table.renderRows();
+            this.closeModal();
+            this.openSnackBar('Deleted successfully', null);
+          },
+          error => {
+            this.openSnackBar(error.title, null);
+          }
+        );
+      }
+    } else {
+      this.entityForm.get('code').setErrors({ mismatch: true });
     }
   }
+
 
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
