@@ -64,7 +64,11 @@
         <mat-error *ngIf="entityForm.controls['name'].hasError('maxlength')">Name must be at most 32 character.</mat-error>
       </mat-form-field>
 
+      <ng-container *ngIf="modalEditor.errors != null">
+        <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+      </ng-container>
       <div *ngIf="debug">
+        <pre>{{ entityForm.getRawValue() | json }}</pre>
         <pre *ngIf="modalEditor.errors != null">{{ modalEditor.errors | json }}</pre>
       </div>
     </div>
@@ -105,6 +109,9 @@
       </mat-form-field>
     </div>
 
+    <ng-container *ngIf="modalEditor.errors != null">
+      <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+    </ng-container>
     <div class="modal-footer">
       <div class="text-right">
         <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>

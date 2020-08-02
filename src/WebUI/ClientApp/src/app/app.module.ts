@@ -141,7 +141,7 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       { path: 'logger', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
       { path: 'zapolnit', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
       { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] },
-      { path: 'smena', component: SmenaComponent },
+      { path: 'smena', component: SmenaComponent, canActivate: [AuthorizeGuard] },
     ]),
     CommonModule,
     ReactiveFormsModule,

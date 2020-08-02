@@ -49,8 +49,8 @@ namespace TapLog.Application.Tests.Commands.CreateTest
 
             var jiraNumber = CleanInput(request.JiraTestNumber).Trim();
 
-            //var existingTest = await _context.StageTests.Include(st => st.Test).Include(st => st.Stage).Where(x => x.Test.JiraTestNumber == jiraNumber).FirstOrDefaultAsync();
             var existingTest = await _context.Tests.Include(t => t.StageTests).Where(x => x.JiraTestNumber == jiraNumber).FirstOrDefaultAsync();
+            
             if (existingTest != null)
             {
                 if (existingTest.StageTests.Where(x => x.StageId == request.StageId).FirstOrDefault() != null)

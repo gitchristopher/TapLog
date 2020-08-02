@@ -18,7 +18,7 @@ namespace TapLog.Application.Tests.Commands.DeleteTest
 
     public class DeleteTestCommand : IRequest
     {
-        public int Id { get; set; }
+        public int TestId { get; set; }
         public int StageId { get; set; }
     }
 
@@ -36,17 +36,14 @@ namespace TapLog.Application.Tests.Commands.DeleteTest
         public async Task<Unit> Handle(DeleteTestCommand request, CancellationToken cancellationToken)
         {
             // Retrieve the entity
-            var entity = await _context.StageTests.Include(t => t.Test).Where(x => x.StageId == request.StageId).Where(x => x.TestId == request.Id).FirstOrDefaultAsync();
+            var entity = await _context.StageTests.Include(t => t.Test).Where(x => x.StageId == request.StageId).Where(x => x.TestId == request.TestId).FirstOrDefaultAsync();
 
             if (entity == null)
             {
-                throw new NotFoundException(nameof(Test), request.Id);
+                throw new NotFoundException(nameof(Test), request.TestId);
             }
 
-            var orphanTests = await _context.StageTests.Include(x => x.Test).Where(x => x.Test.StageTests.Count() == 1).Where(x => x.StageId == request.StageId).Select(x => x.Test).ToListAsync();
-
             // Delete the entity
-            _context.Tests.RemoveRange(orphanTests);
             _context.StageTests.Remove(entity);
 
             await _context.SaveChangesAsync(cancellationToken);

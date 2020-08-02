@@ -57,7 +57,7 @@ namespace TapLog.WebUI.Controllers
         [HttpDelete("{testId}")]
         public async Task<ActionResult> Delete([FromRoute] int testId, [FromQuery] int stageId)
         {
-            await Mediator.Send(new DeleteTestCommand { Id = testId, StageId = stageId });
+            await Mediator.Send(new DeleteTestCommand { TestId = testId, StageId = stageId });
 
             return NoContent();
         }

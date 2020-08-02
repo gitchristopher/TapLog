@@ -79,7 +79,11 @@
         <mat-error *ngIf="entityForm.controls['isCurrent'].hasError('required')">Please enter a value.</mat-error>
       </mat-form-field>
 
+      <ng-container *ngIf="modalEditor.errors != null">
+        <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+      </ng-container>
       <div *ngIf="debug">
+        <pre>{{ entityForm.getRawValue() | json }}</pre>
         <pre *ngIf="this.modalEditor.errors != null">{{ this.modalEditor.errors | json }}</pre>
       </div>
     </div>
@@ -125,6 +129,9 @@
         </mat-error>
       </mat-form-field>
     </div>
+    <ng-container *ngIf="modalEditor.errors != null">
+      <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+    </ng-container>
     <div *ngIf="debug">
       <pre *ngIf="this.entityToDeleteStats != null">{{ this.entityToDeleteStats | json }}</pre>
     </div>

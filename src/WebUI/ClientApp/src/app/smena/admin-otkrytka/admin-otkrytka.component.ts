@@ -6,7 +6,6 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 @Component({
   selector: 'app-admin-otkrytka',
@@ -14,7 +13,7 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-otkrytka.component.css']
 })
 export class AdminOtkrytkaComponent implements OnInit {
-  debug = true;
+  debug = false;
   entityToDeleteStats: CardToDeleteDto;
   dataSource: CardDto[] = [];
   columnList: string[] = ['id', 'number', 'alias', 'supplierName', 'productName', 'passName', 'taps', 'edit', 'delete'];
@@ -33,13 +32,15 @@ export class AdminOtkrytkaComponent implements OnInit {
 
   ngOnInit() {
     this.entityForm = new FormGroup({
-      number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
-      alias: new FormControl('', [Validators.maxLength(32), NoBadCharacters]),
+      number: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
+      alias: new FormControl('', [Validators.maxLength(32)]),
       supplierId: new FormControl(null, [Validators.required]),
       productId: new FormControl(),
       passId: new FormControl(),
       id: new FormControl('', [Validators.required]),
     });
+
+    this.refresh();
 
     this.adminClient.getCardVM().subscribe(
       result => {
@@ -103,6 +104,7 @@ export class AdminOtkrytkaComponent implements OnInit {
           }
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -119,6 +121,7 @@ export class AdminOtkrytkaComponent implements OnInit {
           this.openSnackBar(`Updated successfully: ${entity.number}`, null);
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -156,7 +159,10 @@ export class AdminOtkrytkaComponent implements OnInit {
         this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
         this.modalRef = this.modalService.show(template);
       },
-      error => this.openSnackBar(error.title, null)
+      error => {
+        this.addErrorFromApi(error);
+        this.openSnackBar(error.title, null);
+      }
     );
   }
 
@@ -176,6 +182,7 @@ export class AdminOtkrytkaComponent implements OnInit {
             this.openSnackBar('Deleted successfully', null);
           },
           error => {
+            this.addErrorFromApi(error);
             this.openSnackBar(error.title, null);
           }
         );
@@ -188,6 +195,15 @@ export class AdminOtkrytkaComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 3000,
+    });
+  }
+
+  addErrorFromApi(error: any) {
+    this.modalEditor.errors = [];
+    const response = JSON.parse(error['response']);
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.modalEditor.errors.push(element[0]);
     });
   }
 }

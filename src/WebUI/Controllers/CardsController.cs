@@ -10,6 +10,7 @@ using TapLog.Application.Cards.Commands.UpdateCard;
 using TapLog.Application.Cards.Commands.CreateCard;
 using TapLog.Application.Cards.Query.GetCards;
 using TapLog.Application.Cards.Query.GetCard;
+using Microsoft.AspNetCore.Http;
 
 namespace TapLog.WebUI.Controllers
 {

@@ -5,7 +5,6 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 @Component({
   selector: 'app-admin-ustroystvo',
@@ -13,7 +12,7 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-ustroystvo.component.css']
 })
 export class AdminUstroystvoComponent implements OnInit {
-  debug = true;
+  debug = false;
   entityToDeleteStats: DeviceToDeleteDto;
   dataSource: DeviceDto[] = [];
   columnList: string[] = ['id', 'code', 'name', 'zone', 'latitude', 'longitude', 'edit', 'delete'];
@@ -28,13 +27,15 @@ export class AdminUstroystvoComponent implements OnInit {
 
   ngOnInit() {
     this.entityForm = new FormGroup({
-      code: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
-      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(64), NoBadCharacters]),
+      code: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
+      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(64)]),
       zone: new FormControl(null, [Validators.required]),
-      latitude: new FormControl('', [Validators.maxLength(16), NoBadCharacters]),
-      longitude: new FormControl('', [Validators.maxLength(16), NoBadCharacters]),
+      latitude: new FormControl('', [Validators.maxLength(16)]),
+      longitude: new FormControl('', [Validators.maxLength(16)]),
       id: new FormControl('', [Validators.required]),
     });
+
+    this.refresh();
   }
 
   refresh() {
@@ -89,6 +90,7 @@ export class AdminUstroystvoComponent implements OnInit {
           }
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -105,6 +107,7 @@ export class AdminUstroystvoComponent implements OnInit {
           this.openSnackBar(`Updated successfully: ${entity.name}`, null);
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -138,7 +141,10 @@ export class AdminUstroystvoComponent implements OnInit {
         this.entityForm.get('id').setValue(this.entityToDeleteStats.id);
         this.modalRef = this.modalService.show(template);
       },
-      error => this.openSnackBar(error.title, null)
+      error => {
+        this.addErrorFromApi(error);
+        this.openSnackBar(error.title, null);
+      }
     );
   }
 
@@ -158,6 +164,7 @@ export class AdminUstroystvoComponent implements OnInit {
             this.openSnackBar('Deleted successfully', null);
           },
           error => {
+            this.addErrorFromApi(error);
             this.openSnackBar(error.title, null);
           }
         );
@@ -171,6 +178,15 @@ export class AdminUstroystvoComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 3000,
+    });
+  }
+
+  addErrorFromApi(error: any) {
+    this.modalEditor.errors = [];
+    const response = JSON.parse(error['response']);
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.modalEditor.errors.push(element[0]);
     });
   }
 }

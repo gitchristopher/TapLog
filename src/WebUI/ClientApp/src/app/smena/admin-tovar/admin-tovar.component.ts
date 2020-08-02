@@ -5,7 +5,6 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 
 @Component({
@@ -28,9 +27,11 @@ export class AdminTovarComponent implements OnInit {
 
   ngOnInit() {
     this.entityForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
+      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       id: new FormControl('', [Validators.required]),
     });
+
+    this.refresh();
   }
 
   refresh() {
@@ -85,6 +86,7 @@ export class AdminTovarComponent implements OnInit {
           }
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -101,6 +103,7 @@ export class AdminTovarComponent implements OnInit {
           this.openSnackBar(`Updated successfully: ${entity.name}`, null);
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -148,6 +151,7 @@ export class AdminTovarComponent implements OnInit {
             this.openSnackBar('Deleted successfully', null);
           },
           error => {
+            this.addErrorFromApi(error);
             this.openSnackBar(error.title, null);
           }
         );
@@ -160,6 +164,15 @@ export class AdminTovarComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 3000,
+    });
+  }
+
+  addErrorFromApi(error: any) {
+    this.modalEditor.errors = [];
+    const response = JSON.parse(error['response']);
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.modalEditor.errors.push(element[0]);
     });
   }
 }

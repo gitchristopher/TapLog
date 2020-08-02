@@ -5,7 +5,6 @@ import { IModal } from 'src/_interfaces/modal';
 import { MatTable } from '@angular/material/table';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NoBadCharacters } from 'src/_validators/noBadCharacters';
 
 @Component({
   selector: 'app-admin-etap',
@@ -13,7 +12,7 @@ import { NoBadCharacters } from 'src/_validators/noBadCharacters';
   styleUrls: ['./admin-etap.component.css']
 })
 export class AdminEtapComponent implements OnInit {
-  debug = true;
+  debug = false;
   entityToDeleteStats: StageToDeleteDto;
   dataSource: StageDto[] = [];
   columnList: string[] = ['id', 'name', 'isCurrent', 'edit', 'delete'];
@@ -28,10 +27,12 @@ export class AdminEtapComponent implements OnInit {
 
   ngOnInit() {
     this.entityForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32), NoBadCharacters]),
+      name: new FormControl('', [Validators.required, Validators.minLength(1), Validators.maxLength(32)]),
       isCurrent: new FormControl('', [Validators.required]),
       id: new FormControl('', [Validators.required]),
     });
+
+    this.refresh();
   }
 
   refresh() {
@@ -86,6 +87,7 @@ export class AdminEtapComponent implements OnInit {
           }
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -102,6 +104,7 @@ export class AdminEtapComponent implements OnInit {
           this.openSnackBar(`Updated successfully: ${entity.name}`, null);
         },
         error => {
+          this.addErrorFromApi(error);
           this.openSnackBar(error.title, null);
         }
     );
@@ -137,7 +140,10 @@ export class AdminEtapComponent implements OnInit {
         this.entityForm.get('isCurrent').setValue(this.entityToDeleteStats.isCurrent);
         this.modalRef = this.modalService.show(template);
       },
-      error => this.openSnackBar(error.title, null)
+      error => {
+        this.addErrorFromApi(error);
+        this.openSnackBar(error.title, null);
+      }
     );
   }
 
@@ -157,6 +163,7 @@ export class AdminEtapComponent implements OnInit {
             this.openSnackBar('Deleted successfully', null);
           },
           error => {
+            this.addErrorFromApi(error);
             this.openSnackBar(error.title, null);
           }
         );
@@ -169,6 +176,15 @@ export class AdminEtapComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 3000,
+    });
+  }
+
+  addErrorFromApi(error: any) {
+    this.modalEditor.errors = [];
+    const response = JSON.parse(error['response']);
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.modalEditor.errors.push(element[0]);
     });
   }
 }

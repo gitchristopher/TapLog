@@ -24,7 +24,7 @@ export class NavMenuComponent {
     // Shows the test modal
     showInfoModal(template: TemplateRef<any>): void {
       this.infoModalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
-      setTimeout(() => document.getElementById('title').focus(), 250);
+      // setTimeout(() => document.getElementById('title').focus(), 250);
     }
 
     // Hides the modal on cancel
