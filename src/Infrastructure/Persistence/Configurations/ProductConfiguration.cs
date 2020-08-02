@@ -13,7 +13,7 @@ namespace TapLog.Infrastructure.Persistence.Configurations
         {
             builder.Property(s => s.Name).HasMaxLength(32).IsRequired();
 
-            builder.HasMany(s => s.Cards).WithOne(c => c.Product);
+            builder.HasMany(s => s.Cards).WithOne(c => c.Product).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

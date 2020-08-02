@@ -125,19 +125,35 @@ export class AdminTovarComponent implements OnInit {
     this.table.renderRows();
   }
 
-  deleteEntity(id: number) {
-    if (confirm('All Product data will be lost (Pass, cards, taps)! Are you sure to delete Product?' + id)) {
-      console.log('Change efcore to set id to null in cards');
-      // this.productsClient.delete(id).subscribe(
-      //   result => {
-      //     // do something with no return
-      //     const index = this.dataSource.findIndex(x => x.id === id);
-      //     this.dataSource.splice(index, 1);
-      //     this.table.renderRows();
-      //     this.openSnackBar('Deleted successfully', null);
-      //   },
-      //   error => {this.openSnackBar(error.title, null);}
-      // );
+  openDeleteModal(entity: ProductDto, template: TemplateRef<any> ) {
+    this.modalEditor.title = 'Delete Product: ' + entity.name;
+    this.modalEditor.button = 'Delete';
+    this.entityForm.get('id').setValue(entity.id);
+    this.modalRef = this.modalService.show(template);
+  }
+
+  deleteEntity() {
+    const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
+    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+
+    if (entityToDelete.name.toLowerCase() === userInput) {
+      if (confirm('Are you really really sure?')) {
+        this.productsClient.delete(entityToDelete.id).subscribe(
+          result => {
+            // do something with no return
+            const index = this.dataSource.findIndex(x => x.id === entityToDelete.id);
+            this.dataSource.splice(index, 1);
+            this.table.renderRows();
+            this.closeModal();
+            this.openSnackBar('Deleted successfully', null);
+          },
+          error => {
+            this.openSnackBar(error.title, null);
+          }
+        );
+      }
+    } else {
+      this.entityForm.get('name').setErrors({mismatch: true});
     }
   }
 

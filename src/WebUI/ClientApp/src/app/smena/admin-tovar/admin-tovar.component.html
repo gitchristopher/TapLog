@@ -26,7 +26,7 @@
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let product">
-        <button mat-icon-button color="warn" type="button" (click)="deleteEntity(product.id)">
+        <button mat-icon-button color="warn" type="button" (click)="openDeleteModal(product, deleteModalTemplate)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
@@ -73,6 +73,42 @@
       <div class="text-right">
         <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>
         <button class="btn btn-primary" type="submit" [disabled]="entityForm.invalid">{{modalEditor.button}}</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #deleteModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">{{modalEditor.title}}</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <form>
+    <div class="d-flex flex-column p-5">
+      <ul>
+        <li>Are you sure you want to delete the product?</li>
+        <li>This action can not be undone.</li>
+        <li>Taps that have the product will continue to have the product name.</li>
+      </ul>
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [formControl]="entityForm.controls['name']">
+        <mat-hint>Enter the name of the product to delete.</mat-hint>
+        <mat-error *ngIf="entityForm.controls['name'].hasError('required')">Name is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="entityForm.controls['name'].hasError('mismatch')">Name does not <strong>match</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="modal-footer">
+      <div class="text-right">
+        <button class="btn btn-default" type="button" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-warning" type="button" (click)="deleteEntity()">{{modalEditor.button}}</button>
       </div>
     </div>
   </form>
