@@ -74,6 +74,7 @@ export class AdminEtapComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreateStageCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.name = newEntityCommand.name.trim();
 
     this.stagesClient.create(newEntityCommand).subscribe(
         result => {
@@ -95,6 +96,7 @@ export class AdminEtapComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdateStageCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.name = updateEntityCommand.name.trim();
 
     this.stagesClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -149,9 +151,10 @@ export class AdminEtapComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['name']);
+    const entityParameter = entityToDelete.name.trim();
 
-    if (entityToDelete.name.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.stagesClient.delete(entityToDelete.id).subscribe(
           result => {

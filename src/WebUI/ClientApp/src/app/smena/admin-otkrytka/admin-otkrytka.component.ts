@@ -91,6 +91,8 @@ export class AdminOtkrytkaComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreateCardCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.number = newEntityCommand.number.trim();
+    newEntityCommand.alias = newEntityCommand.alias?.trim();
 
     this.cardsClient.create(newEntityCommand).subscribe(
         result => {
@@ -112,6 +114,8 @@ export class AdminOtkrytkaComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdateCardCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.number = updateEntityCommand.number.trim();
+    updateEntityCommand.alias = updateEntityCommand.alias?.trim();
 
     this.cardsClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -168,9 +172,10 @@ export class AdminOtkrytkaComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['number']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['number']);
+    const entityParameter = entityToDelete.number.trim();
 
-    if (entityToDelete.number.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.cardsClient.delete(entityToDelete.id).subscribe(
           result => {

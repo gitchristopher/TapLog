@@ -73,6 +73,7 @@ export class AdminTovarComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreateProductCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.name = newEntityCommand.name.trim();
 
     this.productsClient.create(newEntityCommand).subscribe(
         result => {
@@ -94,6 +95,7 @@ export class AdminTovarComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdateProductCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.name = updateEntityCommand.name.trim();
 
     this.productsClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -137,9 +139,10 @@ export class AdminTovarComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['name']);
+    const entityParameter = entityToDelete.name.trim();
 
-    if (entityToDelete.name.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.productsClient.delete(entityToDelete.id).subscribe(
           result => {

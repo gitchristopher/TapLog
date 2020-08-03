@@ -49,8 +49,8 @@ namespace TapLog.Application.Devices.Commands.UpdateDevice
             entity.Code = request.Code;
             entity.Name = request.Name;
             entity.Zone = request.Zone;
-            entity.Latitude = request.Latitude;
-            entity.Longitude = request.Longitude;
+            entity.Latitude = (request.Latitude?.Length == 0) ? null : request.Latitude;
+            entity.Longitude = (request.Longitude?.Length == 0) ? null : request.Longitude;
 
             await _context.SaveChangesAsync(cancellationToken);
 

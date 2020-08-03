@@ -75,10 +75,10 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
 
             // Update the entity
             entity.Number = request.Number;
-            entity.Alias = request.Alias;
+            entity.Alias = (request.Alias?.Length == 0) ? null : request.Alias;
             entity.SupplierId = request.SupplierId;
-            entity.ProductId = request?.ProductId ?? null;
-            entity.PassId = request?.PassId ?? null;
+            entity.ProductId = request.ProductId ?? null;
+            entity.PassId = request.PassId ?? null;
 
             await _context.SaveChangesAsync(cancellationToken);
 

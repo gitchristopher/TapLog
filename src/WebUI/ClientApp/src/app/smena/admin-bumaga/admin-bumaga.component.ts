@@ -72,6 +72,7 @@ export class AdminBumagaComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreatePassCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.name = newEntityCommand.name.trim();
 
     this.passesClient.create(newEntityCommand).subscribe(
         result => {
@@ -93,6 +94,7 @@ export class AdminBumagaComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdatePassCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.name = updateEntityCommand.name.trim();
 
     this.passesClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -136,9 +138,10 @@ export class AdminBumagaComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['name']);
+    const entityParameter = entityToDelete.name.trim();
 
-    if (entityToDelete.name.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.passesClient.delete(entityToDelete.id).subscribe(
           result => {

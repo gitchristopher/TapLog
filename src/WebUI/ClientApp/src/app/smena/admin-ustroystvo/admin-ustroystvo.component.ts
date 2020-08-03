@@ -77,6 +77,10 @@ export class AdminUstroystvoComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreateDeviceCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.code = newEntityCommand.code.trim();
+    newEntityCommand.name = newEntityCommand.name.trim();
+    newEntityCommand.latitude = newEntityCommand.latitude?.trim();
+    newEntityCommand.longitude = newEntityCommand.longitude?.trim();
 
     this.devicesClient.create(newEntityCommand).subscribe(
         result => {
@@ -98,6 +102,10 @@ export class AdminUstroystvoComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdateDeviceCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.code = updateEntityCommand.code.trim();
+    updateEntityCommand.name = updateEntityCommand.name.trim();
+    updateEntityCommand.latitude = updateEntityCommand.latitude?.trim();
+    updateEntityCommand.longitude = updateEntityCommand.longitude?.trim();
 
     this.devicesClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -150,9 +158,10 @@ export class AdminUstroystvoComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['code']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['code']);
+    const entityParameter = entityToDelete.code.trim();
 
-    if (entityToDelete.code.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.devicesClient.delete(entityToDelete.id).subscribe(
           result => {

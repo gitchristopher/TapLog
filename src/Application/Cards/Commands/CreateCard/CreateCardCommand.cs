@@ -67,10 +67,10 @@ namespace TapLog.Application.Cards.Commands.CreateCard
             var entity = new Card
             {
                 Number = request.Number,
-                Alias = request.Alias,
+                Alias = (request.Alias?.Length == 0) ? null : request.Alias,
                 SupplierId = request.SupplierId,
-                PassId = request?.PassId ?? null,
-                ProductId = request?.ProductId ?? null
+                PassId = request.PassId ?? null,
+                ProductId = request.ProductId ?? null
             };
 
             _context.Cards.Add(entity);

@@ -74,6 +74,7 @@ export class AdminSkhemaComponent implements OnInit {
 
   createEntity() {
     const newEntityCommand = CreateSupplierCommand.fromJS(this.entityForm.getRawValue());
+    newEntityCommand.name = newEntityCommand.name.trim();
 
     this.suppliersClient.create(newEntityCommand).subscribe(
         result => {
@@ -95,6 +96,7 @@ export class AdminSkhemaComponent implements OnInit {
 
   updateEntity() {
     const updateEntityCommand = UpdateSupplierCommand.fromJS(this.entityForm.getRawValue());
+    updateEntityCommand.name = updateEntityCommand.name.trim();
 
     this.suppliersClient.update(updateEntityCommand.id, updateEntityCommand).subscribe(
         result => {
@@ -148,9 +150,10 @@ export class AdminSkhemaComponent implements OnInit {
 
   deleteEntity() {
     const entityToDelete = this.dataSource.find(x => x.id === Number(this.entityForm.getRawValue()['id']));
-    const userInput = String(this.entityForm.getRawValue()['name']).toLowerCase().trim();
+    const userInput = String(this.entityForm.getRawValue()['name']);
+    const entityParameter = entityToDelete.name.trim();
 
-    if (entityToDelete.name.toLowerCase() === userInput) {
+    if (userInput === entityParameter) {
       if (confirm('Are you really really sure?')) {
         this.suppliersClient.delete(entityToDelete.id).subscribe(
           result => {

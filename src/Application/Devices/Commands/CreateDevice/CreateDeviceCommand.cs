@@ -41,8 +41,8 @@ namespace TapLog.Application.Devices.Commands.CreateDevice
                 Code = request.Code,
                 Name = request.Name,
                 Zone = request.Zone,
-                Latitude = request.Latitude,
-                Longitude = request.Longitude
+                Latitude = (request.Latitude?.Length == 0) ? null : request.Latitude,
+                Longitude = (request.Longitude?.Length == 0) ? null : request.Longitude
             };
 
             _context.Devices.Add(entity);
