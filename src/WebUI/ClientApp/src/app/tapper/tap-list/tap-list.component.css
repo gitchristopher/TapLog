@@ -110,8 +110,8 @@ box-shadow:  5px 5px 4px #dbf4f6,
   "number result before edit" 
   "alias expectation fare delete" 
   "supplier notes after delete"
-  "action tester misc ."
-  "product pass . ."
+  "action notes tester ."
+  "product pass error ."
 }
 
 
@@ -163,8 +163,8 @@ box-shadow:  5px 5px 4px #dbf4f6,
 .tl-tester {
   grid-area: tester;
 }
-.tl-misc {
-  grid-area: misc;
+.tl-error {
+  grid-area: error;
 }
 .iconText {
   display: inline-flex;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -35,14 +36,24 @@ namespace TapLog.Application.Devices.Commands.CreateDevice
 
         public async Task<int> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
         {
+            var code = StringCleaner.CleanInput(request.Code).Trim();
+            var name = StringCleaner.CleanInput(request.Name).Trim();
+            if (String.IsNullOrEmpty(code) || String.IsNullOrEmpty(name))
+            {
+                throw new NotFoundException("User input is bad.", request.Code);
+            }
+
+            var lat = (request.Latitude != null) ? StringCleaner.CleanInput(request.Latitude).Trim() : null;
+            var lng = (request.Longitude != null) ? StringCleaner.CleanInput(request.Longitude).Trim() : null;
+
             //Map request to entity
             var entity = new Device
             {
-                Code = request.Code,
-                Name = request.Name,
+                Code = code,
+                Name = name,
                 Zone = request.Zone,
-                Latitude = (request.Latitude?.Length == 0) ? null : request.Latitude,
-                Longitude = (request.Longitude?.Length == 0) ? null : request.Longitude
+                Latitude = (String.IsNullOrEmpty(lat)) ? null : lat,
+                Longitude = (String.IsNullOrEmpty(lng)) ? null : lng
             };
 
             _context.Devices.Add(entity);

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -36,6 +37,11 @@ namespace TapLog.Application.Passes.Commands.UpdatePass
 
         public async Task<Unit> Handle(UpdatePassCommand request, CancellationToken cancellationToken)
         {
+            var name = StringCleaner.CleanInput(request.Name).Trim();
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new NotFoundException("User input is bad.", request.Id);
+            }
             // Retrieve the entity
             var entity = await _context.Passes.FindAsync(request.Id);
 
@@ -47,11 +53,11 @@ namespace TapLog.Application.Passes.Commands.UpdatePass
             var tapsToUpdate = await _context.Taps.Where(x => x.Pass == entity.Name).ToListAsync();
             foreach (var tap in tapsToUpdate)
             {
-                tap.Pass = request.Name;
+                tap.Pass = name;
             }
 
             // Update the entity
-            entity.Name = request.Name;
+            entity.Name = name;
 
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -33,10 +34,15 @@ namespace TapLog.Application.Passes.Commands.CreatePass
 
         public async Task<int> Handle(CreatePassCommand request, CancellationToken cancellationToken)
         {
+            var name = StringCleaner.CleanInput(request.Name).Trim();
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new NotFoundException("User input is bad.", request.Name);
+            }
             //Map request to entity
             var entity = new Pass
             {
-                Name = request.Name
+                Name = name
             };
 
             _context.Passes.Add(entity);

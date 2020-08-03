@@ -149,7 +149,7 @@
                 <ng-template #notesFormItem>
                   <mat-form-field class="example-full-width"  appearance="outline">
                     <mat-label>Notes</mat-label>
-                    <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=1 matAutosizeMaxRows=1  formControlName="notes" ></textarea>
+                    <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows="1" matAutosizeMaxRows="6" rows="6" formControlName="notes" ></textarea>
                   </mat-form-field>
                 </ng-template>
             </div>
@@ -245,6 +245,12 @@
                   </mat-select>
                 </mat-form-field>
               </ng-template>
+            </div>
+
+            <div class="tl-error">
+              <ng-container *ngIf="formErrors?.errors != null && isEditing == tap.id">
+                <mat-error *ngFor="let err of formErrors.errors">{{err}}</mat-error>
+              </ng-container>
             </div>
 
             <div class="tl-edit">

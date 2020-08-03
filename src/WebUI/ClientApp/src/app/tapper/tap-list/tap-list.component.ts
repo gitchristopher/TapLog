@@ -8,6 +8,10 @@ import {map, startWith} from 'rxjs/operators';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+interface IFormErrors {
+  errors: string[];
+  title: string;
+}
 
 @Component({
   selector: 'app-tap-list',
@@ -40,6 +44,7 @@ export class TapListComponent implements OnInit, OnChanges {
   passList: PassDto[];
   cardList: CardDto[];
   filteredOptions: Observable<CardDto[]>;
+  formErrors: IFormErrors = {errors: [], title: ''};
 
   constructor(private tapsClient: TapsClient, private snackBar: MatSnackBar) {
     this.isChecked = false;
@@ -189,15 +194,19 @@ export class TapListComponent implements OnInit, OnChanges {
           this.selectedExecution.taps.splice(index, 1, newTap);
           this.snackBar.open(`Updated successfully: ${newTap.cardAlias} ${newTap.cardNumber}`, null, {duration: 3000});
 
+          this.isEditing = null;
           // this.submitted = true;
           // this.updateTapForm();
           // this.savedTap(this.selectedExecution);
         },
         error => {
-          this.snackBar.open(error.title, null, {duration: 3000});
+          this.addErrorFromApi(error);
+          if (error.title != null || error.title !== undefined) {
+            this.formErrors.title = error.title;
+          }
+          this.snackBar.open(this.formErrors.title, null, {duration: 3000});
         }
     );
-    this.isEditing = null;
   }
 
   onSubmit() {
@@ -210,7 +219,7 @@ export class TapListComponent implements OnInit, OnChanges {
       balanceAfter: Number(this.updateTapForm.value.balanceAfter),
       balanceBefore: Number(this.updateTapForm.value.balanceBefore),
       cardId: Number(this.updateTapForm.value.card.id),
-      caseNumber: '?',
+      caseNumber: '',
       deviceId: Number(this.updateTapForm.value.device),
       fare: Number(this.updateTapForm.value.fare),
       id: Number(this.isEditing),
@@ -252,4 +261,14 @@ export class TapListComponent implements OnInit, OnChanges {
   //   });
   //   this.isDecending = !this.isDecending;
   // }
+
+  addErrorFromApi(error: any) {
+    this.formErrors.errors = [];
+    const response = JSON.parse(error['response']);
+    this.formErrors.title = response['title'];
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.formErrors.errors.push(element[0]);
+    });
+  }
 }

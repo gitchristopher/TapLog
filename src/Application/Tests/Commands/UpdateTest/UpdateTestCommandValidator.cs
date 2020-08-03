@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 
 namespace TapLog.Application.Tests.Commands.UpdateTest
@@ -18,10 +19,12 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
         {
             _context = context;
 
-            RuleFor(v => v.JiraTestNumber)
+            RuleFor(t => t.JiraTestNumber)
+                .Transform(t => StringCleaner.CleanInput(t))
                 .NotEmpty().WithMessage("Jira Test Number is required.")
                 .MaximumLength(16).WithMessage("Jira Test Number must not exceed 16 characters.")
-                .MustAsync(BeUnique).WithMessage("The specified Test already exists.");
+                .MustAsync(BeUnique).WithMessage("The specified Test already exists.")
+                .Must(NotContainBadCharactersJira).WithMessage("Jira Test Number can only contain a-zA-Z0-9_.$@-");
             RuleFor(v => v.Id)
                 .NotEmpty().WithMessage("Test must not be null.")
                 .MustAsync(TestExist).WithMessage("Test does not exist.");
@@ -36,6 +39,10 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
         public async Task<bool> TestExist(int id, CancellationToken cancellationToken)
         {
             return await _context.Tests.FindAsync(id) != null;
+        }
+        public bool NotContainBadCharactersJira(UpdateTestCommand model, string input)
+        {
+            return !StringCleaner.HasBadCharacters(model.JiraTestNumber);
         }
     }
 }

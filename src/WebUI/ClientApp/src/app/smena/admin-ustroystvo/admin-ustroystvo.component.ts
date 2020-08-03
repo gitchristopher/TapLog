@@ -95,7 +95,6 @@ export class AdminUstroystvoComponent implements OnInit {
         },
         error => {
           this.addErrorFromApi(error);
-          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -116,7 +115,6 @@ export class AdminUstroystvoComponent implements OnInit {
         },
         error => {
           this.addErrorFromApi(error);
-          this.openSnackBar(error.title, null);
         }
     );
   }
@@ -151,7 +149,6 @@ export class AdminUstroystvoComponent implements OnInit {
       },
       error => {
         this.addErrorFromApi(error);
-        this.openSnackBar(error.title, null);
       }
     );
   }
@@ -174,7 +171,6 @@ export class AdminUstroystvoComponent implements OnInit {
           },
           error => {
             this.addErrorFromApi(error);
-            this.openSnackBar(error.title, null);
           }
         );
       }
@@ -193,6 +189,12 @@ export class AdminUstroystvoComponent implements OnInit {
   addErrorFromApi(error: any) {
     this.modalEditor.errors = [];
     const response = JSON.parse(error['response']);
+    if (error.title != null || error.title !== undefined) {
+      this.openSnackBar(error.title, null);
+    } else {
+      const errorTitle = response['title'];
+      this.openSnackBar(errorTitle, null);
+    }
     const errorArray = Object.values(response['errors']);
     errorArray.forEach(element => {
       this.modalEditor.errors.push(element[0]);

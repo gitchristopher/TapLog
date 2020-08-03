@@ -13,6 +13,7 @@ using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
 //using TapLog.Application.Common.Interfaces;
 using System.Globalization;
+using TapLog.Application.Common.Helper;
 
 namespace TapLog.Application.Taps.Commands.CreateTap
 {
@@ -92,6 +93,8 @@ namespace TapLog.Application.Taps.Commands.CreateTap
             var userId = _currentUserService.UserId;
             var user = await _identityService.GetUserNameAsync(userId);
 
+            var userNotes = (request.Notes != null) ? StringCleaner.CleanInput(request.Notes).Trim() : null;
+
             var entity = new Tap
             {
                 TestExecutionId = testExecution.Id,
@@ -105,7 +108,7 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 Fare = request?.Fare,
                 BalanceBefore = request?.BalanceBefore,
                 BalanceAfter = request?.BalanceAfter,
-                Notes = request.Notes,
+                Notes = (String.IsNullOrEmpty(userNotes)) ? null : userNotes,
                 Action = request.Action,
                 Product = product?.Name,
                 Pass = pass?.Name,

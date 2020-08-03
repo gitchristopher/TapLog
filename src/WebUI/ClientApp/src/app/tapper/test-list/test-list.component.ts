@@ -5,6 +5,7 @@ import { TestsClient, CreateTestCommand, ICreateTestCommand,
 import { faPlus, faPlusSquare, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import {style, animate, transition, trigger} from '@angular/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { IModal } from 'src/_interfaces/modal';
 
 @Component({
   selector: 'app-test-list',
@@ -24,7 +25,7 @@ export class TestListComponent implements OnInit, OnChanges {
   isChecked = false;
   isDisabled = this.selectedStage ? false : true;
 
-  debug = true;
+  debug = false;
   selectedTest: TestDto;
   testExecutions: ITestExecutionDto2[] = [];
   testDeatils: TestDto;
@@ -36,6 +37,7 @@ export class TestListComponent implements OnInit, OnChanges {
   addTestEditor: any = {};
   updateTestModalRef: BsModalRef;
   updateTestEditor: any = {};
+  modalEditor: IModal = {title: 'Editor', button: 'Submit', errors: [] };
 
 
   // tslint:disable-next-line: no-output-on-prefix
@@ -81,6 +83,7 @@ export class TestListComponent implements OnInit, OnChanges {
   addTestCancelled(): void {
     this.addTestModalRef.hide();
     this.addTestEditor = {};
+    this.modalEditor.errors = [];
   }
   // Shows the test modal
   showUpdateTestModal(template: TemplateRef<any>, name: string): void {
@@ -93,6 +96,7 @@ export class TestListComponent implements OnInit, OnChanges {
   updateTestCancelled(): void {
     this.updateTestModalRef.hide();
     this.updateTestEditor = {};
+    this.modalEditor.errors = [];
   }
 
   // Persists the new test data from the modal back to the API
@@ -109,10 +113,11 @@ export class TestListComponent implements OnInit, OnChanges {
             this.testList.sort((a, b) => (a.jiraTestNumber > b.jiraTestNumber) ? 1 : -1);
             this.addTestModalRef.hide();
             this.addTestEditor = {};
+            this.modalEditor.errors = [];
           }
         },
         error => {
-          this.snackBar.open(error.title, null, {duration: 3000});
+          this.addErrorFromApi(error);
         }
     );
   }
@@ -145,9 +150,25 @@ export class TestListComponent implements OnInit, OnChanges {
       // TODO: what to do with NoContent response
       this.updateTestModalRef.hide();
       this.updateTestEditor = {};
+      this.modalEditor.errors = [];
       this.snackBar.open(`Updated successfully: ${newTitle}`, null, {duration: 3000});
     }, error => {
+      this.addErrorFromApi(error);
+    });
+  }
+
+  addErrorFromApi(error: any) {
+    this.modalEditor.errors = [];
+    const response = JSON.parse(error['response']);
+    if (error.title != null || error.title !== undefined) {
       this.snackBar.open(error.title, null, {duration: 3000});
+    } else {
+      const errorTitle = response['title'];
+      this.snackBar.open(errorTitle, null, {duration: 3000});
+    }
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+    this.modalEditor.errors.push(element[0]);
     });
   }
 }

@@ -5,6 +5,6 @@ export function NoBadCharacters(control: AbstractControl): { [key: string]: any 
         return null;
     }
     const len = String(control.value).length;
-    const str = String(control.value).replace(/([^A-z0-9]+)/gi, '-').trim();
+    const str = String(control.value).replace(/([^\w\s\.$@-])/gi, '').trim();
     return str.length !== len ? null : { badformat: true };
 }

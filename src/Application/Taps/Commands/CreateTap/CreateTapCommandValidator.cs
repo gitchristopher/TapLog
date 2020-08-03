@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 
 namespace TapLog.Application.Taps.Commands.CreateTap
@@ -35,7 +36,9 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 .MaximumLength(64).WithMessage("Tester must not exceed 64 characters.");
 
             RuleFor(t => t.CaseNumber)
-                .MaximumLength(16).WithMessage("CaseNumber must not exceed 16 characters.");
+                .Transform(t => StringCleaner.CleanInput(t))
+                .MaximumLength(16).WithMessage("CaseNumber must not exceed 16 characters.")
+                .Must(NotContainBadCharactersCase).WithMessage("Case Number can only contain a-zA-Z0-9_.$@-");
 
             RuleFor(t => t.Result)
                 .IsInEnum();
@@ -57,7 +60,9 @@ namespace TapLog.Application.Taps.Commands.CreateTap
                 .ScalePrecision(2, 5);
 
             RuleFor(t => t.Notes)
-                .MaximumLength(256).WithMessage("Notes must not exceed 256 characters.");
+                .Transform(t => StringCleaner.CleanInput(t))
+                .MaximumLength(256).WithMessage("Notes must not exceed 256 characters.")
+                .Must(NotContainBadCharactersNotes).WithMessage("Notes can only contain a-zA-Z0-9_.$@-");
 
             RuleFor(t => t.Action)
                 .IsInEnum();
@@ -88,6 +93,14 @@ namespace TapLog.Application.Taps.Commands.CreateTap
         public async Task<bool> ProductExist(int? productId, CancellationToken cancellationToken)
         {
             return await _context.Products.FindAsync(productId) != null;
+        }
+        public bool NotContainBadCharactersCase(CreateTapCommand model, string input)
+        {
+            return !StringCleaner.HasBadCharacters(model.CaseNumber);
+        }
+        public bool NotContainBadCharactersNotes(CreateTapCommand model, string input)
+        {
+            return !StringCleaner.HasBadCharacters(model.Notes);
         }
     }
 }

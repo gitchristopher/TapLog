@@ -12,6 +12,10 @@ interface ICardSelectItem {
   display: string;
   card: CardDto;
 }
+interface IFormErrors {
+  errors: string[];
+  title: string;
+}
 
 @Component({
   selector: 'app-log-tap',
@@ -32,6 +36,7 @@ export class LogTapComponent implements OnInit, OnChanges {
   // mytime: Date = new Date(); // Date.now() + 86400
   selectedCardType: number;
   userName$: Observable<string>;
+  formErrors: IFormErrors = {errors: [], title: ''};
 
   @Input() selectedExecution: TestExecutionDto2;
   // tslint:disable-next-line: no-output-on-prefix
@@ -122,11 +127,16 @@ export class LogTapComponent implements OnInit, OnChanges {
           newTap.product = this.productList.find(x => x.id === tap.productId)?.name;
           this.selectedExecution.taps.push(newTap);
           this.submitted = true;
+          this.formErrors.errors = [];
           this.updateTapForm();
           this.savedTap(this.selectedExecution);
         },
         error => {
-          this.snackBar.open(error.title, null, {duration: 3000});
+          this.addErrorFromApi(error);
+          if (error.title != null || error.title !== undefined) {
+            this.formErrors.title = error.title;
+          }
+          this.snackBar.open(this.formErrors.title, null, {duration: 3000});
         }
     );
   }
@@ -195,7 +205,7 @@ export class LogTapComponent implements OnInit, OnChanges {
         cardId: cardItem.card.id,
         cardNumber: cardItem.card.number,
         cardSupplierName: cardItem.card.supplierName,
-        caseNumber: '?',
+        caseNumber: null,
         deviceCode: device.code,
         deviceId: Number(this.addTapForm.value.device),
         deviceName: device.name,
@@ -235,20 +245,10 @@ export class LogTapComponent implements OnInit, OnChanges {
     return time;
   }
 
-  // selectCardType(num: number) {
-  //   // console.log('Fix this crap, chaging cardlist to ICardSelect broke condtional passProd select render');
-  //   switch (num) {
-  //     case 0:
-  //       this.selectedCardType = 0;
-  //       break;
-  //     case 4:
-  //       this.selectedCardType = 1;
-  //       break;
-  //     default:
-  //       console.error('Something when wrong in log-tap cardtype section');
-  //       break;
-  //   }
-  // }
+  clearNotes() {
+    this.addTapForm.get('notes').setValue('');
+    this.formErrors.errors = [];
+  }
 
   selectCard(e: ICardSelectItem) {
     const card = CardDto.fromJS(e.card);
@@ -265,5 +265,15 @@ export class LogTapComponent implements OnInit, OnChanges {
     const filterValue = alias.toLowerCase();
 
     return this.cardList.filter(cardItem => cardItem.display.toLowerCase().indexOf(filterValue) >= 0);
+  }
+
+  addErrorFromApi(error: any) {
+    this.formErrors.errors = [];
+    const response = JSON.parse(error['response']);
+    this.formErrors.title = response['title'];
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.formErrors.errors.push(element[0]);
+    });
   }
 }

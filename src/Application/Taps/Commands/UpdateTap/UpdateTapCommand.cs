@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -84,6 +85,8 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
                 throw new NotFoundException("DateTime", request.TimeOf);
             }
 
+            var userNotes = (request.Notes != null) ? StringCleaner.CleanInput(request.Notes).Trim() : null;
+
             // Update the entity
             entity.TestExecutionId = request.TestExecutionId;
             entity.CardId = request.CardId;
@@ -96,7 +99,7 @@ namespace TapLog.Application.Taps.Commands.UpdateTap
             entity.Fare = request?.Fare;
             entity.BalanceBefore = request?.BalanceBefore;
             entity.BalanceAfter = request?.BalanceAfter;
-            entity.Notes = request.Notes;
+            entity.Notes = (String.IsNullOrEmpty(userNotes)) ? null : userNotes;
             entity.Action = request.Action;
             entity.Product = product?.Name;
             entity.Pass = pass?.Name;

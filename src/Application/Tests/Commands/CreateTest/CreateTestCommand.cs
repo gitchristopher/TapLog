@@ -13,6 +13,7 @@ using TapLog.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System;
+using TapLog.Application.Common.Helper;
 
 namespace TapLog.Application.Tests.Commands.CreateTest
 {
@@ -47,7 +48,11 @@ namespace TapLog.Application.Tests.Commands.CreateTest
                 Stage = stage
             };
 
-            var jiraNumber = CleanInput(request.JiraTestNumber).Trim();
+            var jiraNumber = StringCleaner.CleanInput(request.JiraTestNumber).Trim();
+            if (string.IsNullOrEmpty(jiraNumber))
+            {
+                throw new NotFoundException("User input is bad.", request.JiraTestNumber);
+            }
 
             var existingTest = await _context.Tests.Include(t => t.StageTests).Where(x => x.JiraTestNumber == jiraNumber).FirstOrDefaultAsync();
             
@@ -73,21 +78,21 @@ namespace TapLog.Application.Tests.Commands.CreateTest
 
             return newEntity.TestId;
         }
-        private static string CleanInput(string strIn)
-        {
-            // Replace invalid characters with empty strings.
-            try
-            {
-                return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
-                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
-            }
-            // If we timeout when replacing invalid characters,
-            // we should return Empty.
-            catch (RegexMatchTimeoutException)
-            {
-                return String.Empty;
-            }
-        }
+        //private static string CleanInput(string strIn)
+        //{
+        //    // Replace invalid characters with empty strings.
+        //    try
+        //    {
+        //        return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
+        //                             RegexOptions.None, TimeSpan.FromSeconds(1.5));
+        //    }
+        //    // If we timeout when replacing invalid characters,
+        //    // we should return Empty.
+        //    catch (RegexMatchTimeoutException)
+        //    {
+        //        return String.Empty;
+        //    }
+        //}
     }
 
 }

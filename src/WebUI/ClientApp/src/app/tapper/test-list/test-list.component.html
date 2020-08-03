@@ -48,6 +48,10 @@
         {{ addTestEditor.error }}
       </div>
     </div>
+
+    <ng-container *ngIf="modalEditor.errors != null">
+      <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+    </ng-container>
     <div *ngIf="debug">
       <pre>{{ addTestEditor | json }}</pre>
     </div>
@@ -77,6 +81,10 @@
         {{ updateTestEditor.error }}
       </div>
     </div>
+
+    <ng-container *ngIf="modalEditor.errors != null">
+      <mat-error *ngFor="let err of modalEditor.errors">{{err}}</mat-error>
+    </ng-container>
     <div *ngIf="debug">
       <pre>{{ updateTestEditor | json }}</pre>
     </div>

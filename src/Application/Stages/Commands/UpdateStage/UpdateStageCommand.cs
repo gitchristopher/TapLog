@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -35,6 +36,12 @@ namespace TapLog.Application.Stages.Commands.UpdateStage
 
         public async Task<Unit> Handle(UpdateStageCommand request, CancellationToken cancellationToken)
         {
+            var name = StringCleaner.CleanInput(request.Name).Trim();
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new NotFoundException("User input is bad.", request.Name);
+            }
+
             // Retrieve the entity
             var entity = await _context.Stages.FindAsync(request.Id);
 
@@ -53,7 +60,7 @@ namespace TapLog.Application.Stages.Commands.UpdateStage
             }
 
             // Update the entity
-            entity.Name = request.Name;
+            entity.Name = name;
             entity.IsCurrent = request.IsCurrent;
 
             await _context.SaveChangesAsync(cancellationToken);

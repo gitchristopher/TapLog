@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -43,8 +44,12 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
                 throw new NotFoundException(nameof(Test), request.Id);
             }
 
-            var jiraNumber = CleanInput(request.JiraTestNumber).Trim();
-            
+            var jiraNumber = StringCleaner.CleanInput(request.JiraTestNumber).Trim();
+            if (String.IsNullOrEmpty(jiraNumber))
+            {
+                throw new NotFoundException("User input is bad.", request.Id);
+            }
+
             var existingTest = await _context.Tests.FirstOrDefaultAsync(x => x.JiraTestNumber == jiraNumber);
             if (existingTest == null)
             {
@@ -61,21 +66,21 @@ namespace TapLog.Application.Tests.Commands.UpdateTest
             return Unit.Value;
         }
 
-        private static string CleanInput(string strIn)
-        {
-            // Replace invalid characters with empty strings.
-            try
-            {
-                return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
-                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
-            }
-            // If we timeout when replacing invalid characters,
-            // we should return Empty.
-            catch (RegexMatchTimeoutException)
-            {
-                return String.Empty;
-            }
-        }
+        //private static string CleanInput(string strIn)
+        //{
+        //    // Replace invalid characters with empty strings.
+        //    try
+        //    {
+        //        return Regex.Replace(strIn, @"[^\w\s\.@-]", "",
+        //                             RegexOptions.None, TimeSpan.FromSeconds(1.5));
+        //    }
+        //    // If we timeout when replacing invalid characters,
+        //    // we should return Empty.
+        //    catch (RegexMatchTimeoutException)
+        //    {
+        //        return String.Empty;
+        //    }
+        //}
     }
 
 }

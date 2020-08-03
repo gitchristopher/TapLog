@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -38,6 +39,11 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
 
         public async Task<Unit> Handle(UpdateCardCommand request, CancellationToken cancellationToken)
         {
+            var number = StringCleaner.CleanInput(request.Number).Trim();
+            if (String.IsNullOrEmpty(number))
+            {
+                throw new NotFoundException("User input is bad.", request.Id);
+            }
             // Retrieve the entity
             var entity = await _context.Cards.FindAsync(request.Id);
 
@@ -72,10 +78,11 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
                 }
             }
 
+            var alias = (request.Alias != null) ? StringCleaner.CleanInput(request.Alias).Trim() : null;
 
             // Update the entity
-            entity.Number = request.Number;
-            entity.Alias = (request.Alias?.Length == 0) ? null : request.Alias;
+            entity.Number = number;
+            entity.Alias = (String.IsNullOrEmpty(request.Alias)) ? null : alias;
             entity.SupplierId = request.SupplierId;
             entity.ProductId = request.ProductId ?? null;
             entity.PassId = request.PassId ?? null;

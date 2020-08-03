@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TapLog.Application.Common.Exceptions;
+using TapLog.Application.Common.Helper;
 using TapLog.Application.Common.Interfaces;
 using TapLog.Domain.Entities;
 using TapLog.Domain.Enums;
@@ -36,6 +37,13 @@ namespace TapLog.Application.Cards.Commands.CreateCard
 
         public async Task<int> Handle(CreateCardCommand request, CancellationToken cancellationToken)
         {
+            //var number2 = StringCleaner.HasBadCharacters(request.Number);
+            var number = StringCleaner.CleanInput(request.Number).Trim();
+            if (String.IsNullOrEmpty(number))
+            {
+                throw new NotFoundException("User input is bad.", request.Number);
+            }
+
             var supplierEntity = await _context.Suppliers.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.SupplierId);
             if (supplierEntity == null)
             {
@@ -62,12 +70,13 @@ namespace TapLog.Application.Cards.Commands.CreateCard
                 }
             }
 
+            var alias = (request.Alias != null) ? StringCleaner.CleanInput(request.Alias).Trim() : null;
 
             //Map request to entity
             var entity = new Card
             {
-                Number = request.Number,
-                Alias = (request.Alias?.Length == 0) ? null : request.Alias,
+                Number = number,
+                Alias = String.IsNullOrEmpty(alias) ? null : alias,
                 SupplierId = request.SupplierId,
                 PassId = request.PassId ?? null,
                 ProductId = request.ProductId ?? null
