@@ -8,9 +8,8 @@ export interface AppState {
 
 export interface StagesState {
     list: StageDto[];
-    selectedId?: string | number;
+    selectedId?: number;
     loading: boolean;
-    loaded: boolean;
     error?: any;
 }
 

@@ -1,8 +1,8 @@
-<form [formGroup]="stageForm" *ngIf="stagesState != null" [@fadeInOut]> <!--   -->
+<form [formGroup]="form" *ngIf="(stages$ | async) != null" [@fadeInOut]>
   <mat-form-field appearance="standard">
     <mat-label>Select a stage</mat-label>
     <mat-select formControlName="stageSelect" (selectionChange)="selectStage($event.value)">
-      <mat-option *ngFor="let stage of stagesState?.list" [value]="stage">{{stage.name}}</mat-option>
+      <mat-option *ngFor="let stage of (stages$ | async)" [value]="stage">{{stage.name}}</mat-option>
     </mat-select>
   </mat-form-field>
 </form>

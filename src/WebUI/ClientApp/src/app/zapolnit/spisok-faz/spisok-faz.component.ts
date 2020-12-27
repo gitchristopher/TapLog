@@ -1,10 +1,12 @@
-import { Component, OnInit, EventEmitter, Output, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, StageDto, ITestExecutionDto2 } from '../../taplog-api';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { style, state, animate, transition, trigger } from '@angular/animations';
-import { AppState, StagesState } from '../../app.state';
+import { style, animate, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
+import { StageDto } from '../../taplog-api';
+import { AppState } from '../../app.state';
+import { LOAD_STAGES_REQUEST, SELECT_STAGE } from './spisok-faz.actions';
+import { selectSelectedStage, selectStagesList } from './spisok-faz.selectors';
 
 @Component({
   selector: 'app-spisok-faz',
@@ -18,32 +20,26 @@ import { select, Store } from '@ngrx/store';
   ]
 })
 
-export class SpisokFazComponent implements OnInit, OnChanges {
+export class SpisokFazComponent implements OnInit {
 
-  @Input() stagesState: StagesState;
-  @Output() select: EventEmitter<number> = new EventEmitter<number>();
-  stageForm: FormGroup;
+  stages$: Observable<StageDto[]>;
+  selectedStage$: Observable<StageDto>;
+  form: FormGroup;
 
-  constructor(fb: FormBuilder) {
-    this.stageForm = fb.group({
-      stageSelect: new FormControl()
-    });
+  constructor(private fb: FormBuilder, private store: Store<AppState>) {
+    this.stages$ = store.select(selectStagesList);
+    this.selectedStage$ = store.select(selectSelectedStage);
+    this.store.dispatch(LOAD_STAGES_REQUEST());
   }
 
   ngOnInit() {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    let currentStage: StageDto;
-    if (this.stagesState.selectedId) {
-      currentStage = this.stagesState.list.find(x => x.id === this.stagesState.selectedId);
-    } else {
-      currentStage = this.stagesState.list.find(x => x.isCurrent === true);
-    }
-    this.stageForm.get('stageSelect').setValue(currentStage);
+    this.form = this.fb.group({ stageSelect: new FormControl() });
+    this.selectedStage$.subscribe( stage => {
+      this.form.get('stageSelect').setValue(stage);
+    })
   }
 
   selectStage(e: StageDto) {
-    this.select.emit(e.id);
+    this.store.dispatch(SELECT_STAGE({stageId: e.id}));
   }
 }
