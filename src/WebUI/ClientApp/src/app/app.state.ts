@@ -15,9 +15,8 @@ export interface StagesState {
 
 export interface TestsState {
     list: TestDto[];
-    selectedId?: string | number;
+    selectedId?: number;
     loading: boolean;
-    loaded: boolean;
     error?: any;
 }
 

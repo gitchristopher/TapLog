@@ -6,7 +6,8 @@
     <app-spisok-faz></app-spisok-faz>
   </div>
   <div class="tltest">
-    <app-spisok-testov (select)="selectTest($event)" [testsState]="tests$ | async"></app-spisok-testov>
+    <!-- <app-spisok-testov (select)="selectTest($event)" [testsState]="tests$ | async"></app-spisok-testov> -->
+    <app-spisok-testov></app-spisok-testov>
   </div>
   <div class="tlexecutions">
     <app-spisok-kazney (select)="selectExecution($event)" [executionsState]="executions$ | async"></app-spisok-kazney>

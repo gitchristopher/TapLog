@@ -6,23 +6,22 @@ import { TestDto } from 'src/app/taplog-api';
 const initialState: TestsState = {
     list: [],
     loading: false,
-    loaded: false,
 };
 
 export const testovReducer = createReducer<TestsState>(
     initialState,
-    on(LOAD_TESTS_REQUEST, state => ({ ...state, loading: true, loaded: false })),
-    on(LOAD_TESTS_SUCCESS, (state, {tests}) => ({ ...state, list: tests, loading: false, loaded: true })),
-    on(LOAD_TESTS_FAIL, (state, {error}) => ({ ...state, loading: false, loaded: false, error: error  })),
+    on(LOAD_TESTS_REQUEST, state => ({ ...state, loading: true })),
+    on(LOAD_TESTS_SUCCESS, (state, {tests}) => ({ ...state, list: tests, loading: false })),
+    on(LOAD_TESTS_FAIL, (state, {error}) => ({ ...state, loading: false, error: error  })),
     on(SELECT_TEST, (state, {testId}) => ({ ...state, selectedId: testId })),
     on(DESELECT_TEST, state => ({ ...state, selectedId: null })),
-    on(CREATE_TEST_REQUEST, state => ({...state, loading: true, loaded: false })),
-    on(CREATE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, loaded: false, error: error })),
-    on(DELETE_TEST_REQUEST, (state, {testId}) => ({...state, loading: true, loaded: false })),
-    on(DELETE_TEST_SUCCESS, (state, {testId}) => ({ ...state, list: state.list.filter(t => t.id != testId ), loading: false, loaded: true })),
-    on(DELETE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, loaded: false, error: error })),
-    on(UPDATE_TEST_REQUEST, state => ({...state, loading: true, loaded: false })),
-    on(UPDATE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, loaded: false, error: error })),
+    on(CREATE_TEST_REQUEST, state => ({...state, loading: true })),
+    on(CREATE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, error: error })),
+    on(DELETE_TEST_REQUEST, (state, {testId}) => ({...state, loading: true })),
+    on(DELETE_TEST_SUCCESS, (state, {testId}) => ({ ...state, list: state.list.filter(t => t.id != testId ), loading: false })),
+    on(DELETE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, error: error })),
+    on(UPDATE_TEST_REQUEST, state => ({...state, loading: true })),
+    on(UPDATE_TEST_FAIL, (state, {error}) => ({ ...state, loading: false, error: error })),
     // on(CREATE_TEST_SUCCESS, (state, {testId}) => ({...state}));
 );
 
@@ -38,6 +37,11 @@ export const selectTestsState = (state: AppState) => state.tests;
 export const selectTestsList = createSelector(
     selectTestsState,
     (state: TestsState) => state.list
+);
+
+export const selectTestsLoading = createSelector(
+    selectTestsState,
+    (state: TestsState) => state.loading
 );
 
 export const selectSelectedTestId = createSelector(

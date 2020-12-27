@@ -1,13 +1,13 @@
-import { Component, OnInit, TemplateRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
+import { style, animate, transition, trigger } from '@angular/animations';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, UpdateTestCommand } from '../../taplog-api';
-import { style, animate, transition, trigger} from '@angular/animations';
-import { AppState, TestsState } from '../../app.state';
-import { Store } from '@ngrx/store';
-import { selectTestsList } from './spisok-testov.reducers';
+import { TestsClient, CreateTestCommand, ICreateTestCommand, TestDto, UpdateTestCommand, StageDto } from '../../taplog-api';
 import { Observable } from 'rxjs';
-import { selectSelectedStageId } from '../spisok-faz/spisok-faz.reducers';
-import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT_TEST } from './spisok-testov.actions';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../app.state';
+import { selectSelectedStageId } from '../spisok-faz/spisok-faz.selectors';
+import { selectSelectedTestId, selectTestsList, selectTestsLoading } from './spisok-testov.reducers';
+import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT_TEST, SELECT_TEST, LOAD_TESTS_REQUEST } from './spisok-testov.actions';
 
 @Component({
   selector: 'app-spisok-testov',
@@ -15,18 +15,19 @@ import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT
   styleUrls: ['./spisok-testov.component.css'],
   animations: [
     trigger('fadeInOut', [
-      transition(':enter', [ style({opacity: 0 }), animate('300ms 300ms cubic-bezier(.17,.67,.88,.1)', style({opacity: 1 })) ]),
-      transition(':leave', [ animate('300ms cubic-bezier(.17,.67,.88,.1)', style({opacity: 0 })) ])
+      transition(':enter', [style({ opacity: 0 }), animate('300ms 300ms cubic-bezier(.17,.67,.88,.1)', style({ opacity: 1 }))]),
+      transition(':leave', [animate('300ms cubic-bezier(.17,.67,.88,.1)', style({ opacity: 0 }))])
     ])
   ]
 })
 
 export class SpisokTestovComponent implements OnInit {
 
-  @Input() testsState: TestsState;
-  @Output() select: EventEmitter<number> = new EventEmitter<number>();
-  list$: Observable<TestDto[]>;
+  tests$: Observable<TestDto[]>;
+  loading$: Observable<boolean>;
+
   selectedStageId: number;
+  selectedTestId: number;
 
   addTestModalRef: BsModalRef;
   addTestEditor: any = {};
@@ -37,23 +38,61 @@ export class SpisokTestovComponent implements OnInit {
   isDisabled = false;
   debug = false;
 
-  constructor(private modalService: BsModalService, private testsClient: TestsClient, private store: Store<AppState>) { }
+  constructor(private modalService: BsModalService, private testsClient: TestsClient, private store: Store<AppState>) {
+    this.tests$ = this.store.select(selectTestsList);
+    this.loading$ = this.store.select(selectTestsLoading);
+  }
 
   ngOnInit() {
-    this.list$ = this.store.select(selectTestsList);
-    this.store.select(selectSelectedStageId).subscribe((stageId => this.selectedStageId = Number(stageId)));
+    this.store.select(selectSelectedStageId).subscribe((stageId => {
+      if (stageId !== undefined) {
+        this.selectedStageId = stageId;
+        this.store.dispatch(LOAD_TESTS_REQUEST({ stageId }));
+      }
+    }));
+    this.store.select(selectSelectedTestId).subscribe((testId => this.selectedTestId = testId));
   }
-
-  selectTest(e: number) {
-    this.select.emit(e);
-  }
-
-  //#region UI functions
 
   makeListEditable(e: Event) {
     this.isChecked = !this.isChecked;
   }
 
+  selectTest(e: TestDto) {
+    this.store.dispatch(SELECT_TEST({ testId: e.id }));
+  }
+
+  createTest() {
+    const stageId = this.selectedStageId;
+    const jiraTestNumber: string = (this.addTestEditor.title as string).trim();
+    if (jiraTestNumber.length > 0) {
+      // TODO: why 2 lines for creation instead of new CreateTestCommand()?
+      const iTest: ICreateTestCommand = { jiraTestNumber, stageId };
+      const test = CreateTestCommand.fromJS(iTest);
+      this.store.dispatch(CREATE_TEST_REQUEST({ test: test }));
+    }
+    this.hideAddTestModal();
+  }
+
+  deleteTest(id: number) {
+    if (confirm('All taps will be lost! Are you sure to delete the test? ' + id)) {
+      this.store.dispatch(DELETE_TEST_REQUEST({ testId: id, stageId: this.selectedStageId }));
+      this.store.dispatch(DESELECT_TEST());
+    }
+  }
+
+  updateTestName() {
+    const stageId = this.selectedStageId;
+    const testId = this.selectedTestId;
+    const jiraTestNumber = (this.updateTestEditor.title as string).trim();
+    if (jiraTestNumber.length > 0) {
+      const testUpdate = new UpdateTestCommand({ id: testId, jiraTestNumber });
+      this.store.dispatch(UPDATE_TEST_REQUEST({ stageId, testId, testUpdate }));
+      this.store.dispatch(DESELECT_TEST());
+    }
+    this.hideUpdateTestModal();
+  }
+
+  //#region MODAL FUNCTIONS
   showAddTestModal(template: TemplateRef<any>): void {
     this.addTestModalRef = this.modalService.show(template);
     setTimeout(() => document.getElementById('title').focus(), 250);
@@ -74,36 +113,5 @@ export class SpisokTestovComponent implements OnInit {
     this.updateTestModalRef.hide();
     this.updateTestEditor = {};
   }
-  //#endregion UI functions
-
-  createTest() {
-    const text: string = this.addTestEditor.title as string;
-    if (text.trim().length > 0) {
-      const iTest: ICreateTestCommand = {jiraTestNumber: text.trim(), stageId: Number(this.selectedStageId)};
-      const test = CreateTestCommand.fromJS(iTest);
-      this.store.dispatch(CREATE_TEST_REQUEST({test: test}));
-    }
-    this.hideAddTestModal();
-  }
-
-  deleteTest(id: number) {
-    if (confirm('All taps will be lost! Are you sure to delete the test? ' + id)) {
-      if (this.testsState.list.find(x => x.id === id)) {
-        this.store.dispatch(DELETE_TEST_REQUEST({testId: id, stageId: this.selectedStageId}));
-        this.store.dispatch(DESELECT_TEST());
-      }
-    }
-  }
-
-  updateTestName() {
-    const text: string = this.updateTestEditor.title as string;
-    const testId = Number(this.testsState.selectedId);
-    const newTitle = text.trim();
-    if (newTitle.length > 0) {
-      const updatedTest = new UpdateTestCommand({id: testId, jiraTestNumber: newTitle});
-      this.store.dispatch(UPDATE_TEST_REQUEST({stageId: Number(this.selectedStageId), testId: testId, testUpdate: updatedTest}));
-      this.store.dispatch(DESELECT_TEST());
-    }
-    this.hideUpdateTestModal();
-  }
+  //#endregion MODAL FUNCTIONS
 }

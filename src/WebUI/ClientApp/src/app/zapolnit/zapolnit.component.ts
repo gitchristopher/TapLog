@@ -39,16 +39,20 @@ export class ZapolnitComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(LOAD_STAGES_REQUEST());
-    this.selectedStage$ = this.store.select(selectSelectedStageId);
+    // this.store.dispatch(LOAD_STAGES_REQUEST());
+    // this.selectedStage$ = this.store.select(selectSelectedStageId);
     this.selectedTest$ = this.store.select(selectSelectedTestId);
     this.selectedExecution$ = this.store.select(selectSelectedExecutionId);
-    this.store.select(selectSelectedStageId).subscribe((stageId => this.selectedStageId = Number(stageId)));
+    this.selectedExecution$ = this.store.select(selectSelectedExecution);
+    // this.store.select(selectSelectedStageId).subscribe((stageId => {
+    //   this.selectedStageId = Number(stageId);
+    //   this.store.dispatch(LOAD_TESTS_REQUEST({stageId: Number(stageId)}));
+    // }));
   }
 
   selectStage(idFromStageList: number): void {
     this.store.dispatch(SELECT_STAGE({stageId: idFromStageList}));
-    this.store.dispatch(LOAD_TESTS_REQUEST({stageId: idFromStageList}));
+    //this.store.dispatch(LOAD_TESTS_REQUEST({stageId: idFromStageList}));
   }
 
   selectTest(testId: number): void {

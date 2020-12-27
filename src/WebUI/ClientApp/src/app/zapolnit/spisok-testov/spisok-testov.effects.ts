@@ -26,7 +26,7 @@ export class TestovEffects {
             ofType(testov.CREATE_TEST_REQUEST),
             mergeMap((action) => {
                 return this.testClient.create(action.test).pipe(
-                    map(tests => testov.LOAD_TESTS_REQUEST({stageId: action.test.stageId})), // TODO: Find way to update state with no return
+                    map(tests => testov.LOAD_TESTS_REQUEST({stageId: action.test.stageId})),
                     catchError(error => of(testov.CREATE_TEST_FAIL({ error }))));
             })
         )
@@ -37,7 +37,7 @@ export class TestovEffects {
             ofType(testov.UPDATE_TEST_REQUEST),
             mergeMap((action) => {
                 return this.testClient.update(action.testId, action.testUpdate).pipe(
-                    map(tests => testov.LOAD_TESTS_REQUEST({stageId: action.stageId})), // TODO: Find way to update state with no return
+                    map(tests => testov.LOAD_TESTS_REQUEST({stageId: action.stageId})),
                     catchError(error => of(testov.UPDATE_TEST_FAIL({ error }))));
             })
         )
@@ -48,7 +48,7 @@ export class TestovEffects {
             ofType(testov.DELETE_TEST_REQUEST),
             mergeMap((action) => {
                 return this.testClient.delete(action.testId, action.stageId).pipe(
-                    map(noContent => testov.DELETE_TEST_SUCCESS({testId: action.testId})), // TODO: Find way to update state with no return
+                    map(noContent => testov.DELETE_TEST_SUCCESS({testId: action.testId})),
                     catchError(error => of(testov.DELETE_TEST_FAIL({ error }))));
             })
         )
