@@ -24,5 +24,9 @@ export const selectSelectedStageId = createSelector(
 );
 export const selectSelectedStage = createSelector(
     selectStages,
-    (state: StagesState) => state.list.find(s => s.id === state.selectedId)
+    (state: StagesState) => {
+        if (state.selectedId && state.list.findIndex(x => x.id === state.selectedId) >= 0) {
+            return state.list.find(e => e.id === state.selectedId);
+        }
+    }
 );

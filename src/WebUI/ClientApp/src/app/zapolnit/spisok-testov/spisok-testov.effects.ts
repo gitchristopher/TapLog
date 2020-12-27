@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-
 import * as testov from './spisok-testov.actions';
 import { TestsClient } from 'src/app/taplog-api';
-import { mergeMap, map, catchError } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, Effect, ofType } from '@ngrx/effects';
+import { mergeMap, map, catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Injectable()
 export class TestovEffects {

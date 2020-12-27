@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { style, animate, transition, trigger } from '@angular/animations';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { StageDto } from '../../taplog-api';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { StageDto } from '../../taplog-api';
 import { AppState } from '../../app.state';
-import { LOAD_STAGES_REQUEST, SELECT_STAGE } from './spisok-faz.actions';
 import { selectSelectedStage, selectStagesList } from './spisok-faz.selectors';
+import { LOAD_STAGES_REQUEST, SELECT_STAGE } from './spisok-faz.actions';
 
 @Component({
   selector: 'app-spisok-faz',

@@ -1,8 +1,10 @@
 <div>
+  <!-- HEADING -->
   <div class="clearfix">
     <h2 class="float-left pt-1">Test List</h2>
   </div>
 
+  <!-- TOGGLE BUTTON ROW -->
   <div class="action-buttons justify-content-between d-flex flex-row">
     <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled"></mat-slide-toggle>
     <div *ngIf="isChecked" [@fadeInOut]>
@@ -15,6 +17,7 @@
     </div>
   </div>
 
+  <!-- LIST OF TESTS -->
   <mat-selection-list #tests [multiple]="false" *ngIf="!(this.loading$ | async)" [@fadeInOut]>
     <mat-list-option *ngFor="let test of this.tests$ | async" [value]="test" (click)="selectTest(test)">
       <div class="d-flex flex-row justify-content-between align-items-end">

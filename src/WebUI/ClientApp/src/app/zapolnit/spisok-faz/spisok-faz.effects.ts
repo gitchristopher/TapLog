@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-
 import * as faz from './spisok-faz.actions';
 import { StagesClient } from 'src/app/taplog-api';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 
 @Injectable()
 export class FazEffects {

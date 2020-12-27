@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../app.state';
 import { selectSelectedStageId } from '../spisok-faz/spisok-faz.selectors';
-import { selectSelectedTestId, selectTestsList, selectTestsLoading } from './spisok-testov.reducers';
+import { selectSelectedTestId, selectTestsList, selectTestsLoading } from './spisok-testov.selectors';
 import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT_TEST, SELECT_TEST, LOAD_TESTS_REQUEST } from './spisok-testov.actions';
 
 @Component({
@@ -58,7 +58,9 @@ export class SpisokTestovComponent implements OnInit {
   }
 
   selectTest(e: TestDto) {
-    this.store.dispatch(SELECT_TEST({ testId: e.id }));
+    if (e.id !== this.selectedTestId) {
+      this.store.dispatch(SELECT_TEST({ testId: e.id }));
+    }
   }
 
   createTest() {
