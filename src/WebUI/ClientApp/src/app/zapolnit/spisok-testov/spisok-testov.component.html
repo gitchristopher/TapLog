@@ -6,12 +6,15 @@
 
   <!-- TOGGLE BUTTON ROW -->
   <div class="action-buttons justify-content-between d-flex flex-row">
-    <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled"></mat-slide-toggle>
+    <mat-slide-toggle [checked]="isChecked" (change)="makeListEditable($event)" [disabled]="isDisabled">
+    </mat-slide-toggle>
     <div *ngIf="isChecked" [@fadeInOut]>
-      <button mat-mini-fab color="warn" *ngIf="this.selectedTestId > 0" [@fadeInOut] class="menuSmallButton trashButton" (click)="deleteTest(this.selectedTestId)">
+      <button mat-mini-fab color="warn" *ngIf="this.selectedTestId > 0" [@fadeInOut] class="menuSmallButton trashButton"
+        (click)="deleteTest(this.selectedTestId)">
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-mini-fab color="primary" class="menuSmallButton addListItemButton" (click)="showAddTestModal(addTestModalTemplate)">
+      <button mat-mini-fab color="primary" class="menuSmallButton addListItemButton"
+        (click)="showAddTestModal(addTestModalTemplate)">
         <mat-icon>add</mat-icon>
       </button>
     </div>
@@ -23,7 +26,8 @@
       <div class="d-flex flex-row justify-content-between align-items-end">
         <p>{{test.jiraTestNumber}}</p>
         <div *ngIf="isChecked" style="transform: translateX(20px);" [@fadeInOut]>
-          <button mat-mini-fab color="accent" class="menuSmallButton"(click)="showUpdateTestModal(updateTestModalTemplate, test.jiraTestNumber)">
+          <button mat-mini-fab color="accent" class="menuSmallButton"
+            (click)="showUpdateTestModal(updateTestModalTemplate, test.jiraTestNumber)">
             <mat-icon>edit</mat-icon>
           </button>
         </div>
@@ -31,11 +35,14 @@
       <mat-divider></mat-divider>
     </mat-list-option>
   </mat-selection-list>
-  <div *ngIf="debug" >
-    <div *ngFor="let item of this.tests$ | async">
-      {{item.jiraTestNumber}}
-    </div>
-  </div>
+</div>
+
+<!-- DEBUG -->
+<div *ngIf="this.debug">
+  <p>tests$: {{(this.tests$ | async) | json}}</p>
+  <p>loading$: {{(this.loading$ | async) | json}}</p>
+  <p>selectedStageId {{selectedStageId | json}}</p>
+  <p>selectedTestId: {{selectedTestId | json}}</p>
 </div>
 
 <!-- ADDING TEST MODAL -->
@@ -78,8 +85,9 @@
   <div class="modal-body">
     <div class="form-group">
       <label for="updateTitle">Jira Test Number</label>
-      <input type="text" class="form-control" id="updateTitle" placeholder="Test title..." [(ngModel)]="updateTestEditor.title"
-        [ngClass]="{ 'is-invalid': updateTestEditor.error }" (keyup.enter)="updateTestName()" />
+      <input type="text" class="form-control" id="updateTitle" placeholder="Test title..."
+        [(ngModel)]="updateTestEditor.title" [ngClass]="{ 'is-invalid': updateTestEditor.error }"
+        (keyup.enter)="updateTestName()" />
       <div *ngIf="updateTestEditor.error" class="invalid-feedback">
         {{ updateTestEditor.error }}
       </div>

@@ -10,8 +10,8 @@ const initialState: TestsState = {
 export const testovReducer = createReducer<TestsState>(
     initialState,
     on(LOAD_TESTS_REQUEST, state => ({ ...state, loading: true })),
-    on(LOAD_TESTS_SUCCESS, (state, {tests}) => ({ ...state, list: tests, loading: false })),
-    on(LOAD_TESTS_FAIL, (state, {error}) => ({ ...state, loading: false, error: error  })),
+    on(LOAD_TESTS_SUCCESS, (state, {tests}) => ({ ...state, list: tests, loading: false, selectedId: null, error: null })),
+    on(LOAD_TESTS_FAIL, (state, {error}) => ({ ...state, list: null, loading: false, selectedId: null, error: error  })),
     on(SELECT_TEST, (state, {testId}) => ({ ...state, selectedId: testId })),
     on(DESELECT_TEST, state => ({ ...state, selectedId: null })),
     on(CREATE_TEST_REQUEST, state => ({...state, loading: true })),

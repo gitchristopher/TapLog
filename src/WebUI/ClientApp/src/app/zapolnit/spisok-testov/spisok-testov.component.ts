@@ -23,19 +23,19 @@ import { CREATE_TEST_REQUEST, DELETE_TEST_REQUEST, UPDATE_TEST_REQUEST, DESELECT
 
 export class SpisokTestovComponent implements OnInit {
 
-  tests$: Observable<TestDto[]>;
-  loading$: Observable<boolean>;
+  tests$: Observable<TestDto[]>;  // For list in HTML
+  loading$: Observable<boolean>;  // For HTML
 
-  selectedStageId: number;
-  selectedTestId: number;
+  selectedStageId: number;        // For crud and state management
+  selectedTestId: number;         // For crud and state management
 
-  addTestModalRef: BsModalRef;
-  addTestEditor: any = {};
-  updateTestModalRef: BsModalRef;
-  updateTestEditor: any = {};
+  addTestModalRef: BsModalRef;    // For Modals in HTML
+  addTestEditor: any = {};        // For crud and modals in HTML
+  updateTestModalRef: BsModalRef; // For Modals in HTML
+  updateTestEditor: any = {};     // For crud and modals in HTML
 
-  isChecked = false;
-  isDisabled = false;
+  isChecked = false;              // Crud toggle in HTML
+  isDisabled = true;              // Crud toggle
   debug = false;
 
   constructor(private modalService: BsModalService, private testsClient: TestsClient, private store: Store<AppState>) {
@@ -44,25 +44,37 @@ export class SpisokTestovComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.store.select(selectSelectedTestId).subscribe((testId => this.selectedTestId = testId));
     this.store.select(selectSelectedStageId).subscribe((stageId => {
       if (stageId !== undefined) {
+        // gives access to crud functions since a valid stageId has been provided
+        this.isDisabled = false;
         this.selectedStageId = stageId;
         this.store.dispatch(LOAD_TESTS_REQUEST({ stageId }));
       }
     }));
-    this.store.select(selectSelectedTestId).subscribe((testId => this.selectedTestId = testId));
   }
 
+  /**
+   * For displaying buttons hidden with the toggle.
+   */
   makeListEditable(e: Event) {
     this.isChecked = !this.isChecked;
   }
 
+  /**
+   * Updates the state with the newly selected TEST.
+   */
   selectTest(e: TestDto) {
     if (e.id !== this.selectedTestId) {
       this.store.dispatch(SELECT_TEST({ testId: e.id }));
     }
   }
 
+  /**
+   * Allows for the creation of a TEST.
+   * Values based on Form input and currently selected STAGE in state.
+   */
   createTest() {
     const stageId = this.selectedStageId;
     const jiraTestNumber: string = (this.addTestEditor.title as string).trim();
@@ -75,6 +87,9 @@ export class SpisokTestovComponent implements OnInit {
     this.hideAddTestModal();
   }
 
+  /**
+   * Allows for the deletion of a TEST.
+   */
   deleteTest(id: number) {
     if (confirm('All taps will be lost! Are you sure to delete the test? ' + id)) {
       this.store.dispatch(DELETE_TEST_REQUEST({ testId: id, stageId: this.selectedStageId }));
@@ -82,6 +97,10 @@ export class SpisokTestovComponent implements OnInit {
     }
   }
 
+  /**
+   * Allows for the update of a TEST's name, its only editable property.
+   * Values based on Form input and currently selected STAGE & TEST in state.
+   */
   updateTestName() {
     const stageId = this.selectedStageId;
     const testId = this.selectedTestId;
@@ -95,22 +114,35 @@ export class SpisokTestovComponent implements OnInit {
   }
 
   //#region MODAL FUNCTIONS
+
+  /**
+   * Shows the add TEST modal.
+   */
   showAddTestModal(template: TemplateRef<any>): void {
     this.addTestModalRef = this.modalService.show(template);
     setTimeout(() => document.getElementById('title').focus(), 250);
   }
 
+  /**
+   * Hides the add TEST modal.
+   */
   hideAddTestModal(): void {
     this.addTestModalRef.hide();
     this.addTestEditor = {};
   }
 
+  /**
+   * Shows the update TEST modal.
+   */
   showUpdateTestModal(template: TemplateRef<any>, name: string): void {
     this.updateTestEditor.title = name;
     this.updateTestModalRef = this.modalService.show(template);
     setTimeout(() => document.getElementById('updateTitle').focus(), 250);
   }
 
+  /**
+   * Hides the update TEST modal.
+   */
   hideUpdateTestModal(): void {
     this.updateTestModalRef.hide();
     this.updateTestEditor = {};

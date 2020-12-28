@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 import { LOAD_TESTS_REQUEST, SELECT_TEST } from './spisok-testov/spisok-testov.actions';
 import { LOAD_EXECUTIONS_REQUEST, SELECT_EXECUTION } from './spisok-kazney/spisok-kazney.actions';
 // import { selectSelectedStageId } from './spisok-faz/spisok-faz.reducers';
-import { selectSelectedTestId } from './spisok-testov/spisok-testov.reducers';
 import { selectSelectedExecution, selectSelectedExecutionId } from './spisok-kazney/spisok-kazney.selectors';
 
 @Component({
