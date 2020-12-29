@@ -49,6 +49,7 @@ export class SpisokTestovComponent implements OnInit {
       if (stageId !== undefined) {
         // gives access to crud functions since a valid stageId has been provided
         this.isDisabled = false;
+        this.isChecked = false;
         this.selectedStageId = stageId;
         this.store.dispatch(LOAD_TESTS_REQUEST({ stageId }));
       }

@@ -57,7 +57,7 @@ namespace TapLog.Infrastructure.Persistence
                 context.Cards.Add(new Card { Alias = "MC ALICE", Number = "1234554321", Supplier = new Supplier { Name = "MC" }, Product = new Product { Name = "Child" } });
                 context.Cards.Add(new Card { Alias = "AM BOB", Number = "2233445566", Supplier = new Supplier { Name = "AM" }, Product = new Product { Name = "Adult" } });
                 context.Cards.Add(new Card { Alias = "VC EVE", Number = "3216544321", Supplier = new Supplier { Name = "VC" }, Product = new Product { Name = "Senior" } });
-                context.Cards.Add(new Card { Alias = "GC IRINA", Number = "1234321566", Supplier = new Supplier { Name = "GC" }, Pass = new Pass { Name = "GE1 Day" } });
+                context.Cards.Add(new Card { Number = "1234321566", Supplier = new Supplier { Name = "GC" }, Pass = new Pass { Name = "GE1 Day" } });
                 await context.SaveChangesAsync();
             }
             if (!context.Stages.Any())
@@ -123,7 +123,6 @@ namespace TapLog.Infrastructure.Persistence
                         Result = Domain.Enums.Result.Unsuccessful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now.AddSeconds(30),
-                        CaseNumber = "XYZ",
                         WasResultExpected = Domain.Enums.Expected.No
                     },
                     new Tap
@@ -141,7 +140,6 @@ namespace TapLog.Infrastructure.Persistence
                         Result = Domain.Enums.Result.Successful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now.AddSeconds(15),
-                        CaseNumber = "XYZ",
                         WasResultExpected = Domain.Enums.Expected.Yes
                     },
                     new Tap
@@ -159,7 +157,6 @@ namespace TapLog.Infrastructure.Persistence
                         Result = Domain.Enums.Result.Successful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now,
-                        CaseNumber = "XYZ",
                         WasResultExpected = Domain.Enums.Expected.Yes
                     }
                 };
