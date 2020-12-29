@@ -1,9 +1,10 @@
-import { StageDto, TestDto, TestExecutionDto } from './taplog-api';
+import { StageDto, TapDto, TestDto, TestExecutionDto } from './taplog-api';
 
 export interface AppState {
     stages: StagesState;
     tests: TestsState;
     executions: ExecutionsState;
+    taps: TapsState;
 }
 
 export interface StagesState {
@@ -25,4 +26,12 @@ export interface ExecutionsState {
     selectedId?: number;
     loading: boolean;
     error?: any;
+}
+
+export interface TapsState {
+    list: TapDto[];
+    selectedId?: number;
+    loading: boolean;
+    error?: any;
+    editingId?: number;
 }

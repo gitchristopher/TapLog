@@ -1,66 +1,81 @@
+<!-- HEADING -->
 <div class="d-flex align-items-start justify-content-center pb-1">
   <h2 class="">Tap List</h2>
 </div>
+
+<!-- TOGGLE BUTTON ROW -->
 <div class="action-buttons2">
   <mat-slide-toggle [checked]="isChecked" (change)="toggleChanged($event)" [disabled]="isDisabled"></mat-slide-toggle>
 </div>
-<ng-container *ngIf="((selectedExecution$ | async ) && ((selectedExecution$ | async ).taps.length < 1) ) || !(selectedExecution$ | async) ">
+
+<!-- CONTAINER FOR TAPS WHEN ARE ARE NO TAP-->
+<ng-container
+  *ngIf="((selectedExecutionTaps$ | async ) && ((selectedExecutionTaps$ | async ).length < 1) ) || !(selectedExecutionTaps$ | async) ">
   <mat-accordion class="headers-align" disabled>
     <mat-expansion-panel [hideToggle]="true">
       <mat-expansion-panel-header>
         <mat-panel-title> </mat-panel-title>
       </mat-expansion-panel-header>
-      <p *ngIf="!(selectedExecution$ | async)">Select a test and execution.</p>
-      <p *ngIf="(selectedExecution$ | async ) && ((selectedExecution$ | async ).taps.length === 0)">You dont have any taps yet.</p>
+      <p *ngIf="!(selectedExecutionTaps$ | async)">Select a test and execution.</p>
+      <p *ngIf="(selectedExecutionTaps$ | async) && ((selectedExecutionTaps$ | async ).length === 0)">You dont have any
+        taps yet.</p>
     </mat-expansion-panel>
   </mat-accordion>
 </ng-container>
-<div *ngIf="(selectedExecution$ | async )" >
+
+<!-- CONTAINER FOR TAPS WHEN THERE ARE TAPS-->
+<ng-container *ngIf="(selectedExecutionTaps$ | async)">
   <form (ngSubmit)="onSubmit()" [formGroup]="updateTapForm">
 
     <mat-accordion class="headers-align" multi>
-      <ng-container *ngFor="let tap of (selectedExecution$ | async ).taps; index as i; trackBy:tap?.id; last as isLast">
 
-        <mat-expansion-panel [hideToggle]="true">
+      <!-- LIST OF TAPS AS EXPANSION PANELS -->
+      <ng-container *ngFor="let tap of (selectedExecutionTaps$ | async ); index as i; trackBy:tap?.id; last as isLast">
+
+        <!-- EXPANSION PANEL (SINGLE TAP) -->
+        <mat-expansion-panel [hideToggle]="true" (closed)="closeEdit(tap)" [expanded]="tap.id == this.selectedTapId">
+
+          <!-- VISIBLE SECTION WHEN FOLDED -->
           <mat-expansion-panel-header>
             <mat-panel-title>
               <ng-container *ngIf="isEditing != tap.id;">
-                {{tap.deviceName}}
+                <ng-container [ngTemplateOutlet]="matIcon" [ngTemplateOutletContext]="{value: tap.action}"></ng-container>
+                {{tap.deviceCode}} - {{tap.deviceName}}
               </ng-container>
-
-
             </mat-panel-title>
+
             <mat-panel-description>
               <span style="margin-left: 5em;">{{tap.timeOf | date:'mediumTime'}}</span>
               {{tap.timeOf | date:'EEEE, MMMM d'}}
             </mat-panel-description>
           </mat-expansion-panel-header>
-          
-          <!-- Hidden section in expansion panel -->
+
+          <!-- HIDDEN SECTION WHEN COLLAPSED -->
           <div class="tap-list-grid-container">
 
+            <!-- CARD PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-number">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else cardFormItem"><span class="hiddenInfo">Number: </span>
                 {{tap.cardNumber}}
               </div>
+
+              <!-- EDIT MODE -->
               <ng-template #cardFormItem>
                 <mat-form-field class="example-full-width" appearance="outline">
-                  <input type="text"
-                  placeholder="Card"
-                  aria-label="Number"
-                  matInput
-                  formControlName="card"
-                  [matAutocomplete]="auto"
-                  required>
-                  <mat-autocomplete  #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">
+                  <mat-label>Card</mat-label>
+                  <input type="text" placeholder="Card" aria-label="Number" matInput formControlName="card"
+                    [matAutocomplete]="auto" required>
+                  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn">
                     <mat-option *ngFor="let c of filteredOptions | async" [value]="c">
                       {{c.alias}}
                     </mat-option>
                   </mat-autocomplete>
-                  
+
                   <mat-error *ngIf="this.updateTapForm.controls['card'].hasError('required')">
                     Please enter a value
-                 </mat-error>
+                  </mat-error>
 
                   <mat-error *ngIf="this.updateTapForm.controls['card'].hasError('incorrect')">
                     Please select a valid card
@@ -70,24 +85,33 @@
               </ng-template>
             </div>
 
+            <!-- CARD ALIAS PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-alias">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else timeFormItem"><span class="hiddenInfo">Alias: </span>
                 {{tap.cardAlias}}
               </div>
+
+              <!-- EDIT MODE -->
               <ng-template #timeFormItem>
-                <timepicker formControlName="time" [showMeridian]="false" 
-                [showSeconds]="true" [hourStep]="1" 
-                [minuteStep]="1" [secondsStep]="1" [showSpinners]="false">
+                <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="true" [hourStep]="1"
+                  [minuteStep]="1" [secondsStep]="1" [showSpinners]="false">
                 </timepicker>
-                <input formControlName="date" type="text" placeholder="Datepicker" 
-                bsDatepicker [bsConfig]="{ adaptivePosition: true, dateInputFormat: 'YYYY-MM-DD'}"/>
+                <input formControlName="date" type="text" placeholder="Datepicker" bsDatepicker
+                  [bsConfig]="{ adaptivePosition: true, dateInputFormat: 'YYYY-MM-DD'}" />
               </ng-template>
             </div>
 
+            <!-- CARD SUPPLIER PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-supplier">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else deviceFormItem"><span class="hiddenInfo">Type: </span>
                 {{tap.cardSupplierName}}
               </div>
+
+              <!-- EDIT MODE -->
               <ng-template #deviceFormItem>
                 <mat-form-field appearance="outline">
                   <mat-label>Device</mat-label>
@@ -99,125 +123,250 @@
                 </mat-form-field>
               </ng-template>
             </div>
-            
+
+            <!-- TAP RESULT PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-result">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else resultFormItem"><span class="hiddenInfo">Result: </span>
                 {{tap.result | resultEnum}}
               </div>
+
+              <!-- EDIT MODE -->
               <ng-template #resultFormItem>
                 <mat-form-field appearance="outline">
                   <mat-label>Result</mat-label>
                   <mat-select formControlName="result" required>
-                    <mat-option value="0">Successful</mat-option>
-                    <mat-option value="1">Unsuccessful</mat-option>
-                    <mat-option value="2">Nothing</mat-option>
-                    <mat-option value="3">Other</mat-option>
+                    <mat-option value=0>Successful</mat-option>
+                    <mat-option value=1>Unsuccessful</mat-option>
+                    <mat-option value=2>Nothing</mat-option>
+                    <mat-option value=3>Other</mat-option>
                   </mat-select>
                 </mat-form-field>
               </ng-template>
             </div>
 
+            <!-- TAP EXPECTATION PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-expectation">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else expectedFormItem"><span class="hiddenInfo">Expected: </span>
                 {{tap.wasResultExpected | expectedEnum}}
               </div>
+
+              <!-- EDIT MODE -->
               <ng-template #expectedFormItem>
-                <mat-button-toggle-group #group="matButtonToggleGroup"  formControlName="expectedResult" required>
-                  <mat-button-toggle value="0" aria-label="Expected" >
+                <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="expectedResult" required>
+                  <mat-button-toggle value=0 aria-label="Expected">
                     <mat-icon>thumb_up</mat-icon>
                   </mat-button-toggle>
-                  <mat-button-toggle value="1" aria-label="Unexpected">
+                  <mat-button-toggle value=1 aria-label="Unexpected">
                     <mat-icon>thumb_down</mat-icon>
                   </mat-button-toggle>
-                  <mat-button-toggle value="2" aria-label="Unsure">
+                  <mat-button-toggle value=2 aria-label="Unsure">
                     <mat-icon>thumbs_up_down</mat-icon>
                   </mat-button-toggle>
                 </mat-button-toggle-group>
               </ng-template>
             </div>
 
+            <!-- NOTES PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-notes">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else notesFormItem"><span class="hiddenInfo">Notes: </span>
                 {{tap.notes}}</div>
-                <ng-template #notesFormItem>
-                  <mat-form-field class="example-full-width"  appearance="outline">
-                    <mat-label>Notes</mat-label>
-                    <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=1 matAutosizeMaxRows=1 formControlName="notes" ></textarea>
-                  </mat-form-field>
-                </ng-template>
+
+              <!-- EDIT MODE -->
+              <ng-template #notesFormItem>
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Notes</mat-label>
+                  <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows="1" matAutosizeMaxRows="6"
+                    rows="6" formControlName="notes"></textarea>
+                </mat-form-field>
+              </ng-template>
             </div>
 
+            <!-- VALUE BEFORE PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-before">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else beforeFormItem">
-                <span class="hiddenInfo">Before: </span>{{tap.balanceBefore}}</div>
-                <ng-template #beforeFormItem>
-                  <mat-form-field class="example-full-width"  appearance="outline">
-                    <mat-label>Balance before</mat-label>
-                    <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore" min="0">
-                  </mat-form-field>
-                </ng-template>
+                <span class="hiddenInfo">Before: </span>{{tap.balanceBefore | currency}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #beforeFormItem>
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Balance before</mat-label>
+                  <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore" min="0">
+                </mat-form-field>
+              </ng-template>
             </div>
 
+            <!-- FARE VALE PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-fare">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else fareFormItem">
-                <span class="hiddenInfo">Fare: </span>{{tap.fare}}</div>
-                <ng-template #fareFormItem>
-                  <mat-form-field class="example-full-width"  appearance="outline" >
-                    <mat-label>Fare</mat-label>
-                    <input matInput type="number" placeholder="e.g 2.7" formControlName="fare" min="0">
-                  </mat-form-field>
-                </ng-template>
+                <span class="hiddenInfo">Fare: </span>{{tap.fare | currency}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #fareFormItem>
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Fare</mat-label>
+                  <input matInput type="number" placeholder="e.g 2.7" formControlName="fare" min="0">
+                </mat-form-field>
+              </ng-template>
             </div>
 
+            <!-- VALUE AFTER PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
             <div class="tl-after">
+
+              <!-- READ MODE -->
               <div *ngIf="isEditing != tap.id;else afterFormItem">
-                <span class="hiddenInfo">After: </span>{{tap.balanceAfter}}</div>
-                <ng-template #afterFormItem>
-                  <mat-form-field class="example-full-width"  appearance="outline" >
-                    <mat-label>Balance after</mat-label>
-                    <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter" min="0">
-                  </mat-form-field>
-                </ng-template>
+                <span class="hiddenInfo">After: </span>{{tap.balanceAfter | currency}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #afterFormItem>
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Balance after</mat-label>
+                  <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter" min="0">
+                </mat-form-field>
+              </ng-template>
             </div>
-            
-              <div class="tl-edit">
-                <ng-container [ngSwitch]="isEditing">
-                <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton" type="button" (click)="editTap(tap.id)">
+
+            <!-- TAP ACTION PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
+            <div class="tl-action">
+
+              <!-- READ MODE -->
+              <div *ngIf="isEditing != tap.id;else actionFormItem"><span class="hiddenInfo">Action: </span>
+                {{tap.action | TapActionEnum}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #actionFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Action</mat-label>
+                  <mat-select formControlName="action" required>
+                    <mat-option *ngFor="let action of actions | keyvalue" value={{action.key}}>{{action.value}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
+            <!-- TESTER PANEL - READ ONLY -->
+            <div class="tl-tester">
+              <div><span class="hiddenInfo">Tester: </span>
+                {{tap.tester | TesterName}}
+              </div>
+            </div>
+
+            <!-- CARD PRODUCT PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
+            <div class="tl-product">
+
+              <!-- READ MODE -->
+              <div *ngIf="isEditing != tap.id;else productFormItem"><span class="hiddenInfo"
+                  [ngStyle]="{'color': (tap.product==null) ? '#bdbdbd' : '#000000'}">Product: </span>
+                {{tap.product}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #productFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Product</mat-label>
+                  <mat-select formControlName="product">
+                    <mat-option [value]="null">None</mat-option>
+                    <mat-option *ngFor="let p of productList" [value]="p.id" style="width: 100%;">
+                      {{p.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
+            <!-- CARD PASS PANEL - ALTERNATE BETWEEN READ, AND EDIT FORM FIELD -->
+            <div class="tl-pass">
+
+              <!-- READ MODE -->
+              <div *ngIf="isEditing != tap.id;else passFormItem"
+                [ngStyle]="{'color': (tap.product==null) ? '#bdbdbd' : '#000000'}"><span class="hiddenInfo">Pass:
+                </span>
+                {{tap.pass}}
+              </div>
+
+              <!-- EDIT MODE -->
+              <ng-template #passFormItem>
+                <mat-form-field appearance="outline">
+                  <mat-label>Pass</mat-label>
+                  <mat-select formControlName="pass">
+                    <mat-option [value]="null">None</mat-option>
+                    <mat-option *ngFor="let p of passList" [value]="p.id" style="width: 100%;">
+                      {{p.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </div>
+
+            <!-- ERRORS PANEL - READ ONLY -->
+            <div class="tl-error">
+              <ng-container *ngIf="formErrors?.errors != null && isEditing == tap.id">
+                <mat-error *ngFor="let err of formErrors.errors">{{err}}</mat-error>
+              </ng-container>
+            </div>
+
+            <!-- EDIT & SAVE BUTTON -->
+            <div class="tl-edit">
+              <ng-container [ngSwitch]="isEditing">
+                <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton"
+                  type="button" (click)="editTap(tap)">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button *ngSwitchCase="tap.id" [@fadeInOut] mat-mini-fab color="primary" class="menuSmallButton" type="submit" [disabled]="this.updateTapForm.untouched || !this.updateTapForm.valid">
+                <button *ngSwitchCase="tap.id" [@fadeInOut] mat-mini-fab color="primary" class="menuSmallButton"
+                  type="submit" [disabled]="this.updateTapForm.untouched || !this.updateTapForm.valid">
                   <mat-icon>save</mat-icon>
                 </button>
-                <button *ngSwitchDefault [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton" type="button" [disabled]="true">
+                <button *ngSwitchDefault [@fadeInOut] mat-mini-fab color="accent" class="menuSmallButton" type="button"
+                  [disabled]="true">
                   <mat-icon>edit</mat-icon>
                 </button>
               </ng-container>
-              </div>
+            </div>
 
-              <div class="tl-delete">
-                <ng-container [ngSwitch]="isEditing">
-                <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton" type="button" (click)="deleteTap(tap.id)">
+            <!-- DELETE & CANCEL BUTTON -->
+            <div class="tl-delete">
+              <ng-container [ngSwitch]="isEditing">
+                <button *ngSwitchCase="null" [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton"
+                  type="button" (click)="deleteTap(tap)">
                   <mat-icon>delete</mat-icon>
                 </button>
-                <button *ngSwitchCase="tap.id" [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton" type="button" (click)="cancelEdit()">
+                <button *ngSwitchCase="tap.id" [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton"
+                  type="button" (click)="closeEdit(tap)">
                   <mat-icon>cancel</mat-icon>
                 </button>
-                <button *ngSwitchDefault [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton" type="button" [disabled]="true">
+                <button *ngSwitchDefault [@fadeInOut] mat-mini-fab color="warn" class="menuSmallButton" type="button"
+                  [disabled]="true">
                   <mat-icon>delete</mat-icon>
                 </button>
               </ng-container>
-              </div>
+            </div>
 
-          </div>
-        </mat-expansion-panel>
+          </div> <!-- END OF HIDDEN SECTION WHEN COLLAPSED -->
+        </mat-expansion-panel> <!-- END OF EXPANSION PANEL (SINGLE TAP) -->
 
-        <!-- Static panel -->
-        <mat-expansion-panel disabled  *ngIf="!isLast">
+        <!-- STATIC PANEL BETWEEN ACCORDIAN EXPANSION PANELS -->
+        <mat-expansion-panel disabled *ngIf="!isLast">
           <mat-expansion-panel-header>
             <mat-panel-description>
               <p></p>
-              <div class="m-2">
-                <p class="iconText">{{((selectedExecution$ | async ).taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p> 
+              <div class="m-2" *ngIf="this.taps?.length > 1">
+                <!-- TODO: Fix date display, was working in azure, DTO changed from TapDto2 to TapDto, timeOf is now string instead of date -->
+                <!-- <p class="iconText">{{(selectedExecution.taps[i+1].timeOf.valueOf() - tap.timeOf.valueOf()) | date:'H:mm:ss':'UTC'}}</p>  -->
+                <!-- <p class="iconText">{{(toDate((this.taps)[i+1].timeOf.valueOf()) - toDate(tap.timeOf.valueOf())) | date:'H:mm:ss':'UTC'}}</p> -->
                 <mat-icon style="margin-left: 7px; margin-top: 7px; ">timer</mat-icon>
               </div>
             </mat-panel-description>
@@ -228,3 +377,20 @@
       </ng-container>
     </mat-accordion>
   </form>
+</ng-container>
+
+<!-- ACTION ICON IN EXPANSION PANEL HEADER -->
+<ng-template #matIcon let-value="value">
+  <ng-container [ngSwitch]="value">
+    <!-- the same view can be shown in more than one case -->
+    <mat-icon *ngSwitchCase="0" class="mr-3" color="primary">south_east</mat-icon>
+    <mat-icon *ngSwitchCase="1" class="mr-3" color="primary">north_west</mat-icon>
+    <mat-icon *ngSwitchCase="6" class="mr-3" color="accent">east</mat-icon>
+    <mat-icon *ngSwitchCase="5" class="mr-3" color="warn">close</mat-icon>
+    <mat-icon *ngSwitchCase="2" class="mr-3" color="warn">double_arrow</mat-icon>
+    <mat-icon *ngSwitchCase="3" class="mr-3" color="warn" style="transform: rotate(180deg)">double_arrow</mat-icon>
+    <mat-icon *ngSwitchCase="4" class="mr-3" color="accent">undo</mat-icon>
+    <!--default case when there are no matches -->
+    <mat-icon *ngSwitchDefault class="mr-3" color="warn">error</mat-icon>
+  </ng-container>
+</ng-template>

@@ -1,15 +1,23 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
-import { MatAccordion } from '@angular/material/expansion';
-import { TestExecutionDto2, TapDto2, TapsClient, DeviceDto, CardDto, CreateTapCommand, UpdateTapCommand, TestExecutionDto } from 'src/app/taplog-api';
-import { style, state, animate, transition, trigger } from '@angular/animations';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { style, animate, transition, trigger } from '@angular/animations';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { TapsClient, DeviceDto, CardDto, UpdateTapCommand, ProductDto, PassDto, TapDto, TestExecutionDto } from 'src/app/taplog-api';
 import { map, startWith } from 'rxjs/operators';
-import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/app.state';
-import { selectExecutionsList, selectSelectedExecution, selectSelectedExecutionTapCount } from '../spisok-kazney/spisok-kazney.reducers';
-import { DELETE_TAP_REQUEST } from '../spisok-kazney/spisok-kazney.actions';
+import { AppState, TapsState } from 'src/app/app.state';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatAccordion } from '@angular/material/expansion';
+import { ActionsEnum } from 'src/app/_shared/enums/tap-action.enum';
+import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
+import { selectTaps, selectTapsListForSelectedExecution } from './spisok-sobytiy.selectors';
+import { selectSelectedExecution, selectSelectedExecutionId } from '../spisok-kazney/spisok-kazney.selectors';
+import { DELETE_TAP_REQUEST, DESELECT_TAP, EDIT_TAP, LOAD_EXECUTION_TAPS_REQUEST, SELECT_TAP, UPDATE_TAP_REQUEST } from './spisok-sobytiy.actions';
+
+interface IFormErrors {
+  errors: string[];
+  title: string;
+}
 
 @Component({
   selector: 'app-spisok-sobytiy',
@@ -17,84 +25,115 @@ import { DELETE_TAP_REQUEST } from '../spisok-kazney/spisok-kazney.actions';
   styleUrls: ['./spisok-sobytiy.component.css'],
   animations: [
     trigger('fadeInOut', [
-      transition(':enter', [ style({opacity: 0 }), animate('1000ms ease-in-out', style({opacity: 1 })) ])
+      transition(':enter', [style({ opacity: 0 }), animate('1000ms ease-in-out', style({ opacity: 1 }))]),
     ]),
     trigger('fadeOutIn', [
-      transition(':enter', [ style({opacity: 0 }), animate('500ms 500ms ease-in-out', style({opacity: 1 })) ]),
-      transition(':leave', [ animate('500ms ease-out', style({opacity: 0 })) ])
+      transition(':enter', [style({ opacity: 0 }), animate('500ms 500ms ease-in-out', style({ opacity: 1 }))]),
+      transition(':leave', [animate('500ms ease-out', style({ opacity: 0 }))])
     ])
   ]
 })
-export class SpisokSobytiyComponent implements OnInit, OnChanges {
-  @ViewChild(MatAccordion) accordion: MatAccordion;
-  selectedExecution$: Observable<TestExecutionDto>;
-  selectedExecutionz: TestExecutionDto;
-  selectedExecutionTapCount$: Observable<number>;
-  isChecked = false;
-  isDisabled = false;
 
-  @Input() selectedExecution: TestExecutionDto2;
+export class SpisokSobytiyComponent implements OnInit {
+  @ViewChild(MatAccordion) accordion: MatAccordion;     // For list in HTML
+  selectedExecutionTaps$: Observable<TapDto[]>;         // For list in HTML
+  selectedExecutionId: number;                          // For loading the correct taps
+  selectedExecution: TestExecutionDto;                  // Used to populate update form data command
+  taps: TapDto[];                                       // Used to populate update form data command
+  actions = Object.keys(ActionsEnum).map(key => ActionsEnum[key]).filter(k => !(parseInt(k) >= 0));
+  isChecked = false;                                    // For toggeling the accordian
+  isDisabled = false;                                   // For disabling the accordian toggle
+  isEditing: number;                                    // For determining which tap is being edited
+  selectedTapId: number;                                // For determining which tap is being viewed (keep accordian open on load)
+  updateTapForm: FormGroup;                             // To capture updated tap values
+  deviceList: DeviceDto[];                              // For list in HTML
+  productList: ProductDto[];                            // For list in HTML
+  passList: PassDto[];                                  // For list in HTML
+  cardList: CardDto[];                                  // For list in HTML
+  filteredOptions: Observable<CardDto[]>;               // For list in HTML
+  formErrors: IFormErrors = { errors: [], title: '' };    // To display API errors in form
 
-  isEditing: number;
-  // isDecending = true;
-  updateTapForm: FormGroup;
-  fb: FormBuilder;
-  deviceList: DeviceDto[];
-  cardList: CardDto[];
-  filteredOptions: Observable<CardDto[]>;
-
-  constructor(private tapsClient: TapsClient, private store: Store<AppState>) {
-    this.isChecked = false;
-    this.isEditing = null;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // for (const propName in changes) {
-    //   if (changes.hasOwnProperty(propName)) {
-    //     switch (propName) {
-    //       case 'selectedExecution': {
-    //         this.isChecked = false;
-    //         if (this.selectedExecution == null) {
-    //           this.isDisabled = true;
-    //         } else {
-    //           this.isDisabled = false;
-    //           this.cancelEdit();
-    //           // this.selectedExecution = this.sort(this.selectedExecution);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-  }
+  constructor(
+    private tapsClient: TapsClient,
+    private snackBar: MatSnackBar,
+    private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.selectedExecution$ = this.store.select(selectSelectedExecution);
-    this.selectedExecutionTapCount$ = this.store.select(selectSelectedExecutionTapCount);
-    this.store.select(selectSelectedExecution).subscribe((execution => this.selectedExecutionz = execution));
+    this.selectedExecutionTaps$ = this.store.select(selectTapsListForSelectedExecution);
+    this.store.select(selectSelectedExecution).subscribe((execution => this.selectedExecution = execution));
+    this.store.select(selectTaps).subscribe((tapsState => {
+      this.taps = tapsState.list;
+      this.isEditing = tapsState.editingId;
+      this.selectedTapId = tapsState.selectedId;
+      this.handleApiErrors(tapsState);
+    }));
 
+    this.store.select(selectSelectedExecutionId).subscribe((executionId => {
+      this.isChecked = this.selectedExecutionId == executionId;
+      if (Number.isInteger(executionId)) {
+        // Get a new list of taps when the selected execution changes
+        this.store.dispatch(LOAD_EXECUTION_TAPS_REQUEST({ executionId }));
+      } else {
+        // Close the list since there isnt a selected execution (no tap list)
+        this.isChecked = false;
+      }
+      this.selectedExecutionId = executionId;
+    }));
+
+    this.initialiseForm();
+  }
+
+  /**
+   * Adds the errors from state to the Form Errors to be displayed.
+   */
+  private handleApiErrors(tapsState: TapsState) {
+    // TODO: handle errors properly
+    if (tapsState.error !== null) {
+      const err = JSON.parse(tapsState.error['response']);
+      Object.values(err['errors']).forEach(element => this.formErrors.errors.push(element[0]));
+      this.formErrors.title = err['title'];
+      this.snackBar.open(this.formErrors.title, null, { duration: 5000 });
+    } else {
+      this.formErrors = { errors: [], title: '' };
+    }
+  }
+
+  /**
+   * Initialise the update tap form.
+   */
+  private initialiseForm() {
     this.updateTapForm = new FormGroup({
       cardType: new FormControl(),
       card: new FormControl('', [Validators.required, RequireMatch]),
       device: new FormControl(),
       result: new FormControl(),
+      action: new FormControl(),
       expectedResult: new FormControl(),
-      time: new FormControl(),
-      date: new FormControl(),
+      time: new FormControl('', [Validators.required]),
+      date: new FormControl('', [Validators.required]),
       fare: new FormControl(),
       balanceBefore: new FormControl(),
       balanceAfter: new FormControl(),
       notes: new FormControl(),
+      product: new FormControl(),
+      pass: new FormControl(),
     });
   }
 
-  deleteTap(id: number) {
-    if (confirm('Are you sure to delete the tap? ' + id)) {
-      this.store.dispatch(DELETE_TAP_REQUEST({execution: this.selectedExecutionz, tapId: id}));
+  /**
+   * Allows for the deletion of a TAP.
+   */
+  deleteTap(tap: TapDto) {
+    if (confirm(`Are you sure to delete tap: ${tap.id}?`)) {
+      this.store.dispatch(DELETE_TAP_REQUEST({ executionId: tap.testExecutionId, tapId: tap.id }));
     }
   }
 
-  editTap(id: number) {
-    this.isEditing = id;
+  /**
+   * Sets the component into edit mode.
+   */
+  editTap(tap: TapDto) {
+    this.store.dispatch(EDIT_TAP({ tapId: tap.id }));
     if (this.cardList == null || this.deviceList == null) {
       this.getFormInformationFromApi();
     } else {
@@ -102,40 +141,55 @@ export class SpisokSobytiyComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Sets the form values.
+   */
   loadDataIntoForm() {
-    const id = this.isEditing;
-    const tap = this.selectedExecution.taps.find(x => Number(x.id) === Number(id));
+    const tapToEditId = this.isEditing;
+    const tapToEdit = this.taps.find(x => x.id === tapToEditId);
+    const card = this.cardList.find(c => c.id === tapToEdit.cardId);
+    const tempTime = new Date(tapToEdit.timeOf);
+    const tempDate = new Date(tapToEdit.timeOf);
     // HACK: There has to be a better way
-    const tempDate = new Date(tap.timeOf);
     tempDate.setHours(13);
 
-    const card = this.cardList.find(c => Number(c.id) === Number(tap.cardId));
     this.updateTapForm.get('card').setValue(card);
-    this.updateTapForm.get('result').setValue(tap.result.toString());
-    this.updateTapForm.get('expectedResult').setValue(tap.wasResultExpected.toString());
+    this.updateTapForm.get('result').setValue(tapToEdit.result.toString());
+    this.updateTapForm.get('action').setValue(tapToEdit.action.toString());
+    this.updateTapForm.get('expectedResult').setValue(tapToEdit.wasResultExpected.toString());
     this.updateTapForm.patchValue({
-      notes: tap.notes,
-      balanceAfter: tap.balanceAfter,
-      balanceBefore: tap.balanceBefore,
-      fare: tap.fare,
-      time: tap.timeOf,
+      notes: tapToEdit.notes,
+      balanceAfter: tapToEdit.balanceAfter,
+      balanceBefore: tapToEdit.balanceBefore,
+      fare: tapToEdit.fare,
+      time: tempTime,
       date: tempDate,
-      device: tap.deviceId
+      device: tapToEdit.deviceId,
+      product: this.productList.find(x => x.name === tapToEdit.product)?.id,
+      pass: this.passList.find(x => x.name === tapToEdit.pass)?.id,
     });
   }
 
+  /**
+   * Retrieves the card and device lists from the API to populate the select fields
+   */
   getFormInformationFromApi() {
-    this.tapsClient.getTapForm().subscribe( result => {
+    this.tapsClient.getTapForm().subscribe(result => {
+      this.passList = result.passes;
+      this.deviceList = result.devices;
+      this.productList = result.products;
       this.cardList = new Array<CardDto>();
-      result.cards.forEach( card => {
+      result.cards.forEach(card => {
+        // GC dont have an alias but for display purposes
+        // it would make sence to have a generic alias
         if (card.alias == null) {
           card.alias = 'Go Card';
         }
         card.alias = card.alias.concat(' - ', card.number);
         this.cardList.push(card);
       });
-      this.deviceList = result.devices;
 
+      // Enables the auto complete
       this.filteredOptions = this.updateTapForm.get('card').valueChanges.pipe(
         startWith(''),
         map(value => typeof value === 'string' ? value : value.alias),
@@ -144,68 +198,66 @@ export class SpisokSobytiyComponent implements OnInit, OnChanges {
 
       this.loadDataIntoForm();
     }, error => {
-      console.error('error loading tap form VM ' + error);
+      this.snackBar.open(error.title, null, { duration: 3000 });
     });
   }
 
+  /**
+   * Toggles all accordians open and closed.
+   * Exits edit mode when closing.
+   */
   toggleChanged(e: Event) {
     this.isChecked = !this.isChecked;
     this.isChecked ? this.accordion.openAll() : this.accordion.closeAll();
-    if (this.isChecked === false) {
-      this.cancelEdit();
+  }
+
+  /**
+   * Exits edit mode.
+   */
+  closeEdit(tap: TapDto) {
+    if (this.selectedTapId == tap.id || this.isEditing == tap.id) {
+      this.store.dispatch(DESELECT_TAP());
     }
   }
 
-  cancelEdit() {
-    this.isEditing = null;
-  }
-
-  updateTap(data: any) {
-    const tap = new UpdateTapCommand(data);
-    this.tapsClient.update(Number(this.isEditing), tap).subscribe(
-        result => {
-          // TODO: what to do with NoContent response
-          const newTap = new TapDto2(data);
-          newTap.timeOf = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date);
-          const card = this.cardList.find(x => Number(x.id) === Number(newTap.cardId));
-          newTap.cardAlias = card?.alias ? card.alias : 'Go Card';
-          newTap.cardNumber = card.number;
-          newTap.cardSupplierName = card.supplierName;
-          const device = this.deviceList.find(x => x.id === newTap.deviceId);
-          newTap.deviceName = device.name;
-          newTap.deviceCode = device.code;
-          const index = this.selectedExecution.taps.findIndex(x => x.id === Number(newTap.id));
-          this.selectedExecution.taps.splice(index, 1, newTap);
-        },
-        error => {
-            console.error('error when updating tap');
-            console.error(error);
-        }
-    );
-    this.isEditing = null;
-  }
-
+  /**
+   * Sends the form data to the API as an Update Request.
+   */
   onSubmit() {
-    const card = this.cardList.find(c => c.id === Number(this.updateTapForm.value.card.id));
-    const device = this.deviceList.find(d => d.id === Number(this.updateTapForm.value.device));
-    const time = this.formatTimeAndDate(this.updateTapForm.value.time, this.updateTapForm.value.date).toISOString();
-    const data = {
+    const cmdData = this.formatCommandData();
+    const tap = new UpdateTapCommand(cmdData);
+    this.store.dispatch(UPDATE_TAP_REQUEST({ tap }))
+  }
+
+  /**
+   * Create a data object for the purpose of populating an UpdateTapCommand object.
+   * Ensures the values from the form are of the correct type, and all fields exist and populated.
+   */
+  private formatCommandData() {
+    const time = this.formatTimeAndDate(this.updateTapForm.value.time as Date, this.updateTapForm.value.date as Date).toISOString();
+    return {
       testExecutionId: this.selectedExecution.id,
       balanceAfter: Number(this.updateTapForm.value.balanceAfter),
       balanceBefore: Number(this.updateTapForm.value.balanceBefore),
       cardId: Number(this.updateTapForm.value.card.id),
-      caseNumber: '?',
+      caseNumber: null,
       deviceId: Number(this.updateTapForm.value.device),
       fare: Number(this.updateTapForm.value.fare),
       id: Number(this.isEditing),
       notes: this.updateTapForm.value.notes,
       result: Number(this.updateTapForm.value.result),
+      action: Number(this.updateTapForm.value.action),
       tester: 'Current User',
       timeOf: time,
       wasResultExpected: Number(this.updateTapForm.value.expectedResult),
+      productId: Number(this.updateTapForm.value.product),
+      passId: Number(this.updateTapForm.value.pass),
     };
-    this.updateTap(data);
   }
+
+  /**
+   * Combines the Date & Time from the form into one value.
+   */
   formatTimeAndDate = (timeFromForm: Date, dateFromForm: Date): Date => {
     const time = new Date();
     time.setTime(timeFromForm.getTime());
@@ -213,13 +265,39 @@ export class SpisokSobytiyComponent implements OnInit, OnChanges {
     return time;
   }
 
+  /**
+   * Used by auto complete to determin what to display as the option label.
+   */
   displayFn(card: CardDto): string {
     return card && card.alias ? card.alias : '';
   }
 
+  /**
+   * Used by auto complete to filter the card list.
+   */
   private _filter(alias: string): CardDto[] {
     const filterValue = alias.toLowerCase();
 
     return this.cardList.filter(card => card.alias.toLowerCase().indexOf(filterValue) >= 0);
   }
+
+  /**
+   * Displays API errors.
+   */
+  addErrorFromApi(error: any) {
+    this.formErrors.errors = [];
+    const response = JSON.parse(error['response']);
+    this.formErrors.title = response['title'];
+    const errorArray = Object.values(response['errors']);
+    errorArray.forEach(element => {
+      this.formErrors.errors.push(element[0]);
+    });
+  }
+
+  /**
+   * HACK: Fix how dates are done, if this is used the function is continuously called.
+   */
+  // toDate(x) {
+  //   return Date.parse(x);
+  // }
 }

@@ -86,9 +86,11 @@ import { EffectsModule } from '@ngrx/effects';
 import { fazReducer } from '../app/zapolnit/spisok-faz/spisok-faz.reducers';
 import { testovReducer } from '../app/zapolnit/spisok-testov/spisok-testov.reducers';
 import { kazneyReducer } from './zapolnit/spisok-kazney/spisok-kazney.reducers';
+import { sobytiyReducer } from './zapolnit/spisok-sobytiy/spisok-sobytiy.reducers';
 import { FazEffects } from '../app/zapolnit/spisok-faz/spisok-faz.effects';
 import { TestovEffects } from '../app/zapolnit/spisok-testov/spisok-testov.effects';
 import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
+import { SobytiyEffects } from './zapolnit/spisok-sobytiy/spisok-sobytiy.effects';
 
 
 @NgModule({
@@ -178,9 +180,10 @@ import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
       stages: fazReducer,
       tests: testovReducer,
       executions: kazneyReducer,
+      taps: sobytiyReducer
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    EffectsModule.forRoot([FazEffects, TestovEffects, KazneyEffects])
+    EffectsModule.forRoot([FazEffects, TestovEffects, KazneyEffects, SobytiyEffects])
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
