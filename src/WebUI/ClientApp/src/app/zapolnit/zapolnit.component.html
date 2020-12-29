@@ -10,7 +10,8 @@
     <app-spisok-testov></app-spisok-testov>
   </div>
   <div class="tlexecutions">
-    <app-spisok-kazney (select)="selectExecution($event)" [executionsState]="executions$ | async"></app-spisok-kazney>
+    <!-- <app-spisok-kazney (select)="selectExecution($event)" [executionsState]="executions$ | async"></app-spisok-kazney> -->
+    <app-spisok-kazney></app-spisok-kazney>
   </div>
   <div class="tlcurrent">
     <app-spisok-sobytiy [selectedExecution]="selectedExecution"></app-spisok-sobytiy>

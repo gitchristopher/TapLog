@@ -22,8 +22,7 @@ export interface TestsState {
 
 export interface ExecutionsState {
     list: TestExecutionDto[];
-    selectedId?: string | number;
+    selectedId?: number;
     loading: boolean;
-    loaded: boolean;
     error?: any;
 }
