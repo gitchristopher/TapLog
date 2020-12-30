@@ -8,8 +8,6 @@ import { CommonModule } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { TodoComponent } from './todo/todo.component';
 import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
 import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
@@ -99,8 +97,6 @@ import { SobytiyEffects } from './zapolnit/spisok-sobytiy/spisok-sobytiy.effects
       AppComponent,
       NavMenuComponent,
       TapperComponent,
-      CounterComponent,
-      FetchDataComponent,
       TodoComponent,
       HomeComponent,
       TapLoggerComponent,
@@ -138,14 +134,12 @@ import { SobytiyEffects } from './zapolnit/spisok-sobytiy/spisok-sobytiy.effects
     ApiAuthorizationModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
-      { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
+      { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] }, // Todo list
       { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'logger', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
+      { path: 'logger', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] }, // Taplogger
       { path: 'zapolnit', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
-      { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] },
-      { path: 'smena', component: SmenaComponent, canActivate: [AuthorizeGuard] },
+      { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] }, // Exporter/Query
+      { path: 'smena', component: SmenaComponent, canActivate: [AuthorizeGuard] }, // Admin
     ]),
     CommonModule,
     ReactiveFormsModule,

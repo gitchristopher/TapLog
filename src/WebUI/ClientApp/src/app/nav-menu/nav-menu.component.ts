@@ -9,7 +9,6 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 export class NavMenuComponent {
   isExpanded = false;
   infoModalRef: BsModalRef;
-  // infoEditor: any = {};
 
   constructor(private modalService: BsModalService) { }
 
@@ -21,15 +20,13 @@ export class NavMenuComponent {
     this.isExpanded = !this.isExpanded;
   }
 
-    // Shows the test modal
-    showInfoModal(template: TemplateRef<any>): void {
-      this.infoModalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
-      // setTimeout(() => document.getElementById('title').focus(), 250);
-    }
+  // Shows the test modal
+  showInfoModal(template: TemplateRef<any>): void {
+    this.infoModalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
+  }
 
-    // Hides the modal on cancel
-    hideInfoModal(): void {
-      this.infoModalRef.hide();
-      // this.addTestEditor = {};
-    }
+  // Hides the modal on cancel
+  hideInfoModal(): void {
+    this.infoModalRef.hide();
+  }
 }

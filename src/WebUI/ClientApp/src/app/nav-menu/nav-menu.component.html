@@ -2,30 +2,26 @@
   <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow" style="background-color: #673ab7;">
     <div class="container-fluid justify-content-between">
       <a class="navbar-brand" [routerLink]="['/']">Logger</a>
-      <button class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target=".navbar-collapse"
-              aria-label="Toggle navigation"
-              [attr.aria-expanded]="isExpanded"
-              (click)="toggle()">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+        aria-label="Toggle navigation" [attr.aria-expanded]="isExpanded" (click)="toggle()">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
-           [ngClass]="{ show: isExpanded }">
+      <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" [ngClass]="{ show: isExpanded }">
+        <app-login-menu></app-login-menu>
+        <button mat-icon-button color="accent" (click)="showInfoModal(addTestModalTemplate)">
+          <mat-icon>info</mat-icon>
+        </button>
         <ul class="navbar-nav flex-grow">
-          <!-- <li class="nav-item"
-              [routerLinkActive]="['link-active']"
-              [routerLinkActiveOptions]="{ exact: true }">
+          <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link text-light" [routerLink]="['']">Home</a>
-          </li> -->
+          </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/stol']">Query</a>
           </li>
-          <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/zapolnit']">V3</a>
-          </li> -->
+          </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/logger']">Log</a>
           </li>
@@ -40,26 +36,11 @@
           </li>
         </ul>
       </div>
-
-
-      <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
-           [ngClass]="{ show: isExpanded }">
-        <app-login-menu></app-login-menu>
-        <button mat-flat-button color="primary" style="transform: rotate(180deg)" (click)="showInfoModal(addTestModalTemplate)">
-          <mat-icon>information</mat-icon>
-        </button>
-        <ul class="navbar-nav flex-grow">
-          <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch data</a>
-          </li> -->
-        </ul>
-      </div>
     </div>
   </nav>
 </header>
+
+<!-- FARES MODAL -->
 <ng-template #addTestModalTemplate>
   <div class="modal-header clearfix">
     <h4 class="modal-title float-left">Travel Information</h4>
