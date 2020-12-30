@@ -66,7 +66,7 @@ export class AdminOtkrytkaComponent implements OnInit {
       this.modalEditor.title = 'Create New Card';
       this.modalEditor.button = 'Save';
     } else {
-      this.modalEditor.title = 'Update Pass: ' + entity.number;
+      this.modalEditor.title = 'Update Card: ' + entity.number;
       this.modalEditor.button = 'Update';
       this.entityForm.patchValue(entity);
     }

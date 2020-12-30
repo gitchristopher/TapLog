@@ -56,26 +56,23 @@ export class SpisokKazneyComponent implements OnInit {
     if (Number.isInteger(testId) && Number.isInteger(stageId)) {
 
       // User has selected a new stage so remove the executions as they are no longer valid.
-      // Clear the executions when the user changes stages but both stages have the same test.
       // Execution list needs to be refreshed as it is based on stageID & testID
-      if (stageId != this.selectedStageId) {
-        if (this.selectedTestId == testId) {
+      if (stageId != this.selectedStageId && Number.isInteger(this.selectedStageId)) {
           this.store.dispatch(CLEAR_EXECUTIONS());
-        }
       }
 
       // Get the execution list for the newly selected test when the user is clicking between tests within the same stage.
       if (testId != this.selectedTestId) {
         this.store.dispatch(LOAD_EXECUTIONS_REQUEST({stageId: stageId, testId: testId}));
+        if (this.selectedExecutionId) {
+          this.store.dispatch(DESELECT_EXECUTION());
+        }
       }
 
       // This enables the toggle, the toggle allows for creation and deletion of executions.
       // These functions require both the TestId & StageId, therefor its only enabled when both are ints (valid).
       this.isDisabled = false;
     } else {
-      if (this.selectedExecutionId !== null) {
-        this.store.dispatch(CLEAR_EXECUTIONS());
-      }
       // Toggle funcations disabled as TestId || StageId for creations/deletion is not available.
       this.isChecked = false;
       this.isDisabled = true;

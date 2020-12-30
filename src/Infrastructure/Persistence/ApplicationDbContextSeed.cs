@@ -34,10 +34,13 @@ namespace TapLog.Infrastructure.Persistence
                     {
                         new TodoItem { Title = "Use in memory DB", Done = true },
                         new TodoItem { Title = "Show login details on welcome screen", Done = true },
-                        new TodoItem { Title = "Seed more data", Done = true },
+                        new TodoItem { Title = "Seed more data" },
+                        new TodoItem { Title = "Complete updating 3rd Gen components to use redux", Done = true  },
+                        new TodoItem { Title = "Modularise components like current project (Delat)" },
                         new TodoItem { Title = "Rename 3rd version of components from russian" },
                         new TodoItem { Title = "Remove old versions of components" },
-                        new TodoItem { Title = "Update repo with screenshots" }
+                        new TodoItem { Title = "Update repo with screenshots" },
+                        new TodoItem { Title = "Update to Angular 11" }
                     }
                 });
 
@@ -52,12 +55,19 @@ namespace TapLog.Infrastructure.Persistence
                 context.Devices.Add(new Device { Name = "MBB", Code = "15", Zone = 5, Latitude = "27.9630", Longitude = "153.4260" });
                 await context.SaveChangesAsync();
             }
+            if (!context.Products.Any())
+            {
+                context.Products.Add(new Product { Name = "Child" });
+                context.Products.Add(new Product { Name = "Adult" });
+                context.Products.Add(new Product { Name = "Senior" });
+                await context.SaveChangesAsync();
+            }
             if (!context.Cards.Any())
             {
-                context.Cards.Add(new Card { Alias = "MC ALICE", Number = "1234554321", Supplier = new Supplier { Name = "MC" }, Product = new Product { Name = "Child" } });
-                context.Cards.Add(new Card { Alias = "AM BOB", Number = "2233445566", Supplier = new Supplier { Name = "AM" }, Product = new Product { Name = "Adult" } });
-                context.Cards.Add(new Card { Alias = "VC EVE", Number = "3216544321", Supplier = new Supplier { Name = "VC" }, Product = new Product { Name = "Senior" } });
-                context.Cards.Add(new Card { Number = "1234321566", Supplier = new Supplier { Name = "GC" }, Pass = new Pass { Name = "GE1 Day" } });
+                context.Cards.Add(new Card { Alias = "MC ALICE", Number = "1234554321", Supplier = new Supplier { Name = "MC" } });
+                context.Cards.Add(new Card { Alias = "AM BOB", Number = "2233445566", Supplier = new Supplier { Name = "AM" } });
+                context.Cards.Add(new Card { Alias = "VC EVE", Number = "3216544321", Supplier = new Supplier { Name = "VC" } });
+                context.Cards.Add(new Card { Number = "1234321566", Supplier = new Supplier { Name = "GC" }, Pass = new Pass { Name = "GE1 Day" }, Product = new Product { Name = "Tourist" } });
                 await context.SaveChangesAsync();
             }
             if (!context.Stages.Any())
@@ -119,7 +129,8 @@ namespace TapLog.Infrastructure.Persistence
                         DeviceId = context.Devices.Last().Id,
                         Fare = 5,
                         Notes = "Tap didnt work",
-                        Product = context.Cards.FirstOrDefault().Product.Name,
+                        Product = context.Cards.FirstOrDefault()?.Product.Name,
+                        Pass =  context.Cards.FirstOrDefault()?.Pass.Name,
                         Result = Domain.Enums.Result.Unsuccessful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now.AddSeconds(30),
@@ -136,7 +147,8 @@ namespace TapLog.Infrastructure.Persistence
                         DeviceId = context.Devices.Last().Id,
                         Fare = 5,
                         Notes = "Tap worked",
-                        Product = context.Cards.FirstOrDefault().Product.Name,
+                        Product = context.Cards.FirstOrDefault()?.Product.Name,
+                        Pass =  context.Cards.FirstOrDefault()?.Pass.Name,
                         Result = Domain.Enums.Result.Successful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now.AddSeconds(15),
@@ -153,7 +165,8 @@ namespace TapLog.Infrastructure.Persistence
                         DeviceId = context.Devices.FirstOrDefault().Id,
                         Fare = 0,
                         Notes = "Tap worked",
-                        Product = context.Cards.FirstOrDefault().Product.Name,
+                        Product = context.Cards.FirstOrDefault()?.Product.Name,
+                        Pass =  context.Cards.FirstOrDefault()?.Pass.Name,
                         Result = Domain.Enums.Result.Successful,
                         Tester = "Chris",
                         TimeOf = DateTime.Now,
