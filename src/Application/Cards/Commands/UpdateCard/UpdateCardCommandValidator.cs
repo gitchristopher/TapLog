@@ -32,11 +32,11 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
                 .Must(NotContainBadCharactersAlias).WithMessage("Alias can only contain a-zA-Z0-9_.$@-");
             RuleFor(c => c.SupplierId)
                 .NotEmpty().WithMessage("Supplier must not be null.")
-                .MustAsync(SupplierExist).WithMessage("Supplier does not exist.");
+                .MustAsync(SupplierExist).WithMessage("Supplier does not exist. {Property Value}");
             RuleFor(c => c.PassId)
-                .MustAsync(PassExist).WithMessage("Pass does not exist.").When(c => c.PassId != null);
+                .MustAsync(PassExist).WithMessage("Pass does not exist. {Property Value}").When(c => c.PassId != null);
             RuleFor(c => c.ProductId)
-                .MustAsync(ProductExist).WithMessage("Product does not exist.").When(c => c.ProductId != null);
+                .MustAsync(ProductExist).WithMessage("Product does not exist. {Property Value}").When(c => c.ProductId != null);
         }
         
         public bool NotContainBadCharactersNumber(UpdateCardCommand model, string input)
@@ -56,7 +56,7 @@ namespace TapLog.Application.Cards.Commands.UpdateCard
         public async Task<bool> BeUniqueAlias(UpdateCardCommand model, string alias, CancellationToken cancellationToken)
         {
             return await _context.Cards
-                .Where(x => x.Alias.Length > 0)
+                .Where(x => x.Alias.Length > 0).Where(x => x.Id != model.Id)
                 .AllAsync(x => x.Alias != alias);
         }
         public async Task<bool> SupplierExist(int supplierId, CancellationToken cancellationToken)

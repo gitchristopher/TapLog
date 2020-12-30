@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { style, animate, transition, trigger } from '@angular/animations';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TapsClient, DeviceDto, CardDto, UpdateTapCommand, ProductDto, PassDto, TapDto, TestExecutionDto } from 'src/app/taplog-api';
@@ -8,11 +8,11 @@ import { Store } from '@ngrx/store';
 import { AppState, TapsState } from 'src/app/app.state';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatAccordion } from '@angular/material/expansion';
-import { ActionsEnum } from 'src/app/_shared/enums/tap-action.enum';
+import { ActionsEnum } from 'src/_enums/tap-action.enum';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
 import { selectTaps, selectTapsListForSelectedExecution } from './spisok-sobytiy.selectors';
 import { selectSelectedExecution, selectSelectedExecutionId } from '../spisok-kazney/spisok-kazney.selectors';
-import { DELETE_TAP_REQUEST, DESELECT_TAP, EDIT_TAP, LOAD_EXECUTION_TAPS_REQUEST, SELECT_TAP, UPDATE_TAP_REQUEST } from './spisok-sobytiy.actions';
+import { CLEAR_TAPS, DELETE_TAP_REQUEST, DESELECT_TAP, EDIT_TAP, LOAD_EXECUTION_TAPS_REQUEST, SELECT_TAP, UPDATE_TAP_REQUEST } from './spisok-sobytiy.actions';
 
 interface IFormErrors {
   errors: string[];
@@ -70,14 +70,18 @@ export class SpisokSobytiyComponent implements OnInit {
 
     this.store.select(selectSelectedExecutionId).subscribe((executionId => {
       this.isChecked = this.selectedExecutionId == executionId;
+      this.selectedExecutionId = executionId;
+
       if (Number.isInteger(executionId)) {
         // Get a new list of taps when the selected execution changes
         this.store.dispatch(LOAD_EXECUTION_TAPS_REQUEST({ executionId }));
       } else {
         // Close the list since there isnt a selected execution (no tap list)
+        if (this.taps.length) {
+          this.store.dispatch(CLEAR_TAPS());
+        }
         this.isChecked = false;
       }
-      this.selectedExecutionId = executionId;
     }));
 
     this.initialiseForm();
@@ -89,9 +93,9 @@ export class SpisokSobytiyComponent implements OnInit {
   private handleApiErrors(tapsState: TapsState) {
     // TODO: handle errors properly
     if (tapsState.error !== null) {
-      const err = JSON.parse(tapsState.error['response']);
-      Object.values(err['errors']).forEach(element => this.formErrors.errors.push(element[0]));
-      this.formErrors.title = err['title'];
+      // const err = JSON.parse(tapsState.error['response']);
+      Object.values(tapsState.error['errors']).forEach(element => this.formErrors.errors.push(element[0]));
+      this.formErrors.title = tapsState.error['title'];
       this.snackBar.open(this.formErrors.title, null, { duration: 5000 });
     } else {
       this.formErrors = { errors: [], title: '' };
@@ -151,7 +155,7 @@ export class SpisokSobytiyComponent implements OnInit {
     const tempTime = new Date(tapToEdit.timeOf);
     const tempDate = new Date(tapToEdit.timeOf);
     // HACK: There has to be a better way
-    tempDate.setHours(13);
+    tempDate.setHours(23, 0, 0);
 
     this.updateTapForm.get('card').setValue(card);
     this.updateTapForm.get('result').setValue(tapToEdit.result.toString());
@@ -284,15 +288,15 @@ export class SpisokSobytiyComponent implements OnInit {
   /**
    * Displays API errors.
    */
-  addErrorFromApi(error: any) {
-    this.formErrors.errors = [];
-    const response = JSON.parse(error['response']);
-    this.formErrors.title = response['title'];
-    const errorArray = Object.values(response['errors']);
-    errorArray.forEach(element => {
-      this.formErrors.errors.push(element[0]);
-    });
-  }
+  // addErrorFromApi(error: any) {
+  //   this.formErrors.errors = [];
+  //   const response = JSON.parse(error['response']);
+  //   this.formErrors.title = response['title'];
+  //   const errorArray = Object.values(response['errors']);
+  //   errorArray.forEach(element => {
+  //     this.formErrors.errors.push(element[0]);
+  //   });
+  // }
 
   /**
    * HACK: Fix how dates are done, if this is used the function is continuously called.

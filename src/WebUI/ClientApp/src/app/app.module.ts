@@ -49,6 +49,7 @@ import { SpisokFazComponent } from './zapolnit/spisok-faz/spisok-faz.component';
 import { SpisokKazneyComponent } from './zapolnit/spisok-kazney/spisok-kazney.component';
 import { SpisokSobytiyComponent } from './zapolnit/spisok-sobytiy/spisok-sobytiy.component';
 import { SpisokTestovComponent } from './zapolnit/spisok-testov/spisok-testov.component';
+import { ZapisSobytiyComponent } from './zapolnit/zapis-sobytiy/zapis-sobytiy.component';
 
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
@@ -118,6 +119,7 @@ import { SobytiyEffects } from './zapolnit/spisok-sobytiy/spisok-sobytiy.effects
       SpisokKazneyComponent,
       SpisokSobytiyComponent,
       SpisokTestovComponent,
+      ZapisSobytiyComponent,
       StolComponent,
       ZaprosComponent,
       SmenaComponent,

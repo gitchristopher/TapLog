@@ -1,4 +1,4 @@
-import { StageDto, TapDto, TestDto, TestExecutionDto } from './taplog-api';
+import { CardDto, DeviceDto, PassDto, ProductDto, StageDto, TapDto, TestDto, TestExecutionDto } from './taplog-api';
 
 export interface AppState {
     stages: StagesState;
@@ -34,4 +34,8 @@ export interface TapsState {
     loading: boolean;
     error?: any;
     editingId?: number;
+    devices: DeviceDto[];
+    cards: CardDto[];
+    passes: PassDto[];
+    products: ProductDto[];
 }
