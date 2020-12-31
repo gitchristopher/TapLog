@@ -1,0 +1,28 @@
+<mat-sidenav-container style="margin-top: 2.5rem;">
+  <mat-sidenav #sidenav mode="side" opened [fixedTopGap]="57" [fixedInViewport]="true">
+    <mat-selection-list #entity [multiple]="false" (selectionChange)="selectMenuItem($event)">
+      <mat-list-option *ngFor="let section of sections; last as last" [value]="section">
+        <mat-icon mat-list-icon>{{section.icon}}</mat-icon>
+        <h4 mat-line>{{section.title}}</h4>
+        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <div [ngSwitch]="this.selected">
+      <div *ngSwitchCase="this.sections[0]"><app-admin-card></app-admin-card></div>       <!-- Cards       -->
+      <div *ngSwitchCase="this.sections[1]"><app-admin-device></app-admin-device></div>   <!-- Devices     -->
+      <div *ngSwitchCase="this.sections[2]"><app-admin-pass></app-admin-pass></div>           <!-- Passes      -->
+      <div *ngSwitchCase="this.sections[3]"><app-admin-product></app-admin-product></div>             <!-- Products    -->
+      <div *ngSwitchCase="this.sections[4]"><app-admin-stage></app-admin-stage></div>               <!-- Stages      -->
+      <div *ngSwitchCase="this.sections[5]"><app-admin-supplier></app-admin-supplier></div>           <!-- Suppliers   -->
+      <div *ngSwitchCase="this.sections[6]">Taps can be updated or deleted from the logger page, they can be viewed on the query page.</div> <!-- Taps        -->
+      <div *ngSwitchCase="this.sections[7]">Executions can be viewed, updated, or deleted from the logger page.</div> <!-- Executions  -->
+      <div *ngSwitchCase="this.sections[8]">Tests can be viewed, updated, or deleted individually from the logger page.</div> <!-- Tests       -->
+      <div *ngSwitchDefault>Admin</div>
+    </div>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
+

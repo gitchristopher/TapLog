@@ -32,29 +32,29 @@ import { TapperComponent } from './tapper/tapper.component';
 import { StageListComponent } from './tapper/stage-list/stage-list.component';
 import { TestListComponent } from './tapper/test-list/test-list.component';
 import { ExecuteListComponent } from './tapper/execute-list/execute-list.component';
-import { LogTapComponent } from './tapper/log-tap/log-tap.component';
+import { TapLogComponent } from './tapper/tap-log/tap-log.component';
 import { TapListComponent } from './tapper/tap-list/tap-list.component';
 
 // THIRD ITERATION OF TAP LOGGER
-import { ZapolnitComponent } from './zapolnit/zapolnit.component';
-import { SpisokFazComponent } from './zapolnit/spisok-faz/spisok-faz.component';
-import { SpisokKazneyComponent } from './zapolnit/spisok-kazney/spisok-kazney.component';
-import { SpisokSobytiyComponent } from './zapolnit/spisok-sobytiy/spisok-sobytiy.component';
-import { SpisokTestovComponent } from './zapolnit/spisok-testov/spisok-testov.component';
-import { ZapisSobytiyComponent } from './zapolnit/zapis-sobytiy/zapis-sobytiy.component';
+import { LoggerComponent } from './logger/logger.component';
+import { ListStageComponent } from './logger/list-stage/list-stage.component';
+import { ListExecutionComponent } from './logger/list-execution/list-execution.component';
+import { ListTapComponent } from './logger/list-tap/list-tap.component';
+import { ListTestComponent } from './logger/list-test/list-test.component';
+import { LogTapComponent } from './logger/log-tap/log-tap.component';
 
 // QUERY AREA
-import { StolComponent } from './stol/stol.component';
-import { ZaprosComponent } from './stol/zapros/zapros.component';
+import { ExporterComponent } from './exporter/exporter.component';
+import { QuerierComponent } from './exporter/querier/querier.component';
 
 // ADMIN AREA
-import { SmenaComponent } from './smena/smena.component';
-import { AdminEtapComponent } from './smena/admin-etap/admin-etap.component';
-import { AdminSkhemaComponent } from './smena/admin-skhema/admin-skhema.component';
-import { AdminBumagaComponent } from './smena/admin-bumaga/admin-bumaga.component';
-import { AdminTovarComponent } from './smena/admin-tovar/admin-tovar.component';
-import { AdminUstroystvoComponent } from './smena/admin-ustroystvo/admin-ustroystvo.component';
-import { AdminOtkrytkaComponent } from './smena/admin-otkrytka/admin-otkrytka.component';
+import { AdminComponent } from './admin/admin.component';
+import { AdminStageComponent } from './admin/admin-stage/admin-stage.component';
+import { AdminSupplierComponent } from './admin/admin-supplier/admin-supplier.component';
+import { AdminPassComponent } from './admin/admin-pass/admin-pass.component';
+import { AdminProductComponent } from './admin/admin-product/admin-product.component';
+import { AdminDeviceComponent } from './admin/admin-device/admin-device.component';
+import { AdminCardComponent } from './admin/admin-card/admin-card.component';
 
 // PIPES
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
@@ -66,14 +66,14 @@ import { TesterNamePipe } from '../_pipes/TesterName.pipe';
 // NGRX STATE
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { fazReducer } from '../app/zapolnit/spisok-faz/spisok-faz.reducers';
-import { testovReducer } from '../app/zapolnit/spisok-testov/spisok-testov.reducers';
-import { kazneyReducer } from './zapolnit/spisok-kazney/spisok-kazney.reducers';
-import { sobytiyReducer } from './zapolnit/spisok-sobytiy/spisok-sobytiy.reducers';
-import { FazEffects } from '../app/zapolnit/spisok-faz/spisok-faz.effects';
-import { TestovEffects } from '../app/zapolnit/spisok-testov/spisok-testov.effects';
-import { KazneyEffects } from './zapolnit/spisok-kazney/spisok-kazney.effects';
-import { SobytiyEffects } from './zapolnit/spisok-sobytiy/spisok-sobytiy.effects';
+import { StageReducer } from './logger/list-stage/list-stage.reducers';
+import { TestReducer } from './logger/list-test/list-test.reducers';
+import { ExecutionReducer } from './logger/list-execution/list-execution.reducers';
+import { TapReducer } from './logger/list-tap/list-tap.reducers';
+import { StageEffects } from './logger/list-stage/list-stage.effects';
+import { TestEffects } from './logger/list-test/list-test.effects';
+import { ExecutionEffects } from './logger/list-execution/list-execution.effects';
+import { TapEffects } from './logger/list-tap/list-tap.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 
@@ -91,26 +91,26 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       StageListComponent,
       TestListComponent,
       ExecuteListComponent,
-      LogTapComponent,
+      TapLogComponent,
       TapListComponent,
       // 3RD ITERATION OF TAP LOGGER
-      ZapolnitComponent,
-      SpisokFazComponent,
-      SpisokKazneyComponent,
-      SpisokSobytiyComponent,
-      SpisokTestovComponent,
-      ZapisSobytiyComponent,
+      LoggerComponent,
+      ListStageComponent,
+      ListExecutionComponent,
+      ListTapComponent,
+      ListTestComponent,
+      LogTapComponent,
       // QUERY AREA
-      StolComponent,
-      ZaprosComponent,
-      // ADMINA AREA
-      SmenaComponent,
-      AdminEtapComponent,
-      AdminSkhemaComponent,
-      AdminBumagaComponent,
-      AdminTovarComponent,
-      AdminUstroystvoComponent,
-      AdminOtkrytkaComponent,
+      ExporterComponent,
+      QuerierComponent,
+      // ADMIN AREA
+      AdminComponent,
+      AdminStageComponent,
+      AdminSupplierComponent,
+      AdminPassComponent,
+      AdminProductComponent,
+      AdminDeviceComponent,
+      AdminCardComponent,
       // PIPES
       ResultEnumPipe,
       ExpectedEnumPipe,
@@ -128,10 +128,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
       { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'versionTwo', component: TapperComponent, pathMatch: 'full', canActivate: [AuthorizeGuard] },
-      { path: 'versionThree', component: ZapolnitComponent, canActivate: [AuthorizeGuard] },
-      { path: 'stol', component: StolComponent, canActivate: [AuthorizeGuard] },
-      { path: 'smena', component: SmenaComponent, canActivate: [AuthorizeGuard] },
+      { path: 'logger2', component: TapperComponent, canActivate: [AuthorizeGuard] },
+      { path: 'logger3', component: LoggerComponent, canActivate: [AuthorizeGuard] },
+      { path: 'exporter', component: ExporterComponent, canActivate: [AuthorizeGuard] },
+      { path: 'admin', component: AdminComponent, canActivate: [AuthorizeGuard] },
     ]),
     CommonModule,
     ReactiveFormsModule,
@@ -142,13 +142,13 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     TimepickerModule.forRoot(),
     BsDatepickerModule.forRoot(),
     StoreModule.forRoot({
-      stages: fazReducer,
-      tests: testovReducer,
-      executions: kazneyReducer,
-      taps: sobytiyReducer
+      stages: StageReducer,
+      tests: TestReducer,
+      executions: ExecutionReducer,
+      taps: TapReducer
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    EffectsModule.forRoot([FazEffects, TestovEffects, KazneyEffects, SobytiyEffects])
+    EffectsModule.forRoot([StageEffects, TestEffects, ExecutionEffects, TapEffects])
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },

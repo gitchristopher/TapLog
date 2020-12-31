@@ -1,5 +1,5 @@
 <header>
-  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow" style="background-color: #673ab7;">
+  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow w-100" style="background-color: #673ab7;">
     <div class="container-fluid justify-content-between">
       <a class="navbar-brand" [routerLink]="['/']">Logger</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
@@ -17,16 +17,16 @@
             <a class="nav-link text-light" [routerLink]="['']">Home</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/stol']">Query</a>
+            <a class="nav-link text-light" [routerLink]="['/exporter']">Query</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/versionThree']">Logger v3</a>
+            <a class="nav-link text-light" [routerLink]="['/logger3']">Logger v3</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/VersionTwo']">Logger v2</a>
+            <a class="nav-link text-light" [routerLink]="['/logger2']">Logger v2</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/smena']">Admin</a>
+            <a class="nav-link text-light" [routerLink]="['/admin']">Admin</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/todo']">Todo</a>

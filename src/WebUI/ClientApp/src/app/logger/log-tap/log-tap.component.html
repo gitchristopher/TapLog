@@ -1,0 +1,180 @@
+<!-- HEADING -->
+<div class="d-flex align-items-start justify-content-center pb-1">
+  <h2 class="">Add Taps</h2>
+</div>
+
+<!-- TOGGLE BUTTON ROW -->
+<div class="tl-cardRadio switch-padding-bottom">
+  <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedCardType">
+    <mat-radio-button disabled="true" value="0" class="pr-3">EMV</mat-radio-button>
+    <mat-radio-button disabled="true" value="4">Go Card</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<!-- CONTAINER FOR TAP LOGGER-->
+<div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="tapForm" class="tap-log-grid-container bg-raised">
+
+    <!-- CARD FORM FIELD -->
+    <div class="div tl-card">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <input type="text" placeholder="Card" aria-label="Number" matInput formControlName="card"
+          [matAutocomplete]="auto" required>
+        <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption [displayWith]="displayFn"
+          (optionSelected)='setPassAndProduct($event.option.value)'>
+          <mat-option *ngFor="let c of filteredOptions | async" [value]="c">
+            {{c.alias}}
+          </mat-option>
+        </mat-autocomplete>
+
+        <mat-error *ngIf="this.tapForm.controls['card'].hasError('required')">
+          Please enter a value
+        </mat-error>
+
+        <mat-error *ngIf="this.tapForm.controls['card'].hasError('incorrect')">
+          Please select a valid card
+        </mat-error>
+
+      </mat-form-field>
+    </div>
+
+    <!-- TAP ACTION FORM FIELD -->
+    <div class="tl-action">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Action</mat-label>
+        <mat-select formControlName="action" required>
+          <mat-option *ngFor="let action of actions | keyvalue" value={{action.key}}>{{action.value}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- DEVICE FORM FIELD -->
+    <div class="tl-device">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Device</mat-label>
+        <mat-select formControlName="device" required>
+          <mat-option *ngFor="let d of deviceList" [value]="d.id" style="width: 100%;">
+            {{d.code}} - {{d.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- TAP RESULT FORM FIELD -->
+    <div class="tl-result">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Result</mat-label>
+        <mat-select formControlName="result" required>
+          <mat-option value="0">Successful</mat-option>
+          <mat-option value="1">Unsuccessful</mat-option>
+          <mat-option value="2">Nothing</mat-option>
+          <mat-option value="3">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- TAP RESULT EXPECTATION FORM FIELD -->
+    <div class="tl-expectation">
+      <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="expectedResult" required>
+        <mat-button-toggle value="0" aria-label="Expected">
+          <mat-icon>thumb_up</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="1" aria-label="Unexpected">
+          <mat-icon>thumb_down</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="2" aria-label="Unsure">
+          <mat-icon>thumbs_up_down</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- TAP TIME FORM FIELD -->
+    <div class="tl-time">
+      <timepicker formControlName="time" [showMeridian]="false" [showSeconds]="true" [hourStep]="1" [minuteStep]="1"
+        [secondsStep]="1">
+      </timepicker>
+    </div>
+
+    <!-- TAP DATE FORM FIELD -->
+    <div class="tl-date">
+      <input type="text" placeholder="Datepicker" formControlName="date" bsDatepicker
+        [bsConfig]="{ adaptivePosition: true, dateInputFormat: 'YYYY-MM-DD' }" />
+    </div>
+
+    <!-- TAP FARE FORM FIELD -->
+    <div class="tl-fare">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Fare</mat-label>
+        <input matInput type="number" placeholder="e.g 2.7" formControlName="fare" min="0">
+      </mat-form-field>
+    </div>
+
+    <!-- TAP BEFORE FARE FORM FIELD -->
+    <div class="tl-before">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Balance before</mat-label>
+        <input matInput type="number" placeholder="e.g 32.10" formControlName="balanceBefore" min="0">
+      </mat-form-field>
+    </div>
+
+    <!-- TAP AFTER FARE FORM FIELD -->
+    <div class="tl-after">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Balance after</mat-label>
+        <input matInput type="number" placeholder="e.g 29.40" formControlName="balanceAfter" min="0">
+      </mat-form-field>
+    </div>
+
+    <!-- TAP NOTES FORM FIELD -->
+    <div class="tl-notes">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Notes</mat-label>
+        <textarea matInput type="text" matTextareaAutosize matAutosizeMinRows=6 matAutosizeMaxRows=6
+          formControlName="notes"></textarea>
+        <button mat-button *ngIf="this.tapForm.controls['notes'].value" matSuffix mat-icon-button aria-label="Clear"
+          (click)="clearNotes()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- TODO: Remove magic number 4 -->
+    <!-- CARD PASS AND PRODUCT FORM FIELD -->
+    <div class="tl-passProduct" *ngIf="this.selectedCardType == 4">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Product</mat-label>
+        <mat-select formControlName="products">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option *ngFor="let p of productList" [value]="p.id" style="width: 100%;">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Pass</mat-label>
+        <mat-select formControlName="passes">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option *ngFor="let p of passList" [value]="p.id" style="width: 100%;">
+            {{p.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- SAVE BUTTON AREA -->
+    <div class="tl-save">
+      <button mat-raised-button color="primary" type="submit"
+        [disabled]="(this.selectedExecutionId === null || !this.tapForm.valid)">Save Tap</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- ERROR DISPLAY -->
+<ng-container *ngIf="formErrors?.errors != null && this.selectedExecutionId !== null">
+  <mat-error *ngFor="let err of formErrors.errors">{{err}}</mat-error>
+</ng-container>
+
+<p *ngIf="debug">
+  {{this.tapForm.getRawValue() | json}}
+</p>

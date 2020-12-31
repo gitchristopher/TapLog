@@ -35,8 +35,6 @@ export class TapLoggerComponent implements OnInit {
   resultEnum: taplog.Result[] = [taplog.Result.Successful, taplog.Result.Unsuccessful, taplog.Result.None, taplog.Result.Other];
   expectedResult: number;
 
-  // ismeridian = true;
-  // showSec = true;
   mytime: Date = new Date();
 
   // Icons
@@ -60,7 +58,6 @@ export class TapLoggerComponent implements OnInit {
       result => {
           if (result.length) {
             this.stageList = result.sort(function(a, b) {return (Number(a.isCurrent) - Number(b.isCurrent)); }).reverse();
-            // this.selectedStage = this.stageList[0];
             this.selectStage(this.stageList[0]);
           }
       },
@@ -102,9 +99,6 @@ export class TapLoggerComponent implements OnInit {
     this.testsClient.getTestsForStage(stage.id).subscribe(
       result => {
           this.testList = result;
-          // if (this.testList.length) {
-          //   this.selectedTest = this.testList[0];
-          // }
       },
       error => console.error(error)
     );

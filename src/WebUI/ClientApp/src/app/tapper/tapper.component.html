@@ -9,8 +9,8 @@
   </div>
   <div class="tlexecutions">
     <app-execute-list 
-      (onSelect)="selectExecution($event)" 
-      [selectedTest]="selectedTest" 
+      (onSelect)="selectExecution($event)"
+      [selectedTest]="selectedTest"
       [selectedStage]="selectedStage">
     </app-execute-list>
   </div>
@@ -18,9 +18,6 @@
     <app-tap-list [selectedExecution]="selectedExecution"></app-tap-list>
   </div>
   <div class="tladd">
-    <app-log-tap (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"></app-log-tap>
+    <app-tap-log (onSave)="selectExecution($event)" [selectedExecution]="selectedExecution"></app-tap-log>
   </div>
-  <!-- <div class="tlnothing">
-    <p> . </p>
-  </div> -->
 </div>
