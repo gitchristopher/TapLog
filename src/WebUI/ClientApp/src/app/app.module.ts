@@ -36,25 +36,25 @@ import { TapLogComponent } from './tapper/tap-log/tap-log.component';
 import { TapListComponent } from './tapper/tap-list/tap-list.component';
 
 // THIRD ITERATION OF TAP LOGGER
-import { LoggerComponent } from './logger/logger.component';
-import { ListStageComponent } from './logger/list-stage/list-stage.component';
-import { ListExecutionComponent } from './logger/list-execution/list-execution.component';
-import { ListTapComponent } from './logger/list-tap/list-tap.component';
-import { ListTestComponent } from './logger/list-test/list-test.component';
-import { LogTapComponent } from './logger/log-tap/log-tap.component';
+// import { LoggerComponent } from './logger/logger.component';
+// import { ListStageComponent } from './logger/list-stage/list-stage.component';
+// import { ListExecutionComponent } from './logger/list-execution/list-execution.component';
+// import { ListTapComponent } from './logger/list-tap/list-tap.component';
+// import { ListTestComponent } from './logger/list-test/list-test.component';
+// import { LogTapComponent } from './logger/log-tap/log-tap.component';
 
 // QUERY AREA
-import { ExporterComponent } from './exporter/exporter.component';
-import { QuerierComponent } from './exporter/querier/querier.component';
+// import { ExporterComponent } from './exporter/exporter.component';
+// import { QuerierComponent } from './exporter/querier/querier.component';
 
 // ADMIN AREA
-import { AdminComponent } from './admin/admin.component';
-import { AdminStageComponent } from './admin/admin-stage/admin-stage.component';
-import { AdminSupplierComponent } from './admin/admin-supplier/admin-supplier.component';
-import { AdminPassComponent } from './admin/admin-pass/admin-pass.component';
-import { AdminProductComponent } from './admin/admin-product/admin-product.component';
-import { AdminDeviceComponent } from './admin/admin-device/admin-device.component';
-import { AdminCardComponent } from './admin/admin-card/admin-card.component';
+// import { AdminComponent } from './admin/admin.component';
+// import { AdminStageComponent } from './admin/admin-stage/admin-stage.component';
+// import { AdminSupplierComponent } from './admin/admin-supplier/admin-supplier.component';
+// import { AdminPassComponent } from './admin/admin-pass/admin-pass.component';
+// import { AdminProductComponent } from './admin/admin-product/admin-product.component';
+// import { AdminDeviceComponent } from './admin/admin-device/admin-device.component';
+// import { AdminCardComponent } from './admin/admin-card/admin-card.component';
 
 // PIPES
 import { ResultEnumPipe } from '../_pipes/ResultEnumPipe';
@@ -75,6 +75,11 @@ import { TestEffects } from './logger/list-test/list-test.effects';
 import { ExecutionEffects } from './logger/list-execution/list-execution.effects';
 import { TapEffects } from './logger/list-tap/list-tap.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { AppRoutingModule } from './app-routing.module';
+import { ExporterModule } from './exporter/exporter.module';
+import { AdminModule } from './admin/admin.module';
+import { LoggerModule } from './logger/logger.module';
+import { PipeModule } from 'src/_modules/pipe.module';
 
 
 
@@ -93,50 +98,55 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       ExecuteListComponent,
       TapLogComponent,
       TapListComponent,
-      // 3RD ITERATION OF TAP LOGGER
-      LoggerComponent,
-      ListStageComponent,
-      ListExecutionComponent,
-      ListTapComponent,
-      ListTestComponent,
-      LogTapComponent,
-      // QUERY AREA
-      ExporterComponent,
-      QuerierComponent,
-      // ADMIN AREA
-      AdminComponent,
-      AdminStageComponent,
-      AdminSupplierComponent,
-      AdminPassComponent,
-      AdminProductComponent,
-      AdminDeviceComponent,
-      AdminCardComponent,
-      // PIPES
-      ResultEnumPipe,
-      ExpectedEnumPipe,
-      TapActionEnumPipe,
-      TapActionToArrayPipe,
-      TesterNamePipe
+      // 3RD ITERATION OF TAP LOGGER.... imported via LoggerModule
+        // LoggerComponent,
+        // ListStageComponent,
+        // ListExecutionComponent,
+        // ListTapComponent,
+        // ListTestComponent,
+        // LogTapComponent,
+      // QUERY AREA.... imported via ExporterModule
+        // ExporterComponent,
+        // QuerierComponent,
+      // ADMIN AREA.... imported via AdminModule
+        // AdminComponent,
+        // AdminStageComponent,
+        // AdminSupplierComponent,
+        // AdminPassComponent,
+        // AdminProductComponent,
+        // AdminDeviceComponent,
+        // AdminCardComponent,
+      // PIPES.... imported via PipeModuile
+        // ResultEnumPipe,
+        // ExpectedEnumPipe,
+        // TapActionEnumPipe,
+        // TapActionToArrayPipe,
+        // TesterNamePipe
    ],
    imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     FontAwesomeModule,
     HttpClientModule,
     FormsModule,
-    ApiAuthorizationModule,
-    RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
-      { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'logger2', component: TapperComponent, canActivate: [AuthorizeGuard] },
-      { path: 'logger3', component: LoggerComponent, canActivate: [AuthorizeGuard] },
-      { path: 'exporter', component: ExporterComponent, canActivate: [AuthorizeGuard] },
-      { path: 'admin', component: AdminComponent, canActivate: [AuthorizeGuard] },
-    ]),
-    CommonModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MaterialModule,
+    ApiAuthorizationModule,
+    AdminModule,
+    ExporterModule,
+    LoggerModule,
+    PipeModule,
+    // RouterModule.forRoot([
+      //   { path: '', component: HomeComponent, pathMatch: 'full' },
+      //   { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
+      //   { path: 'versionOne', component: TapLoggerComponent, canActivate: [AuthorizeGuard] },
+      //   { path: 'logger2', component: TapperComponent, canActivate: [AuthorizeGuard] },
+      //   { path: 'logger3', component: LoggerComponent, canActivate: [AuthorizeGuard] },
+      //   { path: 'exporter', component: ExporterComponent, canActivate: [AuthorizeGuard] },
+      //   { path: 'admin', component: AdminComponent, canActivate: [AuthorizeGuard] },
+      // ]),
+      // CommonModule,
+    AppRoutingModule,
     ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     TimepickerModule.forRoot(),

@@ -108,7 +108,7 @@ export class LogTapComponent implements OnInit {
       if (this.formErrors.errors.length == 0) {
         const flatErrors = [].concat(...Object.values(error));
         this.formErrors.errors = flatErrors;
-        this.formErrors.title = 'A validaton error has occured. list tap';
+        this.formErrors.title = 'A validation error has occured.';
         this.snackBar.open(this.formErrors.title, null, { duration: 5000 });
       }
     } else {

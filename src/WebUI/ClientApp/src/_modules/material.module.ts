@@ -27,6 +27,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableExporterModule } from 'mat-table-exporter';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ButtonsModule } from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [],
@@ -59,6 +64,10 @@ import { MatTableExporterModule } from 'mat-table-exporter';
     MatExpansionModule,
     MatNativeDateModule,
     MatTableExporterModule,
+    ModalModule.forRoot(),
+    ButtonsModule.forRoot(),
+    TimepickerModule.forRoot(),
+    BsDatepickerModule.forRoot(),
   ],
   exports: [
     MatToolbarModule,
@@ -87,7 +96,10 @@ import { MatTableExporterModule } from 'mat-table-exporter';
     MatTableModule,
     MatExpansionModule,
     MatNativeDateModule,
-    MatTableExporterModule,
-  ]
+    MatTableExporterModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-AU'}
+  ],
 })
 export class MaterialModule { }

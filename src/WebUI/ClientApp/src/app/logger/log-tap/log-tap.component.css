@@ -4,19 +4,27 @@
 
 .tap-log-grid-container {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: min-content min-content min-content min-content min-content min-content min-content 3em 3em;
+  grid-template-columns: 1fr 1fr 120px;
+  grid-template-rows: min-content min-content min-content min-content min-content 3em 3em;
   gap: 3px 1em;
   grid-template-areas:
-    "cardRadio empty"
-    "card fare"
-    "action before"
-    "device after"
-    "result notes"
-    "expectation notes"
-    "time passProduct"
-    "date passProduct"
+    /* "cardRadio empty"
+    "1card 1fare"
+    "1action 1before"
+    "1device 1after"
+    "1result 1notes"
+    "1expectation 1notes"
+    "1time 1passProduct"
+    "1date 1passProduct"
     "save save"
+     */
+    "cardRadio . ."
+    "card . before"
+    "action result fare "
+    "device expectation after "
+    "notes time passProduct"
+    "notes date passProduct"
+    ". save ."
 }
 
 .tl-empty {
@@ -74,6 +82,9 @@
 
 .tl-expectation {
   grid-area: expectation;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   /* background-color: rgba(151, 63, 28, 0.479); */
 }
 
@@ -86,10 +97,16 @@
   grid-area: time;
   /* background-color: rgba(30, 221, 255, 0.863); */
   padding: 5px 0px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .tl-date {
   grid-area: date;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   /* background-color: rgb(255, 255, 255); */
 }
 
@@ -112,4 +129,44 @@
 
 .switch-padding-bottom {
   padding-bottom: 6px;
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 1200px) {
+  .tap-log-grid-container {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1300px and up) */
+@media only screen and (min-width: 1400px) {
+  .tap-log-grid-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: min-content min-content min-content min-content min-content min-content min-content 3em 3em;
+    gap: 3px 1em;
+    grid-template-areas:
+      "cardRadio empty"
+      "card fare"
+      "action before"
+      "device after"
+      "result notes"
+      "expectation notes"
+      "time passProduct"
+      "date passProduct"
+      "save save"
+  }
 }

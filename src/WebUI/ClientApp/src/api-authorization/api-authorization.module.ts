@@ -6,11 +6,13 @@ import { LogoutComponent } from './logout/logout.component';
 import { RouterModule } from '@angular/router';
 import { ApplicationPaths } from './api-authorization.constants';
 import { HttpClientModule } from '@angular/common/http';
+import { PipeModule } from 'src/_modules/pipe.module';
 
 @NgModule({
   imports: [
     CommonModule,
     HttpClientModule,
+    PipeModule,
     RouterModule.forChild(
       [
         { path: ApplicationPaths.Register, component: LoginComponent },

@@ -34,10 +34,10 @@ namespace TapLog.Infrastructure.Persistence
                     {
                         new TodoItem { Title = "Use in memory DB", Done = true },
                         new TodoItem { Title = "Show login details on welcome screen", Done = true },
-                        new TodoItem { Title = "Seed more data" },
+                        new TodoItem { Title = "Seed more data", Done = true },
                         new TodoItem { Title = "Complete updating 3rd Gen components to use redux", Done = true  },
-                        new TodoItem { Title = "Modularise components like current project (Delat)" },
-                        new TodoItem { Title = "Rename 3rd version of components from russian", Done = true },
+                        new TodoItem { Title = "Modularise components like current project (Delat)", Done = true },
+                        new TodoItem { Title = "Rename 3rd version of components and admin from russian", Done = true },
                         new TodoItem { Title = "Remove old versions of components" },
                         new TodoItem { Title = "Update repo with screenshots" },
                         new TodoItem { Title = "Update to Angular 11" }
