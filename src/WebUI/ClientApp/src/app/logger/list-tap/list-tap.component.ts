@@ -244,6 +244,8 @@ export class ListTapComponent implements OnInit {
    */
   private formatCommandData() {
     const time = this.formatTimeAndDate(this.updateTapForm.value.time as Date, this.updateTapForm.value.date as Date).toISOString();
+    const passId = Number(this.updateTapForm.value.passes) == 0 ? null : Number(this.updateTapForm.value.passes);
+    const productId = Number(this.updateTapForm.value.products) == 0 ? null : Number(this.updateTapForm.value.products);
     return {
       testExecutionId: this.selectedExecution.id,
       balanceAfter: Number(this.updateTapForm.value.balanceAfter),
@@ -259,8 +261,8 @@ export class ListTapComponent implements OnInit {
       tester: 'Current User',
       timeOf: time,
       wasResultExpected: Number(this.updateTapForm.value.expectedResult),
-      productId: Number(this.updateTapForm.value.product),
-      passId: Number(this.updateTapForm.value.pass),
+      productId: productId,
+      passId: passId,
     };
   }
 

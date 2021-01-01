@@ -79,13 +79,17 @@
       <!-- Time Of Column -->
       <ng-container matColumnDef="timeOf2">
         <th mat-header-cell *matHeaderCellDef disableClear>Date</th>
-        <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'MMM d' :'UTC'}} </td>
+        <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'MMM d'}} </td>
+        <!-- <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'MMM d':'UTC'}} </td> -->
+        <!-- Check UTC vs not UTC on azure? -->
       </ng-container>
 
       <!-- Time Of Column -->
       <ng-container matColumnDef="timeOf">
         <th mat-header-cell *matHeaderCellDef disableClear>Time</th>
-        <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'H:mm:ss':'UTC'}} </td>
+        <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'H:mm:ss'}} </td>
+        <!-- <td mat-cell *matCellDef="let row"> {{row.timeOf | date:'H:mm:ss':'UTC'}} </td> -->
+        <!-- Check UTC vs not UTC on azure? -->
       </ng-container>
 
       <!-- Fare Column -->
