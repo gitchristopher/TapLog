@@ -23,11 +23,13 @@ Frontend:
 
 ## Screenshots
 
-![Image of Tap Logger](https://github.com/gitchristopher/TapLog/logger.png)
+![Tap Logger](https://github.com/gitchristopher/TapLog/blob/master/logger.png)
 
-![Image of Tap Exporter](https://github.com/gitchristopher/TapLog/exporter.png)
+![Tap Exporter](https://github.com/gitchristopher/TapLog/blob/master/exporter.png)
 
-![Image of Admin](https://github.com/gitchristopher/TapLog/admin.png)
+![Admin](https://github.com/gitchristopher/TapLog/blob/master/admin.png)
+
+![API](https://github.com/gitchristopher/TapLog/blob/master/api.png)
 
 ## Authors
 
