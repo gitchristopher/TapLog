@@ -124,7 +124,6 @@ export class TapLoggerComponent implements OnInit {
 
   selectExecution(execution: taplog.TestExecutionDto2): void {
     this.selectedExecution = execution;
-    console.log(execution.taps);
   }
 
   // modals
@@ -149,7 +148,6 @@ export class TapLoggerComponent implements OnInit {
         },
         error => {
             const errors = JSON.parse(error.response);
-            console.log('error while uploading test');
 
             if (errors && errors.Title) {
                 this.newTestEditor.error = errors.title;
@@ -162,8 +160,6 @@ export class TapLoggerComponent implements OnInit {
 
   addTap(data: any): void {
     const tap = new taplog.CreateTapCommand(data);
-    console.log('uploading');
-    console.log(tap);
     this.tapsClient.create(tap).subscribe(
         result => {
           const newTap = new taplog.TapDto2(data);
@@ -173,17 +169,14 @@ export class TapLoggerComponent implements OnInit {
           this.updateTap();
         },
         error => {
-            console.log('error when uploading tap');
-            console.log(error);
+            window.alert(error);
         }
     );
   }
 
   updateTap() {
     const dateAndTime = this.addTapForm.value.time;
-    console.log(dateAndTime.toISOString());
     const newDateAndTime = new Date(dateAndTime.getTime() + 0.5 * 60000);
-    console.log(newDateAndTime.toISOString());
     this.mytime = new Date(this.mytime.getTime() + 0.25 * 60000);
     this.addTapForm.patchValue({
       notes: null,
@@ -198,8 +191,6 @@ export class TapLoggerComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.addTapForm.value);
-
     const card = this.cardList.find(c => c.id === Number(this.addTapForm.value.card));
     const device = this.deviceList.find(d => d.id === Number(this.addTapForm.value.device));
     const time = this.formatTimeAndDate(this.addTapForm.value.time, this.addTapForm.value.date);

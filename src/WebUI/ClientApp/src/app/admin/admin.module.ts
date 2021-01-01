@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AdminRoutingModule } from './admin-routing.module';
 import { MaterialModule } from 'src/_modules/material.module';
 import { AdminCardComponent } from './admin-card/admin-card.component';
 import { AdminDeviceComponent } from './admin-device/admin-device.component';
@@ -27,7 +26,6 @@ import { PipeModule } from 'src/_modules/pipe.module';
   imports: [
     CommonModule,
     MaterialModule,
-    AdminRoutingModule,
     ReactiveFormsModule,
     FormsModule,
     PipeModule

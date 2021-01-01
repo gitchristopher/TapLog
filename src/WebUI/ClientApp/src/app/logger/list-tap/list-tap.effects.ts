@@ -15,7 +15,6 @@ export class TapEffects {
             mergeMap((action) => {
                 return this.executionClient.get(action.executionId).pipe(
                     map(execution => {
-                        // console.log(execution);
                         return (
                             tap.LOAD_EXECUTION_TAPS_SUCCESS({ taps: execution.taps })
                         )
@@ -68,7 +67,6 @@ export class TapEffects {
                     map(noContent => tap.DELETE_TAP_SUCCESS({ executionId: action.executionId, tapId: action.tapId })),
                     catchError(error => {
                         const apiErrors = JSON.parse(error)['response']['errors'];
-                        console.log(apiErrors);
                         return (
                             of(tap.DELETE_TAP_FAIL({ error: apiErrors }))
                         )

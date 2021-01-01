@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { LoggerRoutingModule } from './logger-routing.module';
 import { MaterialModule } from 'src/_modules/material.module';
 import { ListExecutionComponent } from './list-execution/list-execution.component';
 import { ListStageComponent } from './list-stage/list-stage.component';
@@ -27,7 +26,6 @@ import { PipeModule } from 'src/_modules/pipe.module';
   imports: [
     CommonModule,
     MaterialModule,
-    LoggerRoutingModule,
     ReactiveFormsModule,
     FormsModule,
     PipeModule,
