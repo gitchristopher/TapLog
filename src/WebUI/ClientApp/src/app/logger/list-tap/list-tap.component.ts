@@ -121,8 +121,8 @@ export class ListTapComponent implements OnInit {
       balanceBefore: new FormControl(),
       balanceAfter: new FormControl(),
       notes: new FormControl(),
-      product: new FormControl(),
-      pass: new FormControl(),
+      products: new FormControl(),
+      passes: new FormControl(),
     });
   }
 
@@ -171,8 +171,8 @@ export class ListTapComponent implements OnInit {
       time: tempTime,
       date: tempDate,
       device: tapToEdit.deviceId,
-      product: this.productList.find(x => x.name === tapToEdit.product)?.id,
-      pass: this.passList.find(x => x.name === tapToEdit.pass)?.id,
+      products: this.productList.find(x => x.name === tapToEdit.product)?.id,
+      passes: this.passList.find(x => x.name === tapToEdit.pass)?.id,
     });
   }
 

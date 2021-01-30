@@ -38,8 +38,8 @@ namespace TapLog.Infrastructure.Persistence
                         new TodoItem { Title = "Complete updating 3rd Gen components to use redux", Done = true  },
                         new TodoItem { Title = "Modularise components like current project (Delat)", Done = true },
                         new TodoItem { Title = "Rename 3rd version of components and admin from russian", Done = true },
+                        new TodoItem { Title = "Update repo with screenshots", Done = true },
                         new TodoItem { Title = "Remove old versions of components" },
-                        new TodoItem { Title = "Update repo with screenshots" },
                         new TodoItem { Title = "Update to Angular 11" }
                     }
                 });

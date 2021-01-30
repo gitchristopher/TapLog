@@ -278,7 +278,7 @@
               <ng-template #productFormItem>
                 <mat-form-field appearance="outline">
                   <mat-label>Product</mat-label>
-                  <mat-select formControlName="product">
+                  <mat-select formControlName="products">
                     <mat-option [value]="null">None</mat-option>
                     <mat-option *ngFor="let p of productList" [value]="p.id" style="width: 100%;">
                       {{p.name}}
@@ -302,7 +302,7 @@
               <ng-template #passFormItem>
                 <mat-form-field appearance="outline">
                   <mat-label>Pass</mat-label>
-                  <mat-select formControlName="pass">
+                  <mat-select formControlName="passes">
                     <mat-option [value]="null">None</mat-option>
                     <mat-option *ngFor="let p of passList" [value]="p.id" style="width: 100%;">
                       {{p.name}}
