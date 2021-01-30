@@ -7,11 +7,11 @@ import { Store } from '@ngrx/store';
 import { map, startWith } from 'rxjs/operators';
 import { AppState, TapsState } from 'src/app/app.state';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActionsEnum } from 'src/_enums/tap-action.enum';
+import { TapAction } from 'src/app/TapLog-api';
 import { RequireMatch } from 'src/_validators/requireMatch';
 import { selectSelectedExecutionId } from '../list-execution/list-execustion.selectors';
 import { selectTapFormData, selectTaps, selectTapsList } from '../list-tap/list-tap.selectors';
-import { CLEAR_TAP_ERRORS, CREATE_TAP_REQUEST, LOAD_TAP_FORM_DATA_REQUEST } from '../list-tap/list-tap.actions';
+import { CREATE_TAP_REQUEST, LOAD_TAP_FORM_DATA_REQUEST } from '../list-tap/list-tap.actions';
 
 interface IFormErrors {
   errors: string[];
@@ -24,7 +24,7 @@ interface IFormErrors {
   styleUrls: ['./log-tap.component.css']
 })
 export class LogTapComponent implements OnInit {
-  actions = Object.keys(ActionsEnum).map(key => ActionsEnum[key]).filter(k => !(parseInt(k) >= 0));
+  actions = Object.keys(TapAction).map(key => TapAction[key]).filter(k => !(parseInt(k) >= 0));
   taps: TapDto[];                                         // Used to populate form data
   selectedExecutionId: number;                            // Used to populate command data & HTML error display
   tapForm: FormGroup;                                     // To capture updated tap values

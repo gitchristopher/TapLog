@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { AppState, TapsState } from 'src/app/app.state';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatAccordion } from '@angular/material/expansion';
-import { ActionsEnum } from 'src/_enums/tap-action.enum';
+import { TapAction } from 'src/app/TapLog-api';
 import { RequireMatch as RequireMatch } from '../../../_validators/requireMatch';
 import { selectTaps, selectTapsListForSelectedExecution } from './list-tap.selectors';
 import { selectSelectedExecution, selectSelectedExecutionId } from '../list-execution/list-execustion.selectors';
@@ -40,7 +40,7 @@ export class ListTapComponent implements OnInit {
   selectedExecutionId: number;                          // For loading the correct taps
   selectedExecution: TestExecutionDto;                  // Used to populate update form data command
   taps: TapDto[];                                       // Used to populate update form data command
-  actions = Object.keys(ActionsEnum).map(key => ActionsEnum[key]).filter(k => !(parseInt(k) >= 0));
+  actions = Object.keys(TapAction).map(key => TapAction[key]).filter(k => !(parseInt(k) >= 0));
   isChecked = false;                                    // For toggeling the accordian
   isDisabled = false;                                   // For disabling the accordian toggle
   isEditing: number;                                    // For determining which tap is being edited
